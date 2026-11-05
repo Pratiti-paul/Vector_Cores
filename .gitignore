@@ -1,0 +1,14 @@
+
+# Compiled simulation files
+*.out
+*.vvp
+*.vcd
+*.fst
+
+# Temporary files
+*.tmp
+*.log
+.DS_Store
+
+# Editor settings
+.vscode/
