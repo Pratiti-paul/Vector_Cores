@@ -162,18 +162,15 @@ Vector_Cores/
 
 ## 6. Team Members and Individual Contributions
 
-The project was developed collaboratively, with responsibilities divided across processor modules, integration, verification and synthesis.
+The project was developed collaboratively, with responsibilities divided across processor modules, integration and verification.
 
 | Team Member | Responsibilities |
 |---|---|
-| **Pratiti Paul** | Designed and implemented the Program Counter and Control Unit. Developed the Top Module and integrated the individual processor components into a complete system. |
-| **Anuradha** | Implemented Instruction Memory, developed its testbench, prepared `program.hex` and worked on instruction encoding verification. |
-| **Ganga** | Implemented Data Memory and the 4-to-16 Address Decoder. Developed and executed the Data Memory testbench. |
-| **Alisha** | Implemented the Arithmetic Logic Unit (ALU) and Register File. Developed their respective testbenches. |
+| **Pratiti Paul** | Implemented the Program Counter and Control Unit, developed the Top Module and handled system integration and verification. |
+| **Anuradha** | Implemented Instruction Memory, developed its testbench and prepared `program.hex`. |
+| **Ganga** | Implemented Data Memory and the 4-to-16 Address Decoder, along with its testbench. |
+| **Alisha** | Implemented the ALU and Register File and developed their respective testbenches. |
 
-### Collaborative Integration
-
-All individual modules were integrated into the final processor through the Top Module. The complete system was tested to verify correct instruction execution, data transfer, arithmetic operations, branching, jumping, reset behavior and HALT functionality.
 
 ## 7. Technologies and Tools
 
