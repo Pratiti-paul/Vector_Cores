@@ -1,262 +1,377 @@
-# Vector Cores
-### Design and Implementation of an Instruction and Data Memory Hierarchy Using Harvard Architecture
+# Vector_Cores
+## Design and Implementation of an Instruction and Data Memory Hierarchy Using Harvard Architecture
 
-![Language](https://img.shields.io/badge/Language-Verilog-blue)
-![Architecture](https://img.shields.io/badge/Architecture-Harvard-purple)
-![Domain](https://img.shields.io/badge/Domain-Computer%20Architecture-orange)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+A Verilog-based implementation of a **16-bit, single-cycle processor** following the Harvard Architecture. The processor uses separate instruction and data memories and supports arithmetic, memory-access, branching, jumping and halt instructions.
 
 ---
 
 ## 1. Project Overview
 
-**Vector Cores** is a Computer Architecture design and verification project developed as part of MCA coursework. The project focuses on designing, implementing, and verifying a simplified single-cycle processor datapath using **Harvard Architecture** and Verilog HDL.
+Vector_Cores is a simplified processor designed and implemented using Verilog HDL.
 
-In traditional Von Neumann architecture, instructions and data share a single physical bus and memory space, causing the classic *Von Neumann bottleneck* where instruction fetches and data memory accesses must be serialized. In contrast, the **Harvard Architecture** implements separate physical memories and distinct bus hierarchies:
-- **Instruction Memory (IMEM):** 16 locations × 16 bits, dedicated to instruction fetching.
-- **Data Memory (DMEM):** 16 locations × 8 bits, dedicated to program data read/write operations.
+The processor follows the **Harvard Architecture**, in which instruction memory and data memory are separate. This separation allows the processor to fetch instructions independently of its data-memory operations.
 
-This separation allows concurrent instruction fetch and data operand read/write within the same clock cycle, supporting high-throughput single-cycle execution.
+The processor uses a single-cycle execution model, meaning that each instruction completes in one clock cycle.
 
-### Objectives
-- Understand and implement the core concepts of Harvard Architecture in Verilog HDL.
-- Design independent instruction and data memory modules with proper address decoding.
-- Implement a 4-bit Program Counter and combinational Control Unit decoding 8 distinct instructions.
-- Design an 8-bit Arithmetic Logic Unit (ALU) and 4-entry dual-read Register File.
-- Execute a standardized test program (`program.hex`) verifying arithmetic, memory, and control transfer operations.
-- Establish modular verification workflows using Icarus Verilog and waveform analysis.
+The project focuses on:
+- Designing a modular processor architecture.
+- Implementing instruction fetching and decoding.
+- Performing arithmetic operations using an ALU.
+- Managing registers and data memory.
+- Supporting conditional branching and jump instructions.
+- Verifying functionality through Verilog simulation and testbenches.
+- Evaluating the synthesized hardware structure using Yosys.
 
----
+## 2. Architecture Specifications
 
-## 2. System Architecture & Datapath
+| Component | Specification |
+|---|---|
+| Architecture | Harvard Architecture |
+| Processor Type | Single-Cycle Processor |
+| Instruction Width | 16 bits |
+| Data Width | 8 bits |
+| Program Counter | 4 bits |
+| Instruction Memory | 16 × 16 bits |
+| Data Memory | 16 × 8 bits |
+| Register File | 4 × 8-bit registers |
+| Number of Registers | 4 (R0–R3) |
+| Clock Edge | Rising edge |
+| Reset | Active-high synchronous reset |
 
-### Processor Datapath Modules
+**Register File:** R0 is hardwired to zero. The remaining registers, R1, R2 and R3, are writable.
 
-| Component | Source File | Responsibility |
+**Data Representation:** Arithmetic results are stored in 8 bits, with overflow wrapping around modulo 256.
+
+## 3. System Architecture
+
+The processor consists of the following major components:
+
+### 3.1 Program Counter (PC)
+- Maintains the address of the current instruction.
+- Provides a 4-bit instruction address.
+- Updates to the next address when enabled.
+- Supports sequential execution, branching and jumping.
+- Holds its value when the processor executes HALT.
+
+### 3.2 Instruction Memory
+- Stores 16-bit instructions.
+- Has 16 addressable locations.
+- Uses combinational read operation.
+- Loads the instruction program from `program.hex`.
+
+### 3.3 Control Unit
+- Decodes the opcode of the fetched instruction.
+- Generates control signals for the processor.
+- Controls register writes, memory operations, ALU operations, branching, jumping and halt behavior.
+
+### 3.4 Register File
+- Contains four 8-bit registers: R0, R1, R2 and R3.
+- Supports two combinational read ports.
+- Supports synchronous register writes.
+- Keeps R0 permanently equal to zero.
+
+### 3.5 Arithmetic Logic Unit (ALU)
+- Performs arithmetic operations.
+- Supports addition and subtraction.
+- Produces an 8-bit result.
+- Generates a zero flag used by conditional branching.
+
+### 3.6 Data Memory
+- Contains 16 locations, each storing 8 bits.
+- Supports memory read and write operations.
+- Uses combinational reads and synchronous writes.
+- Includes an internally instantiated 4-to-16 address decoder.
+
+### 3.7 Next PC Selection Logic
+
+Determines the next instruction address based on:
+- Sequential execution: PC + 1.
+- Conditional branch: PC + 1 + signed offset.
+- Jump: absolute 4-bit target address.
+- HALT: PC remains unchanged.
+
+## 4. Supported Instruction Set
+
+The processor implements the following eight instructions:
+
+| Instruction | Opcode | Operation |
 |---|---|---|
-| **Program Counter (PC)** | `rtl/program_counter.v` | 4-bit synchronous register holding the current instruction fetch address. |
-| **Instruction Memory** | `rtl/instruction_memory.v` | 16 × 16-bit read-only memory supplying instructions asynchronously. |
-| **Control Unit** | `rtl/control_unit.v` | Decodes 4-bit opcode `[15:12]` and generates datapath steering signals. |
-| **Register File** | `rtl/register_file.v` | 4 general-purpose 8-bit registers (`R0`–`R3`) with dual read and single write ports. |
-| **Arithmetic Logic Unit (ALU)** | `rtl/alu.v` | Performs 8-bit arithmetic operations (ADD, SUB) and generates zero flag. |
-| **Data Memory** | `rtl/data_memory.v` | 16 × 8-bit RAM storing runtime program variables and data. |
-| **Address Decoder** | `rtl/address_decoder.v` | Decodes 4-bit addresses for data memory selection. |
-| **Top Module** | `rtl/top_module.v` | Integrates all submodules into a unified single-cycle processor system. |
+| ADD | `0011` | Rd = Rs + Rt |
+| SUB | `0100` | Rd = Rs - Rt |
+| ADDI | `0101` | Rd = Rs + Immediate |
+| LOAD | `0001` | Rd = Memory[Address] |
+| STORE | `0010` | Memory[Address] = Rs |
+| BEQ | `0110` | Branch if Rs == Rt |
+| JUMP | `0111` | PC = Target |
+| HALT | `1111` | Stop execution |
 
-### Single-Cycle Execution Stages
-Every instruction completes within one clock cycle through five functional stages:
-1. **Instruction Fetch (IF):** Program Counter outputs a 4-bit address to Instruction Memory, retrieving a 16-bit instruction word combinationally.
-2. **Instruction Decode (ID):** Control Unit interprets opcode `[15:12]`, while Register File reads source operands (`rs`, `rt`).
-3. **Execution (EX):** ALU performs arithmetic calculation or evaluates branch conditions.
-4. **Memory Access (MEM):** Data Memory is read on `LOAD` or written on `STORE`.
-5. **Write Back (WB):** Result from the ALU or Data Memory is written back into the destination register `rd`.
+### Instruction Encoding
 
-### Architecture Parameters
+All instructions are 16 bits wide, with the opcode occupying bits `[15:12]`.
 
-| Parameter | Specification | Details |
-|---|---|---|
-| **Architecture** | Harvard Architecture | Physically separate instruction and data memories |
-| **HDL** | Verilog HDL | IEEE 1364-2001 standard |
-| **Datapath Model** | Single-cycle | Single instruction per clock cycle |
-| **Instruction Width** | 16 bits | Fixed-length 16-bit instruction word |
-| **Data Width** | 8 bits | 8-bit byte-wide data operations |
-| **Program Counter Width** | 4 bits | Addresses 16 words (`0x0`–`0xF`) |
-| **Instruction Memory** | 16 × 16 bits | Read-only, combinational read, loaded from `program.hex` |
-| **Data Memory** | 16 × 8 bits | Synchronous write, asynchronous read |
-| **Register File** | 4 registers × 8 bits | R0, R1, R2, R3 (R0 initialized to 0) |
-| **Clock / Reset** | Single clock | Positive-edge clock, active-high synchronous reset |
+| Instruction | Bit Fields |
+|---|---|
+| LOAD | `[15:12]` Opcode, `[11:10]` Rd, `[9:6]` Address |
+| STORE | `[15:12]` Opcode, `[11:10]` Rs, `[9:6]` Address |
+| ADD | `[15:12]` Opcode, `[11:10]` Rd, `[9:8]` Rs, `[7:6]` Rt |
+| SUB | `[15:12]` Opcode, `[11:10]` Rd, `[9:8]` Rs, `[7:6]` Rt |
+| ADDI | `[15:12]` Opcode, `[11:10]` Rd, `[9:8]` Rs, `[7:0]` Immediate |
+| BEQ | `[15:12]` Opcode, `[11:10]` Rs, `[9:8]` Rt, `[7:0]` Offset |
+| JUMP | `[15:12]` Opcode, `[3:0]` Target |
+| HALT | `[15:12]` Opcode |
 
----
+Unused instruction bits are set to zero. The BEQ offset is signed and the branch target wraps within the 4-bit PC address space.
 
-## 3. Instruction Set Architecture (ISA) & Encoding
-
-The processor implements a 16-bit instruction set. Bits `[15:12]` represent the **4-bit opcode**, while bits `[11:0]` encode operands, immediate values, or memory addresses.
-
-> [!IMPORTANT]
-> All unused bit positions are strictly reserved and **must be set to binary zero (`0`)**.
-
-| Instruction | Opcode `[15:12]` | Syntax | Bitfield Breakdown `[11:0]` | Description |
-|---|:---:|---|---|---|
-| **LOAD** | `0001` | `LOAD rd, [addr]` | `[11:10]` rd, `[9:6]` address, `[5:0]` unused (`6'b0`) | Load byte from DMEM into register `rd` |
-| **STORE** | `0010` | `STORE rs, [addr]` | `[11:10]` rs, `[9:6]` address, `[5:0]` unused (`6'b0`) | Store byte from register `rs` into DMEM |
-| **ADD** | `0011` | `ADD rd, rs, rt` | `[11:10]` rd, `[9:8]` rs, `[7:6]` rt, `[5:0]` unused (`6'b0`) | Add registers: $R[rd] \leftarrow R[rs] + R[rt]$ |
-| **SUB** | `0100` | `SUB rd, rs, rt` | `[11:10]` rd, `[9:8]` rs, `[7:6]` rt, `[5:0]` unused (`6'b0`) | Subtract registers: $R[rd] \leftarrow R[rs] - R[rt]$ |
-| **ADDI** | `0101` | `ADDI rd, rs, imm` | `[11:10]` rd, `[9:8]` rs, `[7:0]` signed immediate | Add immediate: $R[rd] \leftarrow R[rs] + imm$ |
-| **BEQ** | `0110` | `BEQ rs, rt, offset` | `[11:10]` rs, `[9:8]` rt, `[7:0]` signed offset | Branch if $R[rs] == R[rt]$ to $PC + 1 + offset$ |
-| **JUMP** | `0111` | `JUMP addr` | `[11:4]` unused (`8'b0`), `[3:0]` target address | Unconditional jump to target address |
-| **HALT** | `1111` | `HALT` | `[11:0]` unused (`12'b0`) | Freeze PC advance and halt execution |
-
-For complete bitfield diagrams, control signal truth tables, and decoding logic, see the [Technical Specification](docs/technical_specification.md).
-
----
-
-## 4. Standard Verification Program (`program.hex`)
-
-A standardized machine-code program resides in `program.hex` to validate processor functionality across arithmetic, data memory, immediate operations, and halt behavior.
-
-```text
-5405
-5803
-3580
-2480
-4580
-1C80
-5F01
-F000
-```
-
-### Trace of Operations
-
-| Addr | Hex | Instruction | Bitfields | Operation | Architectural Effect |
-|:---:|:---:|---|---|---|---|
-| `0x0` | `5405` | `ADDI R1, R0, 5` | `rd=R1, rs=R0, imm=5` | $R1 \leftarrow R0 + 5$ | $R1 = 5$ |
-| `0x1` | `5803` | `ADDI R2, R0, 3` | `rd=R2, rs=R0, imm=3` | $R2 \leftarrow R0 + 3$ | $R2 = 3$ |
-| `0x2` | `3580` | `ADD R1, R1, R2` | `rd=R1, rs=R1, rt=R2` | $R1 \leftarrow R1 + R2$ | $R1 = 8$ |
-| `0x3` | `2480` | `STORE R1, [2]` | `rs=R1, addr=2` | $\text{DMEM}[2] \leftarrow R1$ | $\text{DMEM}[2] = 8$ |
-| `0x4` | `4580` | `SUB R1, R1, R2` | `rd=R1, rs=R1, rt=R2` | $R1 \leftarrow R1 - R2$ | $R1 = 5$ |
-| `0x5` | `1C80` | `LOAD R3, [2]` | `rd=R3, addr=2` | $R3 \leftarrow \text{DMEM}[2]$ | $R3 = 8$ |
-| `0x6` | `5F01` | `ADDI R3, R3, 1` | `rd=R3, rs=R3, imm=1` | $R3 \leftarrow R3 + 1$ | $R3 = 9$ |
-| `0x7` | `F000` | `HALT` | `unused=12'b0` | Halt execution | $PC = 7$, halted |
-| `0x8`–`0xF` | `F000` | `HALT` | `unused=12'b0` | Trap unused space | Halt safeguard |
-
-### Expected Final State After Execution
-- **$R1 = 5$**
-- **$R2 = 3$**
-- **$R3 = 9$**
-- **$\text{DMEM}[2] = 8$**
-- **$PC = 7$** (with `halted = 1`, `pc_enable = 0`)
-
----
-
-## 5. Repository Structure
+## 5. Project Structure
 
 ```text
 Vector_Cores/
 │
-├── rtl/                                  # Synthesizable Verilog RTL source files
-│   ├── program_counter.v                 # 4-bit Program Counter module
-│   ├── instruction_memory.v              # 16x16-bit Harvard Instruction Memory
-│   ├── data_memory.v                     # 16x8-bit Harvard Data Memory
-│   ├── address_decoder.v                 # Memory address decoding logic
-│   ├── control_unit.v                    # Instruction opcode decoder & control generator
-│   ├── alu.v                             # 8-bit Arithmetic Logic Unit
-│   ├── register_file.v                   # 4x8-bit dual-port Register File
-│   └── top_module.v                      # Processor datapath top-level integration
+├── rtl/
+│   ├── program_counter.v
+│   ├── instruction_memory.v
+│   ├── control_unit.v
+│   ├── register_file.v
+│   ├── alu.v
+│   ├── address_decoder.v
+│   ├── data_memory.v
+│   └── top_module.v
 │
-├── testbench/                            # Verilog simulation testbenches
-│   ├── program_counter_tb.v              # Program Counter unit testbench
-│   ├── instruction_memory_tb.v           # Instruction Memory self-checking testbench
-│   ├── control_unit_tb.v                 # Control Unit unit testbench
-│   ├── data_memory_tb.v                  # Data Memory unit testbench
-│   ├── alu_tb.v                          # ALU unit testbench
-│   └── processor_tb.v                    # Top-level full processor testbench
+├── testbench/
+│   ├── program_counter_tb.v
+│   ├── control_unit_tb.v
+│   ├── instruction_memory_tb.v
+│   ├── data_memory_tb.v
+│   ├── alu_tb.v
+│   ├── register_file_tb.v
+│   ├── processor_tb.v
+│   ├── control_flow_tb.v
+│   └── boundary_reset_tb.v
 │
-├── docs/                                 # Project documentation
-│   ├── technical_specification.md        # Comprehensive ISA, datapath, and module spec
-│   ├── architecture/
-│   │   └── block_diagram.png             # Processor datapath architectural diagram
-│   └── report/
-│       ├── individual_contributions.md   # Team contribution breakdown and progress report
-│       └── instruction_memory_waveform.png # Verified simulation waveform for IMEM
+├── simulation/
+│   ├── waveforms/
+│   └── logs/
 │
-├── simulation/                           # Simulation artifacts
-│   ├── waveforms/                        # Value Change Dump (.vcd) simulation traces
-│   └── logs/                             # Simulation output execution logs
+├── docs/
+│   ├── report/
+│   └── synthesis/
 │
-├── synthesis/                            # Synthesis reports and resource utilization
-│   └── results.md                        # Pre-synthesis verification & synthesis status
-│
-├── program.hex                           # 16-bit hexadecimal test program
-├── README.md                             # Project overview and user guide
-└── .gitignore                            # Git ignore rules for build and temp files
+├── program.hex
+└── README.md
 ```
 
----
+## 6. Team Members and Individual Contributions
 
-## 6. Development Tools & Prerequisites
+The project was developed collaboratively, with responsibilities divided across processor modules, integration, verification and synthesis.
 
-| Tool | Purpose | Source / Installation |
-|---|---|---|
-| **Verilog HDL** | Hardware Description Language | IEEE 1364-2001 standard |
-| **Icarus Verilog (`iverilog`)** | Simulation compiler and runtime engine (`vvp`) | `brew install icarus-verilog` (macOS) / `apt install iverilog` (Ubuntu) |
-| **GTKWave / Surfer** | Waveform viewer for `.vcd` files | `brew install --cask gtkwave` / [Surfer](https://gitlab.com/surfer-project/surfer) |
-| **Git & GitHub** | Version control and collaborative development | `git` CLI |
-| **AMD Xilinx Vivado** | FPGA logic synthesis and resource estimation | Post-integration synthesis |
+| Team Member | Responsibilities |
+|---|---|
+| **Pratiti Paul – Member 1** | Designed and implemented the Program Counter and Control Unit. Developed the Top Module and integrated the individual processor components into a complete system. |
+| **Anuradha – Member 2** | Implemented Instruction Memory, developed its testbench, prepared `program.hex` and worked on instruction encoding verification. |
+| **Ganga – Member 3** | Implemented Data Memory and the 4-to-16 Address Decoder. Developed and executed the Data Memory testbench. |
+| **Alisha – Member 4** | Implemented the Arithmetic Logic Unit (ALU) and Register File. Developed their respective testbenches. |
+| **Pratiti Paul – System Verification and Synthesis** | Additionally handled processor-level verification, control-flow and boundary testing, waveform generation and analysis, and Yosys synthesis and resource analysis. |
 
----
+### Collaborative Integration
 
-## 7. Compiling and Running Simulations
+All individual modules were integrated into the final processor through the Top Module. The complete system was tested to verify correct instruction execution, data transfer, arithmetic operations, branching, jumping, reset behavior and HALT functionality.
 
-> [!IMPORTANT]
-> **Working Directory Notice:** Always run simulation commands from the **repository root directory** (`Vector_Cores/`). `rtl/instruction_memory.v` and its testbench reference `"program.hex"` using relative paths.
+## 7. Technologies and Tools
 
-### 1. Test Instruction Memory
-Validates all 16 instruction memory locations, combinational retrieval, non-sequential address fetching, unused location traps, and full field-level instruction decoding:
+| Tool | Purpose |
+|---|---|
+| Verilog HDL | Hardware description and RTL implementation |
+| Icarus Verilog | Compilation and functional simulation |
+| GTKWave | Waveform visualization |
+| Yosys | Logic synthesis and structural analysis |
+| Git and GitHub | Version control and project collaboration |
+
+## 8. Getting Started
+
+### Prerequisites
+
+Install the following tools:
+
+- Git
+- Icarus Verilog
+- GTKWave (for viewing waveforms)
+- Yosys
+
+### Clone the Repository
+
 ```bash
-iverilog -o imem_test rtl/instruction_memory.v testbench/instruction_memory_tb.v
-vvp imem_test
+git clone https://github.com/Pratiti-paul/Vector_Cores.git
+cd Vector_Cores
 ```
 
-### 2. Test Program Counter
-Validates synchronous reset, sequential increment, jump address loading, and hold functionality:
+### Compile the Processor
+
+Run the following command from the repository root:
+
 ```bash
-iverilog -o pc_test rtl/program_counter.v testbench/program_counter_tb.v
-vvp pc_test
+iverilog -o processor_sim \
+rtl/program_counter.v \
+rtl/instruction_memory.v \
+rtl/control_unit.v \
+rtl/register_file.v \
+rtl/alu.v \
+rtl/address_decoder.v \
+rtl/data_memory.v \
+rtl/top_module.v \
+testbench/processor_tb.v
 ```
 
-### 3. Test Control Unit
-Validates control signal decoding across all 8 instructions (`LOAD`, `STORE`, `ADD`, `SUB`, `ADDI`, `BEQ`, `JUMP`, `HALT`):
+### Run the Simulation
+
 ```bash
-iverilog -o control_test rtl/control_unit.v testbench/control_unit_tb.v
-vvp control_test
+vvp processor_sim
 ```
 
-### 4. Waveform Visualization
-To inspect signal transitions in GTKWave:
+Run simulations from the repository root because the Instruction Memory loads its program using `program.hex`.
+
+### View Waveforms
+
+If a testbench generates a VCD file, open it using:
+
 ```bash
-gtkwave instruction_memory.vcd
+gtkwave simulation/waveforms/processor_wave.vcd
 ```
 
+The waveform filename should match the VCD file generated by the testbench.
+
+## 9. Verification and Testing
+
+The processor was verified using nine dedicated Verilog testbenches.
+
+| Testbench | Checks Passed | Failed |
+|---|---:|---:|
+| Program Counter | 5 | 0 |
+| Control Unit | 8 | 0 |
+| Instruction Memory | 43 | 0 |
+| Data Memory | 38 | 0 |
+| ALU | 7 | 0 |
+| Register File | 6 | 0 |
+| Processor Integration | 7 | 0 |
+| Control Flow | 13 | 0 |
+| Boundary and Reset | 15 | 0 |
+| **Total** | **142** | **0** |
+
+### Verification Coverage
+
+Testing includes:
+- Individual module functionality.
+- Instruction fetching and decoding.
+- Arithmetic operations.
+- Register read and write operations.
+- Data memory load and store operations.
+- Conditional branch taken and not-taken conditions.
+- Forward and backward branching.
+- Jump instruction execution.
+- HALT behavior and PC freeze.
+- Negative branch offsets and PC wraparound.
+- Reset behavior across processor components.
+
+### Processor-Level Test Program
+
+The sample program in `program.hex` performs the following operations:
+
+1. Load immediate value 5 into R1.
+2. Load immediate value 3 into R2.
+3. Add R1 and R2.
+4. Store the result in Data Memory location 2.
+5. Subtract R2 from R1.
+6. Load the stored value into R3.
+7. Increment R3 by 1.
+8. Halt execution.
+
+### Expected Final State
+
+| Component | Expected Value |
+|---|---:|
+| R0 | 0 |
+| R1 | 5 |
+| R2 | 3 |
+| R3 | 9 |
+| Data Memory[2] | 8 |
+| Program Counter | 7 |
+| Halted | 1 |
+
+The processor-level simulation verifies these expected results and confirms that the PC remains unchanged after HALT.
+
+## 10. Synthesis and Resource Analysis
+
+The complete processor hierarchy was synthesized using Yosys.
+
+### Synthesis Environment
+
+- Synthesis Tool: Yosys
+- Version: 0.70+post
+- Top Module: `top_module`
+- Synthesis Type: Generic logic synthesis
+
+### Synthesis Results
+
+| Metric | Result |
+|---|---:|
+| Total Generic Cells | 116 |
+| Multiplexers (`$mux`) | 47 |
+| Equality Comparators (`$eq`) | 18 |
+| Synchronous Enable Storage (`$sdffe`) | 17 |
+| Enable Storage (`$dffe`) | 4 |
+| Other Generic Cells | 30 |
+| Structural Problems | 0 |
+
+### Memory Mapping
+
+Yosys reported that the Data Memory array was replaced with a list of registers.
+
+This occurs because the Data Memory implementation synchronously clears all 16 memory locations during reset. The resulting structure uses register-based storage rather than a conventional block RAM inference.
+
+The synthesis check completed with zero structural problems.
+
+**Note:** These are generic synthesis statistics. They are not FPGA-specific LUT, BRAM or DSP utilization figures.
+
+## 11. Performance Metrics
+
+The processor follows a single-cycle execution model.
+
+Therefore:
+
+- **Cycles Per Instruction (CPI):** 1 for each completed instruction.
+- **Ideal Throughput:** 1 instruction per clock cycle.
+- **Instruction Width:** 16 bits.
+- **Data Width:** 8 bits.
+
+The throughput is an architectural ideal based on the single-cycle design. Actual operating frequency and instructions-per-second have not been measured.
+
+## 12. Limitations and Future Improvements
+
+The current implementation is a simplified educational processor. Possible future improvements include:
+
+- Supporting additional arithmetic and logical instructions.
+- Increasing instruction and data memory capacity.
+- Expanding the register file.
+- Implementing a wider data path.
+- Exploring memory inference suitable for FPGA block RAM.
+- Performing FPGA-specific synthesis and timing analysis.
+- Measuring maximum operating frequency and hardware resource utilization.
+- Comparing performance with alternative processor architectures.
+
+## 13. Conclusion
+
+Vector_Cores demonstrates the design and implementation of a simplified single-cycle processor using Harvard Architecture and Verilog HDL.
+
+The implementation integrates instruction fetching, instruction decoding, register operations, arithmetic processing, memory access and control-flow management.
+
+Functional verification was performed using nine dedicated testbenches, with **142 successful checks and zero failures**. Generic synthesis using Yosys also completed with zero structural problems.
+
+The project provides a practical demonstration of processor organization, RTL design, functional verification and hardware synthesis.
+
 ---
 
-## 8. Verification Status & Project Progress
+## Repository
 
-| Subsystem / Task | Assigned Lead | Implementation Status | Functional Verification | Synthesis Status |
-|---|---|---|---|---|
-| **Program Counter** | Member 1 (Pratiti Paul) | **Complete** | **Passed** (`program_counter_tb.v`) | Pending top integration |
-| **Control Unit** | Member 1 (Pratiti Paul) | **Complete** | **Passed** (`control_unit_tb.v`) | Pending top integration |
-| **Instruction Memory** | Member 2 (Anuradha Raghuwanshi) | **Complete** | **Passed** (`instruction_memory_tb.v`) | Pending top integration |
-| **Data Memory & Address Decoder** | Member 3 | *In Development* | Pending | Pending |
-| **ALU & Register File** | Member 4 | *In Development* | Pending | Pending |
-| **Top Module Integration** | Member 1 (Pratiti Paul) | *In Development* | Pending submodules | Pending |
-| **Full Processor Testbench** | Member 5 | *In Development* | Pending integration | Pending |
-| **FPGA Synthesis & Timing** | Member 5 | *Scheduled* | Pending integration | Scheduled (Vivado) |
+**Project:** Vector_Cores  
+**GitHub:** [Pratiti-paul/Vector_Cores](https://github.com/Pratiti-paul/Vector_Cores)
 
-*Note: In accordance with project engineering ethics, synthesis resource numbers and maximum frequencies are not recorded until physical synthesis is executed by Member 5.*
-
----
-
-## 9. Team Contributions & Git Workflow
-
-The project is developed collaboratively by five team members following a branch-and-PR workflow:
-
-| Contributor | Assigned Scope & Modules | Verified Contributions | Status |
-|---|---|---|---|
-| **Member 1 (Pratiti Paul)** | Project Lead; Program Counter, Control Unit, Top Module integration, Scaffolding | Program Counter (`rtl/program_counter.v`), Control Unit (`rtl/control_unit.v`), Testbenches, Repository Scaffolding, Documentation | PC & Control Unit Completed & Verified; Top Module in progress |
-| **Member 2 (Anuradha Raghuwanshi)** | Memory Systems & Instruction Encoding | Instruction Memory (`rtl/instruction_memory.v`), Testbench (`testbench/instruction_memory_tb.v`), Instruction Format Verification, `program.hex` | Completed & Verified |
-| **Member 3** | Data Memory Subsystem & Address Decoding (`rtl/data_memory.v`, `rtl/address_decoder.v`, `testbench/data_memory_tb.v`) | *None (Pending implementation)* | In Development |
-| **Member 4** | ALU & Register File (`rtl/alu.v`, `rtl/register_file.v`, `testbench/alu_tb.v`) | *None (Pending implementation)* | In Development |
-| **Member 5** | System Verification, Waveforms, Synthesis (`testbench/processor_tb.v`, Vivado Synthesis) | *None (Pending integration)* | In Development (Scheduled post-integration) |
-
-Detailed individual contributions, design rationale, and verification logs are maintained in [Individual Contributions Report](docs/report/individual_contributions.md).
-
----
-
-## 10. Contributors & License
-
-**Vector Cores — Computer Architecture Project**  
-Developed as part of the MCA Computer Architecture coursework.  
-**Repository:** [https://github.com/Pratiti-paul/Vector_Cores](https://github.com/Pratiti-paul/Vector_Cores)
-
----
-*Demonstrating hardware-level separation of instruction and data hierarchies through clean Verilog design and modular verification.*
+Developed as part of the MCA Computer Architecture project.
