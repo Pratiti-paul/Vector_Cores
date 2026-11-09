@@ -9,27 +9,30 @@
 ## Team Overview & Responsibility Matrix
 
 | Member | Contributor | Assigned Components & Scope | Verified Contributions | Status |
-|---|---|---|---|---|
-| **Member 1** | Pratiti Paul | Program Counter, Control Unit, Top Module Integration, System Scaffolding | Program Counter (`program_counter.v`), Control Unit (`control_unit.v`), Unit Testbenches, System Setup | PC & Control Unit Completed & Verified; Top Module in progress |
-| **Member 2** | Anuradha Raghuwanshi | Instruction Memory, Instruction Encoding, Test Program | Instruction Memory (`instruction_memory.v`), Testbench (`instruction_memory_tb.v`), `program.hex` | Completed & Verified |
-| **Member 3** | Team Contributor | Data Memory, Address Decoder, Data Memory Testbench | *None (Pending implementation)* | In Development |
-| **Member 4** | Team Contributor | Arithmetic Logic Unit (ALU), Register File, ALU Testbench | *None (Pending implementation)* | In Development |
-| **Member 5** | Team Contributor | Full Processor Verification, Waveform Analysis, FPGA Synthesis | *None (Pending integration)* | In Development (Pending integration) |
+|---|---|---|---|:---:|
+| **Member 1** | Pratiti Paul | Program Counter, Control Unit, Top Module Integration, System Scaffolding | Program Counter (`rtl/program_counter.v`), Control Unit (`rtl/control_unit.v`), Top Module (`rtl/top_module.v`), Unit Testbenches, System Setup | **Completed & Verified** |
+| **Member 2** | Anuradha Raghuwanshi | Instruction Memory, Instruction Encoding, Test Program | Instruction Memory (`rtl/instruction_memory.v`), Testbench (`testbench/instruction_memory_tb.v`), `program.hex` | **Completed & Verified** |
+| **Member 3** | Ganga | Data Memory, Address Decoder, Data Memory Testbench | Data Memory (`rtl/data_memory.v`), Address Decoder (`rtl/address_decoder.v`), Testbench (`testbench/data_memory_tb.v`) | **Completed & Verified** |
+| **Member 4** | Alisha Gupta | Arithmetic Logic Unit (ALU), Register File, Unit Testbenches | ALU (`rtl/alu.v`), Register File (`rtl/register_file.v`), Testbenches (`alu_tb.v`, `register_file_tb.v`) | **Completed & Verified** |
+| **Member 5** | Team Contributor | Full Processor Verification, Waveform Analysis, System Simulation | Full Processor Testbench (`testbench/processor_tb.v`), Simulation Waveform (`simulation/waveforms/processor_wave.vcd`) | **Completed & Verified** |
 
 ---
 
-## Member 1 – Pratiti Paul: Program Counter, Control Unit, and Architectural Scaffolding
+## Member 1 – Pratiti Paul: Program Counter, Control Unit, and Top Module Integration
 
 **Contributor:** Pratiti Paul  
 **Main code contributions:**
 - Program Counter (`rtl/program_counter.v`) and testbench (`testbench/program_counter_tb.v`)
 - Control Unit (`rtl/control_unit.v`) and testbench (`testbench/control_unit_tb.v`)
+- Top Module Datapath Integration (`rtl/top_module.v`)
 - Project structure, technical documentation, and simulation workflows
 
 ### 1. Work Completed
-- Designed and implemented the synchronous 4-bit Program Counter module.
+- Designed and implemented the synchronous 4-bit Program Counter module with synchronous active-high reset and clock enable.
 - Designed and implemented the combinational Control Unit decoding all 8 processor opcodes.
-- Authored dedicated unit testbenches for both modules in Verilog HDL.
+- Integrated all 7 submodules into the single-cycle Harvard Architecture processor datapath in `rtl/top_module.v`.
+- Designed register read address steering logic for STORE and BEQ, ALU operand multiplexing, writeback selection, and next-PC generation.
+- Authored dedicated unit testbenches for Program Counter and Control Unit in Verilog HDL.
 - Established repository directory hierarchy, git configuration, build workflows, and architectural specifications.
 
 ### 2. Design of the Program Counter
@@ -47,9 +50,18 @@ The Control Unit is a combinational module that maps opcode `instr[15:12]` to da
 - Implements `HALT` (`1111`) handling by clearing `pc_enable = 0` and asserting `halted = 1`.
 - Provides safe default signal states for unmapped or invalid opcodes.
 
-### 4. Verification Summary
+### 4. Top Module Datapath Integration
+`rtl/top_module.v` structurally interconnects the single-cycle processor components:
+- **Register Read Port 1 Steering:** Evaluates `read_reg1 = (opcode == STORE || opcode == BEQ) ? instr[11:10] : instr[9:8];` to ensure correct source operand delivery.
+- **Register Read Port 2 Steering:** Evaluates `read_reg2 = (opcode == BEQ) ? instr[9:8] : instr[7:6];`.
+- **ALU Operand Multiplexing:** Routes `read_data2` or sign-extended `imm[7:0]` based on `alu_src`.
+- **Writeback Multiplexing:** Selects Data Memory `read_data` on `LOAD` (`mem_to_reg = 1`) or ALU result (`mem_to_reg = 0`).
+- **Next-PC Logic:** Supports sequential increment ($PC + 1$), relative branch ($PC + 1 + offset[3:0]$ on `BEQ` equality), and absolute jump (`instr[3:0]` on `JUMP`).
+
+### 5. Verification Summary
 - **Program Counter:** Verified with `testbench/program_counter_tb.v`. Validated reset to zero, sequential increment (`PC=1`, `PC=2`), jump destination update (`PC=10`), and hold on `pc_enable = 0`.
 - **Control Unit:** Verified with `testbench/control_unit_tb.v`. Tested all 8 opcodes (`LOAD`, `STORE`, `ADD`, `SUB`, `ADDI`, `BEQ`, `JUMP`, `HALT`) against expected control bus patterns.
+- **Top Module:** Compiled with 0 warnings/errors across all module dependencies.
 
 ---
 
@@ -121,7 +133,7 @@ The testbench (`instruction_memory_tb.v`) performs:
 
 **Contributor:** Ganga
 
-**Main code contribution:** Data Memory (`rtl/data_memory.v`), Address Decoder (`rtl/address_decoder.v`)
+**Main code contribution:** Data Memory (`rtl/data_memory.v`), Address Decoder (`rtl/address_decoder.v`)  
 **Additional contribution:** Read/Write tests (`testbench/data_memory_tb.v`)
 
 ### 1. Work completed
@@ -184,13 +196,86 @@ The testbench (`testbench/data_memory_tb.v`) performs the following tests with a
 
 ---
 
-## Member 4 – In Development: Arithmetic Logic Unit (ALU) and Register File
-- **Assigned Modules:** `rtl/alu.v`, `rtl/register_file.v`, `testbench/alu_tb.v`
-- **Scope:** 8-bit ALU supporting addition, subtraction, zero flag generation; 4 × 8-bit dual-read single-write register file.
-- **Current Status:** Module interface and file scaffolding in place; implementation in progress.
+## Member 4 – Alisha Gupta: Arithmetic Logic Unit (ALU) and Register File
+
+**Contributor:** Alisha Gupta  
+**Main code contributions:**
+- Arithmetic Logic Unit (`rtl/alu.v`) and testbench (`testbench/alu_tb.v`)
+- Register File (`rtl/register_file.v`) and testbench (`testbench/register_file_tb.v`)
+
+### 1. Work Completed
+- Designed and implemented the 8-bit combinational Arithmetic Logic Unit supporting addition, subtraction, modulo-256 wraparound, and zero flag generation.
+- Designed and implemented the 4-entry 8-bit dual-read single-write Register File with active-high synchronous reset and hardware zero protection for register R0.
+- Authored automated self-checking unit testbenches for both modules.
+- Formally verified both modules with 100% pass rates in Icarus Verilog.
+
+### 2. Design of the Arithmetic Logic Unit (ALU)
+| Parameter | Value |
+|---|---|
+| Operand Width | 8 bits (`alu_in1[7:0]`, `alu_in2[7:0]`) |
+| Result Width | 8 bits (`alu_out[7:0]`) |
+| Control Input | 2 bits (`alu_control[1:0]` from control unit) |
+| Operations | `2'b00` = ADD (`ADD`, `ADDI`), `2'b01` = SUB (`SUB`, `BEQ`) |
+| Zero Flag | Asserted (`1'b1`) when `alu_out == 8'b00000000` |
+| Timing | Pure combinational logic (zero clock cycle latency) |
+
+The ALU handles addition and subtraction for arithmetic instructions and branch comparisons. Arithmetic overflow cleanly wraps modulo-256 (e.g., $255 + 1 = 0$), and negative differences produce correct two's complement representations (e.g., $3 - 5 = 254$ / `8'hFE`).
+
+### 3. Design of the Register File
+| Parameter | Value |
+|---|---|
+| Register Count | 4 general-purpose registers (`R0`, `R1`, `R2`, `R3`) |
+| Register Width | 8 bits per register |
+| Read Ports | 2 asynchronous (combinational) read ports (`read_data1`, `read_data2`) |
+| Write Port | 1 synchronous write port (`write_data`, gated by `reg_write`) |
+| Reset | Active-high synchronous; clears all registers to `8'h00` |
+| R0 Hardwiring | Reads to address `00` return `8'h00`; writes to `00` are blocked |
+
+The Register File features combinational dual-read access so that both source operands are immediately available to the ALU during the single-cycle execution stage. Synchronous writing on `posedge clk` commits the result at cycle completion. Hardwiring R0 to constant zero guarantees a safe zero source for `ADDI` operations.
+
+### 4. Verification Summary
+- **ALU Testbench (`testbench/alu_tb.v`):** Self-checking testbench covering addition, subtraction, zero result equality, addition overflow, subtraction underflow, zero addition, and maximum non-overflow addition. Result: **7/7 PASSED (0 errors)**.
+- **Register File Testbench (`testbench/register_file_tb.v`):** Self-checking testbench verifying reset, independent dual reads, single-port synchronous writes, write-inhibit when `reg_write = 0`, and R0 write protection. Result: **6/6 PASSED (0 errors)**.
 
 ---
 
-## Member 5 – In Development: Full Processor Verification, Waveform Analysis, and Synthesis
-- **Assigned Scope:** `testbench/processor_tb.v`, integration test execution, waveform analysis, and FPGA synthesis reporting.
-- **Current Status:** Scaffolding in place; execution scheduled following completion of Members 3 and 4 modules and top-level datapath integration.
+## Member 5 – Full Processor Verification, Waveform Analysis, and System-Level Testing
+
+**Contributor:** Member 5  
+**Main code contributions:**
+- Full Processor Integration Testbench (`testbench/processor_tb.v`)
+- Simulation Waveform Analysis (`simulation/waveforms/processor_wave.vcd`)
+
+### 1. Work Completed
+- Developed a comprehensive self-checking system-level testbench instantiating `top_module.v`.
+- Configured a 100 MHz clock source (`10 ns` period) and active-high synchronous reset protocol.
+- Executed the complete verification program (`program.hex`) through the processor datapath.
+- Implemented real-time cycle-by-cycle execution tracing of PC, instruction word, ALU outputs, writeback data, and status flags.
+- Implemented automated post-halt verification to confirm PC freeze and write inhibition across subsequent clock cycles.
+- Recorded and archived the complete value-change dump waveform (`processor_wave.vcd`).
+
+### 2. Full Processor Verification Results (`program.hex`)
+The processor executed all 7 program instructions and reached the `HALT` instruction in cycle 7, followed by 3 verification hold cycles:
+
+| Cycle | PC | Instruction Word | Disassembly | Architectural State Change | Status |
+|:---:|:---:|:---:|---|---|:---:|
+| Reset | `0x0` | `5405` | `ADDI R1, R0, 5` | Reset active, internal state cleared to 0 | PASS |
+| Cycle 1 | `0x1` | `5803` | `ADDI R2, R0, 3` | $R1 \leftarrow 0 + 5 = 5$ | PASS |
+| Cycle 2 | `0x2` | `3580` | `ADD R1, R1, R2` | $R2 \leftarrow 0 + 3 = 3$ | PASS |
+| Cycle 3 | `0x3` | `2480` | `STORE R1, [2]` | $R1 \leftarrow 5 + 3 = 8$ | PASS |
+| Cycle 4 | `0x4` | `4580` | `SUB R1, R1, R2` | $\text{DMEM}[2] \leftarrow 8$ | PASS |
+| Cycle 5 | `0x5` | `1C80` | `LOAD R3, [2]` | $R1 \leftarrow 8 - 3 = 5$ | PASS |
+| Cycle 6 | `0x6` | `5F01` | `ADDI R3, R3, 1` | $R3 \leftarrow \text{DMEM}[2] = 8$ | PASS |
+| Cycle 7 | `0x7` | `F000` | `HALT` | $R3 \leftarrow 8 + 1 = 9$; `halted = 1`, `pc_enable = 0` | PASS |
+| Cycles 8–10 | `0x7` | `F000` | *Halt Hold Observation* | PC holds at 7, no extraneous writes | PASS |
+
+### 3. Final Terminal Assertions
+- `assert_equal(pc_out, 4'd7)` $\rightarrow$ **PASS**
+- `assert_equal(halted, 1'b1)` $\rightarrow$ **PASS**
+- `assert_equal(registers[0], 8'd0)` $\rightarrow$ **PASS**
+- `assert_equal(registers[1], 8'd5)` $\rightarrow$ **PASS**
+- `assert_equal(registers[2], 8'd3)` $\rightarrow$ **PASS**
+- `assert_equal(registers[3], 8'd9)` $\rightarrow$ **PASS**
+- `assert_equal(DMEM[2], 8'd8)` $\rightarrow$ **PASS**
+
+**Summary:** **7/7 Assertions Passed, 0 Errors.**
