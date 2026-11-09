@@ -1,4 +1,4 @@
-# Vector_Cores
+# Vector Cores
 ## Design and Implementation of an Instruction and Data Memory Hierarchy Using Harvard Architecture
 
 A Verilog-based implementation of a **16-bit, single-cycle processor** following the Harvard Architecture. The processor uses separate instruction and data memories and supports arithmetic, memory-access, branching, jumping and halt instructions.
@@ -7,7 +7,7 @@ A Verilog-based implementation of a **16-bit, single-cycle processor** following
 
 ## 1. Project Overview
 
-Vector_Cores is a simplified processor designed and implemented using Verilog HDL.
+Vector Cores is a simplified processor designed and implemented using Verilog HDL.
 
 The processor follows the **Harvard Architecture**, in which instruction memory and data memory are separate. This separation allows the processor to fetch instructions independently of its data-memory operations.
 
@@ -166,11 +166,10 @@ The project was developed collaboratively, with responsibilities divided across 
 
 | Team Member | Responsibilities |
 |---|---|
-| **Pratiti Paul – Member 1** | Designed and implemented the Program Counter and Control Unit. Developed the Top Module and integrated the individual processor components into a complete system. |
-| **Anuradha – Member 2** | Implemented Instruction Memory, developed its testbench, prepared `program.hex` and worked on instruction encoding verification. |
-| **Ganga – Member 3** | Implemented Data Memory and the 4-to-16 Address Decoder. Developed and executed the Data Memory testbench. |
-| **Alisha – Member 4** | Implemented the Arithmetic Logic Unit (ALU) and Register File. Developed their respective testbenches. |
-| **Pratiti Paul – System Verification and Synthesis** | Additionally handled processor-level verification, control-flow and boundary testing, waveform generation and analysis, and Yosys synthesis and resource analysis. |
+| **Pratiti Paul** | Designed and implemented the Program Counter and Control Unit. Developed the Top Module and integrated the individual processor components into a complete system. |
+| **Anuradha** | Implemented Instruction Memory, developed its testbench, prepared `program.hex` and worked on instruction encoding verification. |
+| **Ganga** | Implemented Data Memory and the 4-to-16 Address Decoder. Developed and executed the Data Memory testbench. |
+| **Alisha** | Implemented the Arithmetic Logic Unit (ALU) and Register File. Developed their respective testbenches. |
 
 ### Collaborative Integration
 
@@ -371,7 +370,7 @@ The project provides a practical demonstration of processor organization, RTL de
 
 ## Repository
 
-**Project:** Vector_Cores  
+**Project:** Vector Cores  
 **GitHub:** [Pratiti-paul/Vector_Cores](https://github.com/Pratiti-paul/Vector_Cores)
 
 Developed as part of the MCA Computer Architecture project.
