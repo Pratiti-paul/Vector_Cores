@@ -39,11 +39,14 @@ Prior to top-level synthesis, individual hardware modules undergo standalone fun
 - **Module:** `rtl/instruction_memory.v`
 - **Testbench:** `testbench/instruction_memory_tb.v`
 - **Verification Environment:** Icarus Verilog, GTKWave / Surfer waveform viewer
+- **Verification Scope:** Standalone verification of all 16 instruction memory locations (`0x0`–`0xF`), combinational read latency, and instruction field decoding with zero unused bits.
 - **Execution Command (run from repository root):**
   ```bash
   iverilog -o imem_test rtl/instruction_memory.v testbench/instruction_memory_tb.v
   vvp imem_test
   ```
+
+**Result:** All 16 instruction memory locations passed verification and every instruction decoded correctly.
 
 **Simulation Log Output:**
 ```text

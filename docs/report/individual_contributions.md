@@ -8,13 +8,13 @@
 
 ## Team Overview & Responsibility Matrix
 
-| Member | Contributor | Assigned Components & Responsibilities | Implementation Status |
-|---|---|---|---|
-| **Member 1** | Pratiti Paul | Program Counter, Control Unit, Top Module, System Scaffolding | PC & Control Unit Completed & Verified; Top Module in progress |
-| **Member 2** | Anuradha Raghuwanshi | Instruction Memory, Instruction Encoding, Test Program | Completed & Verified |
-| **Member 3** | Team Contributor | Data Memory, Address Decoder | In Development |
-| **Member 4** | Team Contributor | Arithmetic Logic Unit (ALU), Register File | In Development |
-| **Member 5** | Team Contributor | Full Processor Verification, Waveform Analysis, Synthesis | In Development (Pending integration) |
+| Member | Contributor | Assigned Components & Scope | Verified Contributions | Status |
+|---|---|---|---|---|
+| **Member 1** | Pratiti Paul | Program Counter, Control Unit, Top Module Integration, System Scaffolding | Program Counter (`program_counter.v`), Control Unit (`control_unit.v`), Unit Testbenches, System Setup | PC & Control Unit Completed & Verified; Top Module in progress |
+| **Member 2** | Anuradha Raghuwanshi | Instruction Memory, Instruction Encoding, Test Program | Instruction Memory (`instruction_memory.v`), Testbench (`instruction_memory_tb.v`), `program.hex` | Completed & Verified |
+| **Member 3** | Team Contributor | Data Memory, Address Decoder, Data Memory Testbench | *None (Pending implementation)* | In Development |
+| **Member 4** | Team Contributor | Arithmetic Logic Unit (ALU), Register File, ALU Testbench | *None (Pending implementation)* | In Development |
+| **Member 5** | Team Contributor | Full Processor Verification, Waveform Analysis, FPGA Synthesis | *None (Pending integration)* | In Development (Pending integration) |
 
 ---
 
@@ -62,7 +62,7 @@ The Control Unit is a combinational module that maps opcode `instr[15:12]` to da
 
 ### 1. Work completed
 - Designed and implemented the instruction memory module of the Harvard-style processor.
-- Wrote a self-checking Verilog testbench that verifies every memory location and decodes each fetched instruction using the team's instruction format.
+- Wrote a self-checking Verilog testbench that verifies all 16 instruction memory locations and decodes each fetched instruction using the team's instruction format.
 - Wrote a test program (`program.hex`) that uses LOAD, STORE, ADD, SUB, ADDI and HALT for later full-processor testing.
 - Verified the design in Icarus Verilog and inspected the waveform in the Surfer waveform viewer.
 
@@ -110,7 +110,7 @@ The program assumes all registers are 0 after reset (R0 is used as a zero source
 
 ### 5. Verification
 The testbench (`instruction_memory_tb.v`) performs:
-1. Read of all 16 locations, compared against `program.hex`.
+1. Read of all 16 instruction memory locations, compared against `program.hex`.
 2. Non-sequential address changes (0 -> 15 -> 5) to confirm the combinational read.
 3. Check that unused locations (8-15) return HALT.
 4. Decode of every fetched instruction with the agreed field layout, and a check that all unused bits are zero.

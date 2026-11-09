@@ -220,4 +220,5 @@ Upon completion of the test program and assertion of the `halted` signal:
 
 1. **Working Directory:** All simulation compilation (`iverilog`) and execution (`vvp`) commands **must be executed from the repository root directory**.
 2. **Hex File Path Resolution:** Both `rtl/instruction_memory.v` and `testbench/instruction_memory_tb.v` invoke `$readmemh("program.hex", ...)`. Because the file path is relative, running from the repository root guarantees that `program.hex` is correctly located and loaded without moving or duplicating files.
+3. **Instruction Memory Verification:** The self-checking testbench `testbench/instruction_memory_tb.v` validates all 16 instruction memory locations (`0x0`–`0xF`), confirming combinational access, non-sequential addressing, correct opcode and field decoding, zero-padded unused bits, and default `HALT` (`16'hF000`) initialization for unused words.
 

@@ -191,7 +191,7 @@ Vector_Cores/
 > **Working Directory Notice:** Always run simulation commands from the **repository root directory** (`Vector_Cores/`). `rtl/instruction_memory.v` and its testbench reference `"program.hex"` using relative paths.
 
 ### 1. Test Instruction Memory
-Validates all 16 memory locations, combinational retrieval, non-sequential address fetching, unused location traps, and full field-level instruction decoding:
+Validates all 16 instruction memory locations, combinational retrieval, non-sequential address fetching, unused location traps, and full field-level instruction decoding:
 ```bash
 iverilog -o imem_test rtl/instruction_memory.v testbench/instruction_memory_tb.v
 vvp imem_test
@@ -240,13 +240,13 @@ gtkwave instruction_memory.vcd
 
 The project is developed collaboratively by five team members following a branch-and-PR workflow:
 
-| Contributor | Role & Assigned Modules | Deliverables |
-|---|---|---|
-| **Member 1 (Pratiti Paul)** | Project Lead, Datapath & Control | Program Counter, Control Unit, Top Module, Scaffolding, Documentation |
-| **Member 2 (Anuradha Raghuwanshi)** | Memory Systems & Encoding | Instruction Memory, Instruction Format Verification, `program.hex` |
-| **Member 3** | Data Subsystems | Data Memory, Address Decoder, Data Memory Testbench |
-| **Member 4** | Execution & Storage | Arithmetic Logic Unit (ALU), Register File, ALU Testbench |
-| **Member 5** | Verification & Synthesis | Full Processor Testbench, Simulation Waveforms, Hardware Synthesis Report |
+| Contributor | Assigned Scope & Modules | Verified Contributions | Status |
+|---|---|---|---|
+| **Member 1 (Pratiti Paul)** | Project Lead; Program Counter, Control Unit, Top Module integration, Scaffolding | Program Counter (`rtl/program_counter.v`), Control Unit (`rtl/control_unit.v`), Testbenches, Repository Scaffolding, Documentation | PC & Control Unit Completed & Verified; Top Module in progress |
+| **Member 2 (Anuradha Raghuwanshi)** | Memory Systems & Instruction Encoding | Instruction Memory (`rtl/instruction_memory.v`), Testbench (`testbench/instruction_memory_tb.v`), Instruction Format Verification, `program.hex` | Completed & Verified |
+| **Member 3** | Data Memory Subsystem & Address Decoding (`rtl/data_memory.v`, `rtl/address_decoder.v`, `testbench/data_memory_tb.v`) | *None (Pending implementation)* | In Development |
+| **Member 4** | ALU & Register File (`rtl/alu.v`, `rtl/register_file.v`, `testbench/alu_tb.v`) | *None (Pending implementation)* | In Development |
+| **Member 5** | System Verification, Waveforms, Synthesis (`testbench/processor_tb.v`, Vivado Synthesis) | *None (Pending integration)* | In Development (Scheduled post-integration) |
 
 Detailed individual contributions, design rationale, and verification logs are maintained in [Individual Contributions Report](docs/report/individual_contributions.md).
 
