@@ -16,12 +16,9 @@ module instruction_memory (
 );
 
     reg [15:0] mem [0:15];
-    integer i;
 
     initial begin
-        for (i = 0; i < 16; i = i + 1)
-            mem[i] = 16'hF000;          // unused locations = HALT
-        $readmemh("program.hex", mem);  // test program
+        $readmemh("program.hex", mem);
     end
 
     assign instr = mem[addr];
