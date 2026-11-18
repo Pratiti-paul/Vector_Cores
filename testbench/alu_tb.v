@@ -5,7 +5,7 @@ module alu_tb;
 
     reg [7:0] alu_in1;
     reg [7:0] alu_in2;
-    reg [1:0] alu_control;
+    reg [2:0] alu_control;
 
     wire [7:0] alu_out;
     wire zero;
@@ -62,44 +62,80 @@ module alu_tb;
         // Test 1: Addition
         alu_in1 = 8'd5;
         alu_in2 = 8'd3;
-        alu_control = 2'b00;
+        alu_control = 3'b000;
         check_result(8'd8, 1'b0, "ADD: 5 + 3");
 
         // Test 2: Subtraction
         alu_in1 = 8'd8;
         alu_in2 = 8'd3;
-        alu_control = 2'b01;
+        alu_control = 3'b001;
         check_result(8'd5, 1'b0, "SUB: 8 - 3");
 
         // Test 3: Zero result
         alu_in1 = 8'd5;
         alu_in2 = 8'd5;
-        alu_control = 2'b01;
+        alu_control = 3'b001;
         check_result(8'd0, 1'b1, "SUB: 5 - 5");
 
         // Test 4: Addition overflow
         alu_in1 = 8'hFF;
         alu_in2 = 8'h01;
-        alu_control = 2'b00;
+        alu_control = 3'b000;
         check_result(8'h00, 1'b1, "ADD: 255 + 1");
 
         // Test 5: Subtraction underflow
         alu_in1 = 8'd3;
         alu_in2 = 8'd5;
-        alu_control = 2'b01;
+        alu_control = 3'b001;
         check_result(8'hFE, 1'b0, "SUB: 3 - 5");
 
         // Test 6: Addition with zero
         alu_in1 = 8'd0;
         alu_in2 = 8'd0;
-        alu_control = 2'b00;
+        alu_control = 3'b000;
         check_result(8'd0, 1'b1, "ADD: 0 + 0");
 
         // Test 7: Maximum addition without overflow
         alu_in1 = 8'd100;
         alu_in2 = 8'd100;
-        alu_control = 2'b00;
+        alu_control = 3'b000;
         check_result(8'd200, 1'b0, "ADD: 100 + 100");
+
+        // Test 8: Bitwise AND
+        alu_in1 = 8'b11001100;
+        alu_in2 = 8'b10101010;
+        alu_control = 3'b010;
+        check_result(8'b10001000, 1'b0, "AND: CC & AA");
+
+        // Test 9: AND producing zero
+        alu_in1 = 8'hF0;
+        alu_in2 = 8'h0F;
+        alu_control = 3'b010;
+        check_result(8'h00, 1'b1, "AND: F0 & 0F");
+
+        // Test 10: Bitwise OR
+        alu_in1 = 8'b11001100;
+        alu_in2 = 8'b10101010;
+        alu_control = 3'b011;
+        check_result(8'b11101110, 1'b0, "OR: CC | AA");
+
+        // Test 11: OR with zero operands
+        alu_in1 = 8'h00;
+        alu_in2 = 8'h00;
+        alu_control = 3'b011;
+        check_result(8'h00, 1'b1, "OR: 00 | 00");
+
+        // Test 12: Bitwise XOR
+        alu_in1 = 8'b11001100;
+        alu_in2 = 8'b10101010;
+        alu_control = 3'b100;
+        check_result(8'b01100110, 1'b0, "XOR: CC ^ AA");
+
+        // Test 13: XOR of equal operands
+        alu_in1 = 8'h5A;
+        alu_in2 = 8'h5A;
+        alu_control = 3'b100;
+        check_result(8'h00, 1'b1, "XOR: 5A ^ 5A");
 
         $display("--------------------------------------");
         $display("TOTAL PASSED: %0d", passed);
