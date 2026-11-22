@@ -197,7 +197,7 @@ This is a high-level guide to the repository. Some generated logs, waveforms, an
 |---|---|
 | **Pratiti Paul** | Implemented the Program Counter and Control Unit; developed the Top Module; handled processor integration, processor-level verification, waveform analysis, and synthesis. |
 | **Anuradha Raghuwanshi** | Implemented Instruction Memory and its testbench; prepared the Phase I program image; developed the Phase II Python two-pass assembler, assembler tests, and sample assembly programs. |
-| **Ganga** | Implemented Data Memory and the 4-to-16 Address Decoder; developed expanded memory and decoder verification. |
+| **Ganga Raghuwanshi** | Implemented Data Memory and the 4-to-16 Address Decoder; developed expanded memory and decoder verification. |
 | **Alisha Gupta** | Implemented the ALU and Register File; extended the ALU with AND, OR, and XOR operations and developed the related testbenches. |
 
 The modules were integrated collaboratively, with team members coordinating interfaces and reviewing processor behavior.
@@ -446,6 +446,3 @@ Vector Cores demonstrates the design and implementation of a simplified single-c
 
 The recorded Phase II verification includes **390 Verilog checks across 11 testbenches** and **203 Python assembler tests**, all passing. Generic synthesis using Yosys reported **125 generic cells** and **0 structural problems**. These results demonstrate functional and structural verification; they do not represent measured FPGA timing, power, or board utilization.
 
-## 15. Individual Contributions Report
-
-The detailed contribution report is available at [`docs/report/individual_contribution_report.md`](docs/report/individual_contribution_report.md).
