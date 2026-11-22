@@ -231,7 +231,8 @@ Vector_Cores/
 │   │   └── harvard_vs_vn_block_diagram.png
 │   ├── waveforms/                   # annotated timing diagrams (SVG + PNG)
 │   ├── report/
-│   │   ├── Final Report.pdf
+│   │   ├── Report Phase 1.pdf
+│   │   ├── Report Phase 2.pdf
 │   │   ├── technical_report.md      # full technical report (source)
 │   │   ├── technical_report.pdf
 │   │   ├── individual_contribution_report.md
@@ -619,7 +620,8 @@ Twelve dedicated testbenches completed **561 checks with zero failures**, accomp
 | Document | Contents |
 |---|---|
 | [`docs/report/technical_report.pdf`](docs/report/technical_report.pdf) ([source](docs/report/technical_report.md)) | Final technical report: architecture, microarchitecture, verification, waveforms, synthesis and Fmax, and the Harvard vs Von Neumann comparison |
-| [`docs/report/Final Report.pdf`](<docs/report/Final Report.pdf>) | Phase II IEEE-format project paper |
+| [`docs/report/Report Phase 2.pdf`](<docs/report/Report Phase 2.pdf>) | Phase II IEEE-format project paper |
+| [`docs/report/Report Phase 1.pdf`](<docs/report/Report Phase 1.pdf>) | Phase I project paper |
 | [`docs/report/individual_contribution_report.md`](docs/report/individual_contribution_report.md) | Individual contributions of each team member |
 | [`docs/architecture_comparison.md`](docs/architecture_comparison.md) | Detailed Harvard vs Von Neumann comparison |
 | [`synthesis/results.md`](synthesis/results.md) | Synthesis, place-and-route and timing results |
