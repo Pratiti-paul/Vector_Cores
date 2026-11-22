@@ -23,6 +23,7 @@ Vector Cores is an educational processor implemented using Verilog HDL (IEEE 136
 - Assemble symbolic assembly programs into machine-code instructions.
 - Verify module-level and processor-level behavior with Verilog testbenches.
 - Analyze the synthesized logic using Yosys.
+- Compare the Harvard design against a Von Neumann (shared-memory) baseline.
 
 ## 2. Architecture Specifications
 
@@ -192,7 +193,10 @@ Vector_Cores/
 │   ├── instruction_memory.v
 │   ├── program_counter.v
 │   ├── register_file.v
-│   └── top_module.v
+│   ├── top_module.v
+│   └── baseline/                    # Von Neumann comparison baseline
+│       ├── unified_memory.v
+│       └── vn_top_module.v
 ├── testbench/
 │   ├── address_decoder_tb.v
 │   ├── alu_tb.v
@@ -201,6 +205,7 @@ Vector_Cores/
 │   ├── control_flow_tb.v
 │   ├── control_unit_tb.v
 │   ├── data_memory_tb.v
+│   ├── harvard_vs_vn_tb.v
 │   ├── instruction_memory_tb.v
 │   ├── logical_ops_tb.v
 │   ├── processor_tb.v
@@ -219,9 +224,11 @@ Vector_Cores/
 │   └── waveforms/
 │       ├── boundary_reset_wave.vcd
 │       ├── control_flow_wave.vcd
+│       ├── harvard_vs_vn_wave.vcd
 │       ├── logical_ops_wave.vcd
 │       └── processor_wave.vcd
 ├── docs/
+│   ├── architecture_comparison.md
 │   ├── assembler_design.md
 │   ├── data_memory_verification.md
 │   ├── architecture/
@@ -294,9 +301,9 @@ vvp proc_test
 rm -f proc_test
 ```
 
-### 8.5 Run All Eleven Verilog Testbenches (Full Regression)
+### 8.5 Run All Twelve Verilog Testbenches (Full Regression)
 
-This regression command runs all eleven testbenches sequentially:
+This regression command runs all twelve testbenches sequentially:
 
 ```bash
 iverilog -g2012 -s program_counter_tb -o pc_test rtl/program_counter.v testbench/program_counter_tb.v && vvp pc_test && rm -f pc_test && \
@@ -309,7 +316,8 @@ iverilog -g2012 -s register_file_tb -o rf_test rtl/register_file.v testbench/reg
 iverilog -g2012 -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v && vvp proc_test && rm -f proc_test && \
 iverilog -g2012 -s control_flow_tb -o cf_test rtl/*.v testbench/control_flow_tb.v && vvp cf_test && rm -f cf_test && \
 iverilog -g2012 -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v && vvp br_test && rm -f br_test && \
-iverilog -g2012 -s logical_ops_tb -o log_test rtl/*.v testbench/logical_ops_tb.v && vvp log_test && rm -f log_test
+iverilog -g2012 -s logical_ops_tb -o log_test rtl/*.v testbench/logical_ops_tb.v && vvp log_test && rm -f log_test && \
+iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v && vvp cmp_test && rm -f cmp_test
 ```
 
 ### 8.6 Individual Testbench Commands
@@ -327,14 +335,15 @@ iverilog -g2012 -s logical_ops_tb -o log_test rtl/*.v testbench/logical_ops_tb.v
 | Control Flow | `iverilog -g2012 -s control_flow_tb -o cf_test rtl/*.v testbench/control_flow_tb.v` | `vvp cf_test` |
 | Boundary and Reset | `iverilog -g2012 -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v` | `vvp br_test` |
 | Logical Operations | `iverilog -g2012 -s logical_ops_tb -o log_test rtl/*.v testbench/logical_ops_tb.v` | `vvp log_test` |
+| Harvard vs Von Neumann | `iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v` | `vvp cmp_test` |
 
 ## 9. Verification and Testing
 
-Eleven dedicated Verilog testbenches plus an automated Python pytest suite provide comprehensive coverage.
+Twelve dedicated Verilog testbenches plus an automated Python pytest suite provide comprehensive coverage.
 
 | Testbench | Level | Checks passed | Failed | Status |
 |---|---|---:|---:|:---:|
-| `program_counter_tb.v` | Unit | 15 | 0 | **PASS** |
+| `program_counter_tb.v` | Unit | 35 | 0 | **PASS** |
 | `instruction_memory_tb.v` | Unit | 16 | 0 | **PASS** |
 | `register_file_tb.v` | Unit | 6 | 0 | **PASS** |
 | `alu_tb.v` | Unit | 13 | 0 | **PASS** |
@@ -345,7 +354,8 @@ Eleven dedicated Verilog testbenches plus an automated Python pytest suite provi
 | `control_flow_tb.v` | System | 13 | 0 | **PASS** |
 | `boundary_reset_tb.v` | System | 15 | 0 | **PASS** |
 | `logical_ops_tb.v` | System | 56 | 0 | **PASS** |
-| **Total Verilog Checks** | — | **390** | **0** | **100% PASS** |
+| `harvard_vs_vn_tb.v` | Comparison | 151 | 0 | **PASS** |
+| **Total Verilog Checks** | — | **561** | **0** | **100% PASS** |
 | **Python Assembler (`pytest`)** | Tool | **203** | **0** | **100% PASS** |
 
 ### 9.2 Python Assembler Tests
@@ -370,6 +380,7 @@ Testing covers:
 - Reset behavior across processor components.
 - Assembler parsing, label resolution, instruction encoding, and sample programs.
 - Execution of assembler-generated logical-operation machine code on the processor.
+- Equivalence of the Harvard processor and the Von Neumann baseline, with measured cycle counts.
 
 ### 9.4 Logical-Operations Integration Example
 
@@ -477,6 +488,7 @@ The implementation synchronously clears all 16 memory locations during reset, so
 | Control Flow | `simulation/waveforms/control_flow_wave.vcd` | `control_flow_tb.v` |
 | Boundary and Reset | `simulation/waveforms/boundary_reset_wave.vcd` | `boundary_reset_tb.v` |
 | Logical Operations | `simulation/waveforms/logical_ops_wave.vcd` | `logical_ops_tb.v` |
+| Harvard vs Von Neumann | `simulation/waveforms/harvard_vs_vn_wave.vcd` | `harvard_vs_vn_tb.v` |
 
 Open the archived system-level waveforms using GTKWave:
 
@@ -485,6 +497,7 @@ gtkwave simulation/waveforms/logical_ops_wave.vcd
 gtkwave simulation/waveforms/control_flow_wave.vcd
 gtkwave simulation/waveforms/boundary_reset_wave.vcd
 gtkwave simulation/waveforms/logical_ops_wave.vcd
+gtkwave simulation/waveforms/harvard_vs_vn_wave.vcd
 ```
 
 Waveform files are generated simulation artifacts. Their availability depends on which simulations have been run and which artifacts are included in the repository.
@@ -509,9 +522,29 @@ The processor uses a single-cycle execution model:
 
 The throughput is an architectural ideal. Actual operating frequency and instructions per second have not been measured.
 
+### 13.1 Harvard vs Von Neumann (Shared-Memory) Comparison
+
+A Von Neumann baseline (`rtl/baseline/vn_top_module.v`) runs the same ISA. It reuses the same Program Counter, Control Unit, Register File, ALU, and Address Decoder, so memory organization is the only difference between the two designs:
+
+- Instructions and data share one 32 × 16-bit `unified_memory` with a **single port**. Words `0x00`–`0x0F` hold instructions (write-protected) and `0x10`–`0x1F` hold data.
+- A LOAD or STORE needs the port twice: once to fetch and once to access data. It therefore takes **2 cycles** (fetch, then data access) and stalls the PC. All other instructions still take 1 cycle.
+- The Harvard design fetches and accesses data **in the same cycle**, so every instruction takes 1 cycle.
+
+For N executed instructions, M of which are LOAD/STORE: Harvard takes **N** cycles, Von Neumann takes **N + M** cycles, and the Harvard speed-up is **1 + M/N**.
+
+| Program | N | M | Harvard cycles | VN cycles | Harvard CPI | VN CPI | Harvard speed-up |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| P1 `program.hex` (mixed) | 7 | 2 | 7 | 9 | 1.000 | 1.286 | **1.286×** |
+| P2 memory-heavy | 10 | 7 | 10 | 17 | 1.000 | 1.700 | **1.700×** |
+| P3 compute-only loop | 16 | 0 | 16 | 16 | 1.000 | 1.000 | **1.000×** |
+
+Both processors reached identical, expected final register, data-memory, and PC states in all three programs (151 checks, 0 failures). The speed-ups are cycle-count ratios; wall-clock speed-up also depends on each design's post-synthesis Fmax, which has not been measured.
+
+The full comparison, including the memory map, FSM diagram, analysis, and waveform signals to inspect, is in [`docs/architecture_comparison.md`](docs/architecture_comparison.md).
+
 ## 14. Conclusion
 
 Vector Cores demonstrates the design and implementation of a modular single-cycle processor using Harvard Architecture and Verilog HDL. The implementation integrates instruction fetching, decoding, register operations, arithmetic and bitwise logical processing, data-memory access, and control-flow management. It also includes a Python two-pass assembler for translating assembly programs into machine code.
 
-Eleven dedicated testbenches completed **390 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. These results do not represent measured FPGA timing, power, or board utilization.
+Twelve dedicated testbenches completed **561 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. A Von Neumann shared-memory baseline shows the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. These results do not represent measured FPGA timing, power, or board utilization.
 

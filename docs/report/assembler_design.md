@@ -29,7 +29,7 @@ The assembler supports all 11 instructions:
 | **HALT** | `HALT` | `1111` | `1111 000000000000` | Halts execution, deasserts `pc_enable` |
 
 *Note on Logical Instructions:*
-Opcodes `1000`, `1001`, and `1010` are defined and encoded by the assembler. Hardware support for ALU logical operations is implemented on the `alisha/alu-3bit` branch and awaiting final merge into the top-level Control Unit.
+Opcodes `1000`, `1001`, and `1010` are defined and encoded by the assembler. They are decoded by the Control Unit (`alu_control` = `010` / `011` / `100`), executed by the ALU, and verified on the processor by `testbench/logical_ops_tb.v`.
 
 ---
 

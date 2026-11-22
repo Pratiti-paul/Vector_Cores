@@ -3,11 +3,11 @@
 ; Demonstrates: AND, OR, XOR (new Phase II instructions)
 ;
 ; Hardware note:
-;   These instructions are encoded using proposed opcodes:
+;   These instructions use opcodes:
 ;     AND = 1000, OR = 1001, XOR = 1010
-;   The ALU (alu.v) already supports AND/OR/XOR with 3-bit alu_control.
-;   The control_unit.v on main requires a hardware update (branch alisha/alu-3bit)
-;   before these instructions will execute correctly on the processor.
+;   control_unit.v decodes these opcodes and drives the 3-bit alu_control
+;   (AND = 010, OR = 011, XOR = 100); alu.v executes them. They run on the
+;   processor and are verified by testbench/logical_ops_tb.v.
 ;
 ; Bitwise operation reference (R1=0x0C=12, R2=0x0A=10):
 ;   R1 in binary: 0000 1100
