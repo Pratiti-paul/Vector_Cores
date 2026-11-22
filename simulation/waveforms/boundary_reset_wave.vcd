@@ -1,5 +1,5 @@
 $date
-	Tue Nov 10 02:05:30 2026
+	Sun Nov 22 15:05:56 2026
 $end
 $version
 	Icarus Verilog
@@ -64,17 +64,17 @@ $var wire 1 P branch_enable $end
 $var wire 1 Q alu_src $end
 $var wire 8 R alu_result [7:0] $end
 $var wire 8 S alu_in2 [7:0] $end
-$var wire 2 T alu_control [1:0] $end
+$var wire 3 T alu_control [2:0] $end
 $scope module alu_inst $end
 $var wire 8 U alu_in1 [7:0] $end
 $var wire 8 V alu_in2 [7:0] $end
 $var wire 1 5 zero $end
-$var wire 2 W alu_control [1:0] $end
+$var wire 3 W alu_control [2:0] $end
 $var reg 8 X alu_out [7:0] $end
 $upscope $end
 $scope module cu_inst $end
 $var wire 4 Y opcode [3:0] $end
-$var reg 2 Z alu_control [1:0] $end
+$var reg 3 Z alu_control [2:0] $end
 $var reg 1 Q alu_src $end
 $var reg 1 P branch_enable $end
 $var reg 1 L halted $end
