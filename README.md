@@ -115,6 +115,10 @@ The branch target is truncated to the 4-bit PC address space and therefore wraps
 
 The diagram is stored at [`docs/architecture/block_diagram.png`](docs/architecture/block_diagram.png).
 
+The diagram below compares the Harvard memory organization with the Von Neumann baseline (Section 13.1). The Harvard design has two independent buses; the baseline has one shared port, an address multiplexer, an instruction register and a FETCH/DATA state machine.
+
+![Harvard vs Von Neumann block diagram](docs/architecture/harvard_vs_vn_block_diagram.svg)
+
 ## 4. Supported Instruction Set
 
 All instructions are 16 bits wide. The opcode occupies bits `[15:12]`. The processor supports 11 instructions:
@@ -166,8 +170,8 @@ The ALU and Control Unit communicate using a dedicated 3-bit control bus (`alu_c
 ```text
 Vector_Cores/
 ├── README.md
-├── program.hex
-├── assembler/
+├── program.hex                      # Sample program loaded into instruction memory
+├── assembler/                       # Python two-pass assembler
 │   ├── __init__.py
 │   ├── __main__.py
 │   ├── assembler.py
@@ -179,7 +183,7 @@ Vector_Cores/
 │       ├── basic_alu.asm
 │       ├── branch_jump.asm
 │       └── logical_ops.asm
-├── tests/
+├── tests/                           # pytest suite for the assembler
 │   ├── __init__.py
 │   ├── test_assembler.py
 │   ├── test_encoder.py
@@ -200,7 +204,6 @@ Vector_Cores/
 ├── testbench/
 │   ├── address_decoder_tb.v
 │   ├── alu_tb.v
-│   ├── address_decoder_tb.v
 │   ├── boundary_reset_tb.v
 │   ├── control_flow_tb.v
 │   ├── control_unit_tb.v
@@ -211,40 +214,39 @@ Vector_Cores/
 │   ├── processor_tb.v
 │   ├── program_counter_tb.v
 │   └── register_file_tb.v
-├── assembler/
-│   ├── assembler.py
-│   └── samples/
-├── tests/
 ├── simulation/
 │   ├── logical_ops_assembled.hex
-│   ├── render_waveforms.py        # VCD -> annotated SVG timing diagrams
-│   ├── logs/
-│   │   ├── yosys_synthesis.log
-│   │   ├── yosys_synthesis_final.log
-│   │   └── yosys_synthesis_phase2.log
-│   └── waveforms/
+│   ├── render_waveforms.py          # VCD -> annotated SVG timing diagrams
+│   └── waveforms/                   # system-level VCD waveforms
 │       ├── boundary_reset_wave.vcd
 │       ├── control_flow_wave.vcd
 │       ├── harvard_vs_vn_wave.vcd
 │       ├── logical_ops_wave.vcd
 │       └── processor_wave.vcd
 ├── docs/
-│   ├── architecture_comparison.md
-│   ├── waveforms/                 # annotated Harvard vs VN timing diagrams (SVG + PNG)
-│   ├── assembler_design.md
-│   ├── data_memory_verification.md
+│   ├── architecture_comparison.md   # Harvard vs Von Neumann comparison
 │   ├── architecture/
-│   │   └── block_diagram.png
+│   │   ├── block_diagram.png
+│   │   ├── harvard_vs_vn_block_diagram.svg
+│   │   └── harvard_vs_vn_block_diagram.png
+│   ├── waveforms/                   # annotated timing diagrams (SVG + PNG)
 │   ├── report/
 │   │   ├── Final Report.pdf
-│   │   └── individual_contribution_report.md
+│   │   ├── technical_report.md      # full technical report (source)
+│   │   ├── technical_report.pdf
+│   │   ├── individual_contribution_report.md
+│   │   ├── assembler_design.md
+│   │   └── data_memory_verification.md
 │   └── Video/
 │       └── video.md
 └── synthesis/
-    ├── results.md
-    ├── run_ice40.sh               # Yosys + nextpnr flow (resources, Fmax)
-    ├── fmax_wrappers.v            # registered-output wrappers for timing
-    └── ice40/                     # synthesis and place-and-route reports
+    ├── results.md                   # synthesis, place-and-route and timing results
+    ├── run_yosys_reports.sh         # generic + Xilinx 7-Series reports
+    ├── run_ice40.sh                 # iCE40 place-and-route and Fmax
+    ├── fmax_wrappers.v              # registered-output wrappers for timing
+    ├── generic/                     # Yosys generic-flow logs
+    ├── xilinx/                      # Xilinx 7-Series mapping reports
+    └── ice40/                       # iCE40 synthesis and place-and-route reports
 ```
 
 This is a high-level guide to the repository. Some generated logs, waveforms, and supporting files may be present in addition to the paths shown above.
@@ -417,10 +419,16 @@ memory
 opt
 check
 stat
-" | tee simulation/logs/yosys_synthesis_phase2.log
+"
 ```
 
-The recorded Phase II generic synthesis report states:
+All Yosys reports can be regenerated with one script. It runs this generic flow and the Xilinx mapping in Section 10.3 for both the Harvard processor and the Von Neumann baseline:
+
+```bash
+bash synthesis/run_yosys_reports.sh
+```
+
+The full logs are saved in `synthesis/generic/harvard_generic.txt` and `synthesis/generic/vn_generic.txt`. The Phase II generic synthesis report states:
 
 ```text
 Checking module top_module...
@@ -458,23 +466,24 @@ Found and reported 0 problems.
 
 The Phase II netlist contains 195 wires (1,025 wire bits), 107 public wires (543 public wire bits), and 50 ports (193 port bits).
 
-### 10.3 Xilinx 7-Series Technology Mapping (Baseline Estimate)
+### 10.3 Xilinx 7-Series Technology Mapping
 
-The baseline technical audit recorded the following technology-mapping results for the AMD Xilinx 7-Series family (`xc7`):
+Both designs were mapped to the AMD Xilinx 7-Series family (`xc7`) with Yosys `synth_xilinx` (`bash synthesis/run_yosys_reports.sh`). The reports are in `synthesis/xilinx/`.
 
-| Resource | Count |
-|---|---:|
-| Slice registers (`FDRE`) | 156 |
-| Slice LUTs | 184 |
-| Carry chains (`CARRY4`) | 6 |
-| Clock buffers (`BUFG`) | 1 |
-| Input buffers (`IBUF`) | 2 |
-| Output buffers (`OBUF`) | 38 |
-| Estimated logic cells | 170 |
+| Resource | Harvard (`top_module`) | Von Neumann (`vn_top_module`) |
+|---|---:|---:|
+| Slice LUTs (LUT2–LUT6) | 202 | 287 |
+| Slice registers (`FDRE`) | 156 | 301 |
+| Carry chains (`CARRY4`) | 6 | 6 |
+| `MUXF7` | 1 | 1 |
+| Clock buffers (`BUFG`) | 1 | 1 |
+| Input / output buffers (`IBUF` / `OBUF`) | 2 / 38 | 2 / 46 |
 
-The reported register breakdown is 128 Data Memory bits, 24 writable Register File bits (`R1`–`R3`), and 4 Program Counter bits.
+**Harvard LUT breakdown:** LUT2: 22, LUT3: 28, LUT4: 41, LUT5: 81, LUT6: 30.
 
-**Reproducibility note:** These are technology-mapping results recorded by the project audit, not measured board utilization or timing results.
+**Harvard register breakdown:** 128 Data Memory bits + 24 writable Register File bits (`R1`–`R3`) + 4 Program Counter bits.
+
+These are Yosys technology-mapping results, not Vivado implementation results. Yosys cannot run Xilinx timing analysis, so Fmax is measured with the iCE40 flow in Section 10.5. An earlier Phase I audit recorded 184 LUTs for the Harvard design. The current count is higher because the ALU now includes AND, OR and XOR and the ALU control is 3 bits wide.
 
 ### 10.4 Memory Mapping Observation
 
@@ -505,28 +514,28 @@ Synthesis keeps the module hierarchy so the data memory is not optimized for the
 
 ## 11. Waveform Archives
 
-| Waveform | Location | Generating testbench |
-|---|---|---|
-| Instruction Memory | `instruction_memory.vcd` | `instruction_memory_tb.v` |
-| Data Memory | `data_memory.vcd` | `data_memory_tb.v` |
-| Processor (root output) | `processor.vcd` | `processor_tb.v` |
-| Processor (archived) | `simulation/waveforms/processor_wave.vcd` | `processor_tb.v` |
-| Control Flow | `simulation/waveforms/control_flow_wave.vcd` | `control_flow_tb.v` |
-| Boundary and Reset | `simulation/waveforms/boundary_reset_wave.vcd` | `boundary_reset_tb.v` |
-| Logical Operations | `simulation/waveforms/logical_ops_wave.vcd` | `logical_ops_tb.v` |
-| Harvard vs Von Neumann | `simulation/waveforms/harvard_vs_vn_wave.vcd` | `harvard_vs_vn_tb.v` |
+| Waveform | Location | Generating testbench | Stored in repository |
+|---|---|---|---|
+| Processor | `simulation/waveforms/processor_wave.vcd` | `processor_tb.v` | Yes |
+| Control Flow | `simulation/waveforms/control_flow_wave.vcd` | `control_flow_tb.v` | Yes |
+| Boundary and Reset | `simulation/waveforms/boundary_reset_wave.vcd` | `boundary_reset_tb.v` | Yes |
+| Logical Operations | `simulation/waveforms/logical_ops_wave.vcd` | `logical_ops_tb.v` | Yes |
+| Harvard vs Von Neumann | `simulation/waveforms/harvard_vs_vn_wave.vcd` | `harvard_vs_vn_tb.v` | Yes |
+| Instruction Memory | `instruction_memory.vcd` (repository root) | `instruction_memory_tb.v` | No, created when the test runs |
+| Data Memory | `data_memory.vcd` (repository root) | `data_memory_tb.v` | No, created when the test runs |
+| Processor (root copy) | `processor.vcd` (repository root) | `processor_tb.v` | No, created when the test runs |
 
-Open the archived system-level waveforms using GTKWave:
+Open the system-level waveforms using GTKWave:
 
 ```bash
-gtkwave simulation/waveforms/logical_ops_wave.vcd
+gtkwave simulation/waveforms/processor_wave.vcd
 gtkwave simulation/waveforms/control_flow_wave.vcd
 gtkwave simulation/waveforms/boundary_reset_wave.vcd
 gtkwave simulation/waveforms/logical_ops_wave.vcd
 gtkwave simulation/waveforms/harvard_vs_vn_wave.vcd
 ```
 
-Waveform files are generated simulation artifacts. Their availability depends on which simulations have been run and which artifacts are included in the repository.
+`.vcd` files are ignored by `.gitignore`, so the system-level waveforms above are added to the repository explicitly. Module-level waveforms are recreated in the repository root whenever their testbench runs.
 
 ### 11.1 Annotated Harvard vs Von Neumann Waveforms
 
@@ -604,3 +613,19 @@ Vector Cores demonstrates the design and implementation of a modular single-cycl
 
 Twelve dedicated testbenches completed **561 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. A Von Neumann shared-memory baseline shows the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles. Including clock frequency, the Harvard design is **2.18×** and **2.88×** faster in execution time. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. Place-and-route on iCE40 HX8K gives an Fmax of **63.86 MHz** for the Harvard processor and **37.69 MHz** for the Von Neumann baseline. These are post-route figures; FPGA power and board-level measurements were not performed.
 
+
+## 15. Reports
+
+| Document | Contents |
+|---|---|
+| [`docs/report/technical_report.pdf`](docs/report/technical_report.pdf) ([source](docs/report/technical_report.md)) | Final technical report: architecture, microarchitecture, verification, waveforms, synthesis and Fmax, and the Harvard vs Von Neumann comparison |
+| [`docs/report/Final Report.pdf`](<docs/report/Final Report.pdf>) | Phase II IEEE-format project paper |
+| [`docs/report/individual_contribution_report.md`](docs/report/individual_contribution_report.md) | Individual contributions of each team member |
+| [`docs/architecture_comparison.md`](docs/architecture_comparison.md) | Detailed Harvard vs Von Neumann comparison |
+| [`synthesis/results.md`](synthesis/results.md) | Synthesis, place-and-route and timing results |
+
+Rebuild the technical report PDF after editing its Markdown source (requires `reportlab`; `Pillow` is optional):
+
+```bash
+python3 docs/report/build_report.py
+```

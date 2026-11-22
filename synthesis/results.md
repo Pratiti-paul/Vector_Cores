@@ -129,9 +129,9 @@ ALL INSTRUCTION MEMORY TESTS PASSED
 ```
 
 ### Waveform Inspection
-![Instruction memory waveform](../docs/report/instruction_memory_waveform.png)
+Running the testbench writes `instruction_memory.vcd` to the repository root (open it with `gtkwave instruction_memory.vcd`). The waveform shows asynchronous combinational instruction fetch: the `instr` bus updates as soon as the address changes. Program instructions are read from addresses `0x0`–`0x6`, addresses `0x7`–`0xF` return `HALT` (`16'hF000`), and non-sequential address changes confirm the combinational behavior.
 
-*Figure 1: Waveform demonstrating asynchronous combinational instruction fetch. The `instr` bus updates immediately with address changes. Program instructions are retrieved from addresses `0x0`–`0x6`, addresses `0x7`–`0xF` return `HALT` (`16'hF000`), and non-sequential address transitions verify combinational behavior.*
+Instruction fetch inside the running processor, one fetched instruction per cycle, is shown in the annotated timing diagram [`docs/waveforms/harvard_vs_vn_p1.svg`](../docs/waveforms/harvard_vs_vn_p1.svg) (row "IMEM -> instruction").
 
 ### Functional Observations
 - **Combinational Fetch:** Instruction memory is read-only and unclocked, yielding purely combinational read latency.

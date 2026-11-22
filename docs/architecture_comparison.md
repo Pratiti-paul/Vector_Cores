@@ -14,6 +14,8 @@ The existing Harvard RTL (`rtl/*.v`) is unchanged. The baseline reuses `program_
 
 ## 2. Memory Organization
 
+![Harvard vs Von Neumann block diagram](architecture/harvard_vs_vn_block_diagram.svg)
+
 | | Harvard (`top_module`) | Von Neumann (`vn_top_module`) |
 |---|---|---|
 | Instruction storage | `instruction_memory`: 16 × 16-bit | `unified_memory` words `0x00`–`0x0F` |

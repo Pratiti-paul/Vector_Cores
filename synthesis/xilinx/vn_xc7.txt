@@ -1,0 +1,167 @@
+
+9. Printing statistics.
+
+=== address_decoder ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        3 wires
+       21 wire bits
+        3 public wires
+       21 public wire bits
+        3 ports
+       21 port bits
+       16 cells
+       16   LUT5
+
+=== alu ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       50 wires
+      126 wire bits
+        5 public wires
+       28 public wire bits
+        5 ports
+       28 port bits
+       39 cells
+        4   CARRY4
+       17   LUT2
+        6   LUT4
+        4   LUT5
+        7   LUT6
+        1   MUXF7
+
+=== control_unit ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       11 wires
+       16 wire bits
+       11 public wires
+       16 public wire bits
+       11 ports
+       16 port bits
+       11 cells
+        1   LUT3
+       10   LUT4
+
+=== program_counter ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        5 wires
+       11 wire bits
+        5 public wires
+       11 public wire bits
+        5 ports
+       11 port bits
+        4 cells
+        4   FDRE
+
+=== register_file ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       23 wires
+       68 wire bits
+       12 public wires
+       57 public wire bits
+        9 ports
+       33 port bits
+       51 cells
+       24   FDRE
+        3   LUT4
+       24   LUT5
+
+=== unified_memory ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       89 wires
+      604 wire bits
+       24 public wires
+      313 public wire bits
+        6 ports
+       40 port bits
+      401 cells
+      256   FDRE
+        8   LUT2
+        3   LUT3
+       32   LUT4
+       65   LUT5
+       37   LUT6
+        1 submodules
+        1   address_decoder
+
+=== vn_top_module ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       98 wires
+      237 wire bits
+       30 public wires
+      122 public wire bits
+       12 ports
+       48 port bits
+      123 cells
+        1   BUFG
+        2   CARRY4
+       17   FDRE
+        2   IBUF
+        1   INV
+        6   LUT2
+       39   LUT3
+        5   LUT4
+        4   LUT5
+       46   OBUF
+        5 submodules
+        1   alu
+        1   control_unit
+        1   program_counter
+        1   register_file
+        1   unified_memory
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+      645 vn_top_module
+       39 alu
+       11 control_unit
+        4 program_counter
+       51 register_file
+      401 unified_memory
+       16   address_decoder
+
+        +----------Count including submodules.
+        | 
+      279 wires
+     1083 wire bits
+       90 public wires
+      568 public wire bits
+       51 ports
+      197 port bits
+        - memories
+        - memory bits
+        - processes
+      645 cells
+        1   BUFG
+        6   CARRY4
+      301   FDRE
+        2   IBUF
+        1   INV
+       31   LUT2
+       43   LUT3
+       56   LUT4
+      113   LUT5
+       44   LUT6
+        1   MUXF7
+       46   OBUF
+        5 submodules
+        1   alu
+        1   control_unit
+        1   program_counter
+        1   register_file
+        1   unified_memory
+
