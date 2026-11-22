@@ -22,14 +22,10 @@ BEQ branch offset convention (confirmed in top_module.v):
 JUMP uses an absolute 4-bit instruction address from instr[3:0].
 
 AND / OR / XOR status:
-  - Opcodes 1000 / 1001 / 1010 are PROPOSED by this assembler (Phase II).
-  - The ALU (alu.v on main) already supports AND/OR/XOR with 3-bit alu_control.
-  - control_unit.v on main still uses 2-bit alu_control and does NOT yet
-    decode opcodes 1000/1001/1010 (they hit 'default: pc_enable=0').
-  - Hardware integration of AND/OR/XOR in the control unit is pending
-    (tracked on branch alisha/alu-3bit).
-  - The assembler correctly encodes these instructions; they will execute
-    once the hardware team merges the control-unit update.
+  - Opcodes 1000 / 1001 / 1010 (R-type: rd, rs, rt), introduced in Phase II.
+  - Fully supported in hardware: control_unit.v drives the 3-bit
+    alu_control (AND = 010, OR = 011, XOR = 100) and alu.v executes them.
+  - Verified at processor level by testbench/logical_ops_tb.v.
 """
 
 from dataclasses import dataclass, field
@@ -99,7 +95,7 @@ INSTRUCTIONS: Dict[str, InstructionDef] = {
     "ADDI":  InstructionDef("ADDI",  0b0101, ["REG",  "REG",  "IMM8"]),
     "BEQ":   InstructionDef("BEQ",   0b0110, ["REG",  "REG",  "OFF8"]),
     "JUMP":  InstructionDef("JUMP",  0b0111, ["IADDR"]),
-    # --- Logical instructions (Phase II – opcodes pending CU hardware merge) ---
+    # --- Logical instructions (Phase II – supported by control_unit.v) ---
     "AND":   InstructionDef("AND",   0b1000, ["REG",  "REG",  "REG"]),
     "OR":    InstructionDef("OR",    0b1001, ["REG",  "REG",  "REG"]),
     "XOR":   InstructionDef("XOR",   0b1010, ["REG",  "REG",  "REG"]),
@@ -107,5 +103,6 @@ INSTRUCTIONS: Dict[str, InstructionDef] = {
     "HALT":  InstructionDef("HALT",  0b1111, []),
 }
 
-# Opcodes that require hardware-team merge before they execute on the processor
-PENDING_HW_OPCODES = {"AND", "OR", "XOR"}
+# Opcodes that are encoded but not yet executable on the processor.
+# Empty: AND/OR/XOR are now decoded by control_unit.v.
+PENDING_HW_OPCODES: set = set()

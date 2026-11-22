@@ -2,7 +2,7 @@
 
 ## Design and Implementation of an Instruction and Data Memory Hierarchy Using Harvard Architecture
 
-A Verilog HDL implementation of a simplified **16-bit, single-cycle processor** based on Harvard Architecture. The processor uses separate instruction and data memories and supports arithmetic, memory-access, conditional-branch, jump, and halt instructions.
+A Verilog HDL implementation of a simplified **16-bit, single-cycle processor** based on Harvard Architecture. The processor uses separate instruction and data memories and supports arithmetic, logical (AND/OR/XOR), memory-access, conditional-branch, jump, and halt instructions.
 
 **Course:** MCA Computer Architecture  
 
@@ -16,11 +16,12 @@ Vector Cores is an educational processor implemented using Verilog HDL (IEEE 136
 Project objectives:
 - Design a modular processor architecture.
 - Implement instruction fetching and opcode decoding.
-- Perform register operations and 8-bit arithmetic.
+- Perform register operations, 8-bit arithmetic, and bitwise logic (AND, OR, XOR).
 - Support data-memory reads and writes.
 - Implement conditional branches, jumps, and HALT.
 - Verify behavior with Verilog testbenches.
 - Analyze the synthesized logic using Yosys.
+- Compare the Harvard design against a Von Neumann (shared-memory) baseline.
 
 ## 2. Architecture Specifications
 
@@ -54,7 +55,7 @@ Project objectives:
 - Initializes its contents from `program.hex` using `$readmemh`.
 
 ### 3.3 Control Unit (`control_unit`)
-Decodes the 4-bit opcode and generates control signals for register writes, memory operations, ALU selection, write-back selection, branches, jumps, PC enable, and HALT.
+Decodes the 4-bit opcode and generates control signals for register writes, memory operations, ALU selection, write-back selection, branches, jumps, PC enable, and HALT. It drives a 3-bit `alu_control` that matches the ALU: `000` ADD, `001` SUB, `010` AND, `011` OR, `100` XOR. Unused opcodes stop the PC.
 
 ### 3.4 Register File (`register_file`)
 - Four 8-bit registers (`R0`–`R3`).
@@ -62,7 +63,7 @@ Decodes the 4-bit opcode and generates control signals for register writes, memo
 - Reads from `R0` return zero; writes to `R0` are blocked.
 
 ### 3.5 Arithmetic Logic Unit (`alu`)
-- Supports addition and subtraction.
+- Supports addition, subtraction, and bitwise AND, OR, and XOR (3-bit `alu_control`).
 - Produces an 8-bit result and a zero flag.
 - Arithmetic wraps modulo 256.
 
@@ -103,6 +104,9 @@ All instructions are 16 bits wide. The opcode occupies bits `[15:12]`.
 | `ADDI` | `0101` | `R[rd] = R[rs] + immediate` |
 | `BEQ` | `0110` | Branch if `R[rs] == R[rt]` |
 | `JUMP` | `0111` | `PC = target` |
+| `AND` | `1000` | `R[rd] = R[rs] & R[rt]` |
+| `OR` | `1001` | `R[rd] = R[rs] \| R[rt]` |
+| `XOR` | `1010` | `R[rd] = R[rs] ^ R[rt]` |
 | `HALT` | `1111` | Disable PC updates and assert `halted` |
 
 ### 4.1 Instruction Encoding
@@ -111,7 +115,7 @@ All instructions are 16 bits wide. The opcode occupies bits `[15:12]`.
 |---|---|
 | `LOAD` | `[15:12]` opcode, `[11:10]` `rd`, `[9:6]` address, `[5:0]` zero |
 | `STORE` | `[15:12]` opcode, `[11:10]` `rs`, `[9:6]` address, `[5:0]` zero |
-| `ADD` / `SUB` | `[15:12]` opcode, `[11:10]` `rd`, `[9:8]` `rs`, `[7:6]` `rt`, `[5:0]` zero |
+| `ADD` / `SUB` / `AND` / `OR` / `XOR` | `[15:12]` opcode, `[11:10]` `rd`, `[9:8]` `rs`, `[7:6]` `rt`, `[5:0]` zero |
 | `ADDI` | `[15:12]` opcode, `[11:10]` `rd`, `[9:8]` `rs`, `[7:0]` signed immediate |
 | `BEQ` | `[15:12]` opcode, `[11:10]` `rs`, `[9:8]` `rt`, `[7:0]` signed offset |
 | `JUMP` | `[15:12]` opcode, `[11:4]` zero, `[3:0]` target |
@@ -137,14 +141,19 @@ Vector_Cores/
 │   ├── instruction_memory.v
 │   ├── program_counter.v
 │   ├── register_file.v
-│   └── top_module.v
+│   ├── top_module.v
+│   └── baseline/                    # Von Neumann comparison baseline
+│       ├── unified_memory.v
+│       └── vn_top_module.v
 ├── testbench/
 │   ├── alu_tb.v
 │   ├── boundary_reset_tb.v
 │   ├── control_flow_tb.v
 │   ├── control_unit_tb.v
 │   ├── data_memory_tb.v
+│   ├── harvard_vs_vn_tb.v
 │   ├── instruction_memory_tb.v
+│   ├── logical_ops_tb.v
 │   ├── processor_tb.v
 │   ├── program_counter_tb.v
 │   └── register_file_tb.v
@@ -155,8 +164,11 @@ Vector_Cores/
 │   └── waveforms/
 │       ├── boundary_reset_wave.vcd
 │       ├── control_flow_wave.vcd
+│       ├── harvard_vs_vn_wave.vcd
+│       ├── logical_ops_wave.vcd
 │       └── processor_wave.vcd
 ├── docs/
+│   ├── architecture_comparison.md
 │   ├── architecture/
 │   │   └── block_diagram.png
 │   └── report/
@@ -243,23 +255,38 @@ iverilog -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v &
 | Processor | `iverilog -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v` | `vvp proc_test` |
 | Control Flow | `iverilog -s control_flow_tb -o cf_test rtl/*.v testbench/control_flow_tb.v` | `vvp cf_test` |
 | Boundary and Reset | `iverilog -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v` | `vvp br_test` |
+| Logical Instructions | `iverilog -s logical_ops_tb -o logic_test rtl/*.v rtl/baseline/*.v testbench/logical_ops_tb.v` | `vvp logic_test` |
+| Harvard vs Von Neumann | `iverilog -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v` | `vvp cmp_test` |
+
+### 8.6 Run the Harvard vs Von Neumann Comparison
+
+This test runs the same programs on the Harvard processor and on the Von Neumann baseline. It checks that both reach the same final state and reports cycles, CPI, and speed-up. Run it from the repository root.
+
+```bash
+iverilog -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v && vvp cmp_test && rm -f cmp_test
+```
 
 ## 9. Verification and Testing
 
-Nine dedicated testbenches were used.
+Twelve testbenches are used: nine module- and processor-level testbenches, the address-decoder testbench, the logical-instruction testbench, and the Harvard vs Von Neumann comparison testbench (see [Section 13.1](#131-harvard-vs-von-neumann-shared-memory-comparison)).
 
-| Testbench | Checks passed | Failed |
-|---|---:|---:|
-| Program Counter | 5 | 0 |
-| Control Unit | 8 | 0 |
-| Instruction Memory | 43 | 0 |
-| Data Memory | 38 | 0 |
-| ALU | 7 | 0 |
-| Register File | 6 | 0 |
-| Processor Integration | 7 | 0 |
-| Control Flow | 13 | 0 |
-| Boundary and Reset | 15 | 0 |
-| **Total** | **142** | **0** |
+The counts below are **automated checks**: comparisons against an expected value that the testbench evaluates itself and reports as pass or fail. They were measured by running every testbench with Icarus Verilog.
+
+| Testbench | Automated checks passed | Failed | Notes |
+|---|---:|---:|---|
+| Program Counter | 35 | 0 | Reset, sequential update, jump, hold, all 16 addresses, 15 → 0 wraparound, synchronous reset, and reset priority over enable |
+| Control Unit | 32 | 0 | All 11 control outputs checked against a reference decode table for all 16 opcodes, in forward and reverse order |
+| Instruction Memory | 43 | 0 | 16 locations, 3 non-sequential reads, 8 HALT fills, 16 format checks |
+| Data Memory | 79 | 0 | |
+| Address Decoder | 40 | 0 | |
+| ALU | 13 | 0 | ADD, SUB, AND, OR, XOR, and the zero flag |
+| Register File | 6 | 0 | |
+| Processor Integration | 7 | 0 | |
+| Control Flow | 13 | 0 | |
+| Boundary and Reset | 15 | 0 | |
+| Logical Instructions (AND/OR/XOR) | 28 | 0 | Harvard and Von Neumann cores |
+| Harvard vs Von Neumann Comparison | 151 | 0 | |
+| **Total** | **462** | **0** | |
 
 ### 9.1 Verification Coverage
 
@@ -388,6 +415,8 @@ Yosys reported that the Data Memory array was replaced with a list of registers.
 | Processor (archived) | `simulation/waveforms/processor_wave.vcd` | `processor_tb.v` |
 | Control Flow | `simulation/waveforms/control_flow_wave.vcd` | `control_flow_tb.v` |
 | Boundary and Reset | `simulation/waveforms/boundary_reset_wave.vcd` | `boundary_reset_tb.v` |
+| Harvard vs Von Neumann | `simulation/waveforms/harvard_vs_vn_wave.vcd` | `harvard_vs_vn_tb.v` |
+| Logical Instructions | `simulation/waveforms/logical_ops_wave.vcd` | `logical_ops_tb.v` |
 
 Open the archived system-level waveforms using GTKWave:
 
@@ -395,6 +424,7 @@ Open the archived system-level waveforms using GTKWave:
 gtkwave simulation/waveforms/processor_wave.vcd
 gtkwave simulation/waveforms/control_flow_wave.vcd
 gtkwave simulation/waveforms/boundary_reset_wave.vcd
+gtkwave simulation/waveforms/harvard_vs_vn_wave.vcd
 ```
 
 ## 12. Limitations and Future Improvements
@@ -403,7 +433,7 @@ gtkwave simulation/waveforms/boundary_reset_wave.vcd
 2. **Asynchronous Instruction Memory:** Instruction Memory uses combinational reads. A different implementation may be needed for FPGA block RAM configurations.
 3. **Relative program-file path:** Instruction Memory loads `program.hex` using a relative path. Run simulations from the repository root.
 4. **Small address space:** The 4-bit address buses limit instruction and data memories to 16 locations each.
-5. **Instruction set:** The processor currently supports eight instructions. Additional arithmetic, logical, and control-flow instructions could be added.
+5. **Instruction set:** The processor currently supports eleven instructions. Additional arithmetic, shift, and control-flow instructions could be added.
 6. **Datapath capacity:** Future versions could increase data width, register count, and memory capacity.
 7. **Further hardware characterization:** Board-level testing, maximum-frequency measurement, critical-path timing analysis, and power measurement remain future work.
 
@@ -418,11 +448,31 @@ The processor uses a single-cycle execution model:
 
 The throughput is an architectural ideal. Actual operating frequency and instructions per second have not been measured.
 
+### 13.1 Harvard vs Von Neumann (Shared-Memory) Comparison
+
+A Von Neumann baseline (`rtl/baseline/vn_top_module.v`) runs the same ISA. It reuses the same Program Counter, Control Unit, Register File, ALU, and Address Decoder, so memory organization is the only difference between the two designs:
+
+- Instructions and data share one 32 × 16-bit `unified_memory` with a **single port**. Words `0x00`–`0x0F` hold instructions (write-protected) and `0x10`–`0x1F` hold data.
+- A LOAD or STORE needs the port twice: once to fetch and once to access data. It therefore takes **2 cycles** (fetch, then data access) and stalls the PC. All other instructions still take 1 cycle.
+- The Harvard design fetches and accesses data **in the same cycle**, so every instruction takes 1 cycle.
+
+For N executed instructions, M of which are LOAD/STORE: Harvard takes **N** cycles, Von Neumann takes **N + M** cycles, and the Harvard speed-up is **1 + M/N**.
+
+| Program | N | M | Harvard cycles | VN cycles | Harvard CPI | VN CPI | Harvard speed-up |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| P1 `program.hex` (mixed) | 7 | 2 | 7 | 9 | 1.000 | 1.286 | **1.286×** |
+| P2 memory-heavy | 10 | 7 | 10 | 17 | 1.000 | 1.700 | **1.700×** |
+| P3 compute-only loop | 16 | 0 | 16 | 16 | 1.000 | 1.000 | **1.000×** |
+
+Both processors reached identical, expected final register, data-memory, and PC states in all three programs (151 checks, 0 failures). The speed-ups are cycle-count ratios; wall-clock speed-up also depends on each design's post-synthesis Fmax, which has not been measured.
+
+The full comparison, including the memory map, FSM diagram, analysis, and waveform signals to inspect, is in [`docs/architecture_comparison.md`](docs/architecture_comparison.md).
+
 ## 14. Conclusion
 
 Vector Cores demonstrates the design and implementation of a simplified single-cycle processor using Harvard Architecture and Verilog HDL. The implementation integrates instruction fetching, decoding, register operations, arithmetic processing, data-memory access, and control-flow management.
 
-Nine dedicated testbenches completed **142 checks with zero failures**. Generic synthesis using Yosys reported **116 cells** and zero structural problems. The project also records Xilinx 7-Series technology-mapping results.
+Twelve testbenches completed **462 automated checks with zero failures**. A Von Neumann shared-memory baseline was added for comparison: the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles (151 comparison checks, zero failures). Generic synthesis using Yosys reported **116 cells** and zero structural problems. The project also records Xilinx 7-Series technology-mapping results.
 
 ## 15. Individual Contributions Report
 
