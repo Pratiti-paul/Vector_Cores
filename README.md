@@ -2,10 +2,9 @@
 
 ## Design and Implementation of an Instruction and Data Memory Hierarchy Using Harvard Architecture
 
-A Verilog HDL implementation of a simplified **16-bit, single-cycle processor** based on Harvard Architecture. The processor uses separate instruction and data memories and supports arithmetic, memory-access, conditional-branch, jump, and halt instructions.
+A Verilog HDL implementation of a simplified **16-bit, single-cycle processor** based on Harvard Architecture. The processor uses separate instruction and data memories and supports arithmetic, logical, memory-access, conditional-branch, jump, and halt instructions.
 
-**Course:** MCA Computer Architecture  
-
+**Course:** MCA Computer Architecture
 
 ---
 
@@ -13,13 +12,16 @@ A Verilog HDL implementation of a simplified **16-bit, single-cycle processor** 
 
 Vector Cores is an educational processor implemented using Verilog HDL (IEEE 1364-2001). It follows Harvard Architecture, with separate instruction and data memories and independent memory paths. The processor uses a single-cycle execution model: each completed instruction executes in one clock cycle.
 
-Project objectives:
+### Project objectives
+
 - Design a modular processor architecture.
 - Implement instruction fetching and opcode decoding.
-- Perform register operations and 8-bit arithmetic.
+- Perform register operations and 8-bit arithmetic and logical operations.
 - Support data-memory reads and writes.
 - Implement conditional branches, jumps, and HALT.
-- Verify behavior with Verilog testbenches.
+- Extend the instruction set with AND, OR, and XOR operations.
+- Assemble symbolic assembly programs into machine-code instructions.
+- Verify module-level and processor-level behavior with Verilog testbenches.
 - Analyze the synthesized logic using Yosys.
 
 ## 2. Architecture Specifications
@@ -35,6 +37,7 @@ Project objectives:
 | Instruction Memory | 16 × 16 bits |
 | Data Memory | 16 × 8 bits |
 | Register File | 4 × 8-bit registers (`R0`–`R3`) |
+| ALU control | 3 bits |
 | Clock edge | Rising edge (`posedge clk`) |
 | Reset | Active-high synchronous reset |
 
@@ -43,40 +46,61 @@ Project objectives:
 ## 3. System Architecture
 
 ### 3.1 Program Counter (`program_counter`)
+
 - Maintains the current instruction address using a 4-bit register.
 - Updates to the selected next address when enabled.
 - Supports sequential execution, branches, and jumps.
 - Holds its value when HALT disables the PC.
 
 ### 3.2 Instruction Memory (`instruction_memory`)
+
 - Stores 16 instructions, each 16 bits wide.
 - Uses combinational (asynchronous) reads.
 - Initializes its contents from `program.hex` using `$readmemh`.
 
 ### 3.3 Control Unit (`control_unit`)
-Decodes the 4-bit opcode and generates control signals for register writes, memory operations, ALU selection, write-back selection, branches, jumps, PC enable, and HALT.
+
+Decodes the 4-bit opcode and generates control signals for register writes, memory operations, ALU selection, write-back selection, branches, jumps, PC enable, and HALT. The Phase II Control Unit supports all 11 instructions listed in Section 4 and uses a 3-bit ALU control signal.
 
 ### 3.4 Register File (`register_file`)
+
 - Four 8-bit registers (`R0`–`R3`).
 - Two combinational read ports and one synchronous write port.
 - Reads from `R0` return zero; writes to `R0` are blocked.
 
 ### 3.5 Arithmetic Logic Unit (`alu`)
+
 - Supports addition and subtraction.
+- Supports bitwise AND, OR, and XOR.
 - Produces an 8-bit result and a zero flag.
-- Arithmetic wraps modulo 256.
+- Arithmetic results wrap modulo 256.
+
+The 3-bit ALU control mapping is:
+
+| ALU control | Operation |
+|---|---|
+| `000` | ADD |
+| `001` | SUB |
+| `010` | AND |
+| `011` | OR |
+| `100` | XOR |
+| `101`–`111` | Reserved (default result: `8'h00`) |
 
 ### 3.6 Data Memory (`data_memory`)
+
 - Contains 16 locations of 8 bits each.
 - Supports combinational reads and synchronous writes.
 - Synchronously clears all locations during reset.
 - Instantiates the 4-to-16 Address Decoder internally.
 
 ### 3.7 Address Decoder (`address_decoder`)
+
 Implements a 4-to-16 one-hot decoder. It is instantiated inside Data Memory, not as a separate top-level datapath module.
 
 ### 3.8 Next-PC Selection
+
 The Top Module selects the next PC from:
+
 - Sequential execution: `PC + 1`.
 - Conditional branch: `PC + 1 + signed_offset`.
 - Jump: absolute 4-bit target.
@@ -100,7 +124,7 @@ All instructions are 16 bits wide. The opcode occupies bits `[15:12]`. The proce
 | `STORE` | `0010` | `DMEM[address] = R[rs]` |
 | `ADD` | `0011` | `R[rd] = R[rs] + R[rt]` |
 | `SUB` | `0100` | `R[rd] = R[rs] - R[rt]` |
-| `ADDI` | `0101` | `R[rd] = R[rs] + immediate` |
+| `ADDI` | `0101` | `R[rd] = R[rs] + signed_immediate` |
 | `BEQ` | `0110` | Branch if `R[rs] == R[rt]` |
 | `JUMP` | `0111` | `PC = target` |
 | `AND` | `1000` | `R[rd] = R[rs] & R[rt]` (Bitwise AND) |
@@ -121,7 +145,7 @@ All instructions are 16 bits wide. The opcode occupies bits `[15:12]`. The proce
 | `JUMP` | `[15:12]` opcode, `[11:4]` zero, `[3:0]` target |
 | `HALT` | `[15:12]` opcode, `[11:0]` zero |
 
-The `BEQ` offset is signed and added to `PC + 1`; the resulting target is truncated to 4 bits. `JUMP` uses an absolute 4-bit target address.
+The `BEQ` offset is signed and added to `PC + 1`; the resulting target is truncated to 4 bits. `JUMP` uses an absolute 4-bit target address. The three logical instructions use the same R-type field layout as `ADD` and `SUB`.
 
 ### 4.2 ALU Control Encoding (3-Bit)
 
@@ -140,7 +164,6 @@ The ALU and Control Unit communicate using a dedicated 3-bit control bus (`alu_c
 
 ```text
 Vector_Cores/
-├── .gitignore
 ├── README.md
 ├── program.hex
 ├── assembler/
@@ -173,6 +196,7 @@ Vector_Cores/
 ├── testbench/
 │   ├── address_decoder_tb.v
 │   ├── alu_tb.v
+│   ├── address_decoder_tb.v
 │   ├── boundary_reset_tb.v
 │   ├── control_flow_tb.v
 │   ├── control_unit_tb.v
@@ -182,6 +206,10 @@ Vector_Cores/
 │   ├── processor_tb.v
 │   ├── program_counter_tb.v
 │   └── register_file_tb.v
+├── assembler/
+│   ├── assembler.py
+│   └── samples/
+├── tests/
 ├── simulation/
 │   ├── logical_ops_assembled.hex
 │   ├── logs/
@@ -207,14 +235,16 @@ Vector_Cores/
     └── results.md
 ```
 
+This is a high-level guide to the repository. Some generated logs, waveforms, and supporting files may be present in addition to the paths shown above.
+
 ## 6. Team Members and Individual Contributions
 
 | Team member | Responsibilities |
 |---|---|
-| **Pratiti Paul** | Implemented the Program Counter and Control Unit; developed the Top Module; processor-level verification, waveform analysis, and synthesis. |
-| **Anuradha Raghuwanshi** | Implemented Instruction Memory, developed its testbench, and prepared `program.hex`. |
-| **Ganga** | Implemented Data Memory and the 4-to-16 Address Decoder, along with its testbench. |
-| **Alisha Gupta** | Implemented the ALU and Register File and developed their respective testbenches. |
+| **Pratiti Paul** | Implemented the Program Counter and Control Unit; developed the Top Module; handled processor integration, processor-level verification, waveform analysis, and synthesis. |
+| **Anuradha Raghuwanshi** | Implemented Instruction Memory and its testbench; prepared the Phase I program image; developed the Phase II Python two-pass assembler, assembler tests, and sample assembly programs. |
+| **Ganga** | Implemented Data Memory and the 4-to-16 Address Decoder; developed expanded memory and decoder verification. |
+| **Alisha Gupta** | Implemented the ALU and Register File; extended the ALU with AND, OR, and XOR operations and developed the related testbenches. |
 
 The modules were integrated collaboratively, with team members coordinating interfaces and reviewing processor behavior.
 
@@ -233,7 +263,7 @@ The modules were integrated collaboratively, with team members coordinating inte
 
 ### 8.1 Prerequisites
 
-Install Git, Icarus Verilog (`iverilog` and `vvp`), Python 3 (`pytest` optional, for assembler tests), GTKWave (optional, for waveform viewing), and Yosys (for synthesis).
+Install Git, Icarus Verilog (`iverilog` and `vvp`), Python 3 and pytest, GTKWave (optional, for waveform viewing), and Yosys (for synthesis).
 
 ### 8.2 Clone the Repository
 
@@ -259,12 +289,7 @@ pytest tests/
 Run from the repository root because Instruction Memory loads `program.hex` using a relative path.
 
 ```bash
-iverilog -s processor_tb -o proc_test \
-  rtl/top_module.v rtl/program_counter.v rtl/instruction_memory.v \
-  rtl/control_unit.v rtl/register_file.v rtl/alu.v \
-  rtl/data_memory.v rtl/address_decoder.v \
-  testbench/processor_tb.v
-
+iverilog -g2012 -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v
 vvp proc_test
 rm -f proc_test
 ```
@@ -323,57 +348,46 @@ Eleven dedicated Verilog testbenches plus an automated Python pytest suite provi
 | **Total Verilog Checks** | — | **390** | **0** | **100% PASS** |
 | **Python Assembler (`pytest`)** | Tool | **203** | **0** | **100% PASS** |
 
-### 9.1 Verification Coverage
+### 9.2 Python Assembler Tests
+
+The recorded Python assembler test suite completed **203 tests with 0 failures** using pytest.
+
+### 9.3 Verification Coverage
 
 Testing covers:
+
 - Individual module functionality.
 - Instruction fetching and decoding.
-- Arithmetic operations.
-- Register-file read and write behavior.
-- Data-memory reads and writes.
+- Addition, subtraction, and immediate arithmetic.
+- Bitwise AND, OR, and XOR operations.
+- Register-file read and write behavior, including hardwired `R0`.
+- Data-memory reads, writes, and address decoding.
 - Branch taken and not-taken conditions.
 - Forward and backward branch offsets.
 - Jump execution.
 - HALT behavior and PC freeze.
 - Negative branch offsets and PC wraparound.
 - Reset behavior across processor components.
+- Assembler parsing, label resolution, instruction encoding, and sample programs.
+- Execution of assembler-generated logical-operation machine code on the processor.
 
-### 9.2 Processor-Level Test Program
+### 9.4 Logical-Operations Integration Example
 
-The program in `program.hex` performs the following operations:
+The Phase II logical-operations system test exercises AND, OR, and XOR through the integrated processor. The recorded example initializes `R1 = 12` and `R2 = 10`, then checks:
 
-| Address | Hex | Assembly | Result |
-|---:|---:|---|---|
-| `0x0` | `5405` | `ADDI R1, R0, 5` | `R1 = 5` |
-| `0x1` | `5803` | `ADDI R2, R0, 3` | `R2 = 3` |
-| `0x2` | `3580` | `ADD R1, R1, R2` | `R1 = 8` |
-| `0x3` | `2480` | `STORE R1, [2]` | `DMEM[2] = 8` |
-| `0x4` | `4580` | `SUB R1, R1, R2` | `R1 = 5` |
-| `0x5` | `1C80` | `LOAD R3, [2]` | `R3 = 8` |
-| `0x6` | `5F01` | `ADDI R3, R3, 1` | `R3 = 9` |
-| `0x7` | `F000` | `HALT` | `PC = 7`, `halted = 1` |
-
-Locations `0x8`–`0xF` contain `F000` (HALT).
-
-**Expected final architectural state:**
-
-| Component | Expected value |
+| Operation | Expected result |
 |---|---:|
-| `R0` | 0 |
-| `R1` | 5 |
-| `R2` | 3 |
-| `R3` | 9 |
-| `DMEM[2]` | 8 |
-| Program Counter | 7 |
-| `halted` | 1 |
+| `12 AND 10` | 8 |
+| `12 OR 10` | 14 |
+| `12 XOR 10` | 6 |
 
-The processor-level test verifies these values and confirms that the PC remains at 7 after HALT.
+The system test also checks register write-back, zero-result behavior, the hardwired-zero register, and HALT/PC-freeze behavior. The recorded logical-operations testbench reported 56 checks passed and 0 failures.
 
 ## 10. Synthesis and Resource Analysis
 
-The complete processor hierarchy was synthesized using **Yosys 0.70**, with `top_module` as the top-level module.
+The complete processor hierarchy was synthesized using Yosys with `top_module` as the top-level module.
 
-### 10.1 Generic Synthesis Command
+### 10.1 Generic Synthesis Flow
 
 Run from the repository root:
 
@@ -390,7 +404,7 @@ stat
 " | tee simulation/logs/yosys_synthesis_phase2.log
 ```
 
-The recorded structural check reported:
+The recorded Phase II generic synthesis report states:
 
 ```text
 Checking module top_module...
@@ -467,15 +481,17 @@ The implementation synchronously clears all 16 memory locations during reset, so
 Open the archived system-level waveforms using GTKWave:
 
 ```bash
-gtkwave simulation/waveforms/processor_wave.vcd
+gtkwave simulation/waveforms/logical_ops_wave.vcd
 gtkwave simulation/waveforms/control_flow_wave.vcd
 gtkwave simulation/waveforms/boundary_reset_wave.vcd
 gtkwave simulation/waveforms/logical_ops_wave.vcd
 ```
 
+Waveform files are generated simulation artifacts. Their availability depends on which simulations have been run and which artifacts are included in the repository.
+
 ## 12. Limitations and Future Improvements
 
-1. **Data Memory mapping:** Synchronous reset clears all memory locations in one clock cycle. The reported synthesis flow therefore maps the memory to registers instead of conventional block RAM.
+1. **Data Memory mapping:** Synchronous reset clears all memory locations. The reported synthesis flow therefore maps the memory to registers instead of conventional block RAM.
 2. **Asynchronous Instruction Memory:** Instruction Memory uses combinational reads. A different implementation may be needed for FPGA block RAM configurations.
 3. **Relative program-file path:** Instruction Memory loads `program.hex` using a relative path. Run simulations from the repository root.
 4. **Small address space:** The 4-bit address buses limit instruction and data memories to 16 locations each.
@@ -495,12 +511,10 @@ The throughput is an architectural ideal. Actual operating frequency and instruc
 
 ## 14. Conclusion
 
-Vector Cores demonstrates the design and implementation of a modular single-cycle processor using Harvard Architecture and Verilog HDL. The implementation integrates instruction fetching, decoding, register operations, arithmetic and bitwise logical processing, data-memory access, and control-flow management.
+Vector Cores demonstrates the design and implementation of a modular single-cycle processor using Harvard Architecture and Verilog HDL. The implementation integrates instruction fetching, decoding, register operations, arithmetic and bitwise logical processing, data-memory access, and control-flow management. It also includes a Python two-pass assembler for translating assembly programs into machine code.
 
-Eleven dedicated testbenches completed **390 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems.
+Eleven dedicated testbenches completed **390 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. These results do not represent measured FPGA timing, power, or board utilization.
 
 ## 15. Individual Contributions Report
 
 The detailed contribution report is available at [`docs/report/individual_contribution_report.md`](docs/report/individual_contribution_report.md).
-
-
