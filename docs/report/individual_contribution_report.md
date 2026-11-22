@@ -337,6 +337,10 @@ The Data Memory testbench covers:
 6.  Compatibility with the STORE/LOAD sequence in `program.hex`.
 7.  Overwriting previously stored values.
 
+Result: **79/79 checks passed** in the Data Memory testbench and
+**40/40 checks passed** in the Address Decoder testbench
+(`testbench/address_decoder_tb.v`).
+
 ------------------------------------------------------------------------
 
 ## 5. Member 4 -- Alisha Gupta
@@ -393,9 +397,10 @@ accepts a result through its write port. R0 is hardwired to zero.
 
 ### 5.4 Verification
 
--   **ALU testbench:** Covers addition, subtraction, zero-result
-    detection, overflow, underflow and additional arithmetic cases.
-    Result: **7/7 checks passed**.
+-   **ALU testbench:** Covers addition, subtraction, bitwise AND, OR
+    and XOR, zero-result detection, overflow, underflow and additional
+    arithmetic cases.
+    Result: **13/13 checks passed**.
 -   **Register File testbench:** Covers reset, independent dual reads,
     synchronous writes, write inhibition and R0 write protection.
     Result: **6/6 checks passed**.
@@ -404,20 +409,24 @@ accepts a result through its write port. R0 is hardwired to zero.
 
 ## 6. Overall Project Verification
 
-The complete processor was verified using nine dedicated testbenches.
+The complete processor was verified using twelve testbenches. The
+counts below match the regression results recorded in the README.
 
-  Testbench                 Checks Passed   Failed
-  ----------------------- --------------- --------
-  Program Counter                       5        0
-  Control Unit                          8        0
-  Instruction Memory                   43        0
-  Data Memory                          38        0
-  ALU                                   7        0
-  Register File                         6        0
-  Processor Integration                 7        0
-  Control Flow                         13        0
-  Boundary and Reset                   15        0
-  **Total**                       **142**    **0**
+  Testbench                           Checks Passed   Failed
+  --------------------------------- --------------- --------
+  Program Counter                                 35        0
+  Control Unit                                   130        0
+  Instruction Memory                              16        0
+  Data Memory                                     79        0
+  Address Decoder                                 40        0
+  ALU                                             13        0
+  Register File                                    6        0
+  Processor Integration                            7        0
+  Control Flow                                    13        0
+  Boundary and Reset                              15        0
+  Logical Operations                              56        0
+  Harvard vs Von Neumann Comparison              151        0
+  **Total**                                  **561**    **0**
 
 System-level verification covered:
 
@@ -488,8 +497,8 @@ Each member contributed to a defined part of the processor, including
 instruction memory, data memory, the Address Decoder, ALU, Register
 File, Program Counter, Control Unit and system integration.
 
-The integrated processor was verified using nine testbenches, with **142
-checks passed and zero failures**. Generic synthesis and structural
+The integrated processor was verified using twelve testbenches, with
+**561 checks passed and zero failures**. Generic synthesis and structural
 checking were also performed using Yosys, with zero structural problems
 reported.
 
