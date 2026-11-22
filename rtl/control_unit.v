@@ -7,7 +7,7 @@ module control_unit (
     output reg mem_read,
     output reg mem_write,
 
-    output reg [1:0] alu_control,
+    output reg [2:0] alu_control,
 
     output reg alu_src,
     output reg mem_to_reg,
@@ -20,15 +20,15 @@ module control_unit (
     always @(*) begin
 
         // Default values
-        pc_enable    = 1'b1;
-        reg_write    = 1'b0;
-        mem_read     = 1'b0;
-        mem_write    = 1'b0;
+        pc_enable     = 1'b1;
+        reg_write     = 1'b0;
+        mem_read      = 1'b0;
+        mem_write     = 1'b0;
 
-        alu_control  = 2'b00;
+        alu_control   = 3'b000;
 
-        alu_src      = 1'b0;
-        mem_to_reg   = 1'b0;
+        alu_src       = 1'b0;
+        mem_to_reg    = 1'b0;
 
         branch_enable = 1'b0;
         jump_enable   = 1'b0;
@@ -51,31 +51,49 @@ module control_unit (
             // ADD
             4'b0011: begin
                 reg_write   = 1'b1;
-                alu_control = 2'b00;
+                alu_control = 3'b000;
             end
 
             // SUB
             4'b0100: begin
                 reg_write   = 1'b1;
-                alu_control = 2'b01;
+                alu_control = 3'b001;
             end
 
             // ADDI
             4'b0101: begin
                 reg_write   = 1'b1;
-                alu_control = 2'b00;
+                alu_control = 3'b000;
                 alu_src     = 1'b1;
             end
 
             // BEQ
             4'b0110: begin
                 branch_enable = 1'b1;
-                alu_control   = 2'b01;
+                alu_control   = 3'b001;
             end
 
             // JUMP
             4'b0111: begin
                 jump_enable = 1'b1;
+            end
+
+            // AND
+            4'b1000: begin
+                reg_write   = 1'b1;
+                alu_control = 3'b010;
+            end
+
+            // OR
+            4'b1001: begin
+                reg_write   = 1'b1;
+                alu_control = 3'b011;
+            end
+
+            // XOR
+            4'b1010: begin
+                reg_write   = 1'b1;
+                alu_control = 3'b100;
             end
 
             // HALT
