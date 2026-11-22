@@ -7,7 +7,7 @@ module control_unit (
     output reg mem_read,
     output reg mem_write,
 
-    output reg [2:0] alu_control,   // 3-bit ALU op select (matches alu.v)
+    output reg [2:0] alu_control,
 
     output reg alu_src,
     output reg mem_to_reg,
@@ -20,15 +20,15 @@ module control_unit (
     always @(*) begin
 
         // Default values
-        pc_enable    = 1'b1;
-        reg_write    = 1'b0;
-        mem_read     = 1'b0;
-        mem_write    = 1'b0;
+        pc_enable     = 1'b1;
+        reg_write     = 1'b0;
+        mem_read      = 1'b0;
+        mem_write     = 1'b0;
 
-        alu_control  = 3'b000;
+        alu_control   = 3'b000;
 
-        alu_src      = 1'b0;
-        mem_to_reg   = 1'b0;
+        alu_src       = 1'b0;
+        mem_to_reg    = 1'b0;
 
         branch_enable = 1'b0;
         jump_enable   = 1'b0;
@@ -78,19 +78,19 @@ module control_unit (
                 jump_enable = 1'b1;
             end
 
-            // AND  (R-type: rd, rs, rt)
+            // AND
             4'b1000: begin
                 reg_write   = 1'b1;
                 alu_control = 3'b010;
             end
 
-            // OR   (R-type: rd, rs, rt)
+            // OR
             4'b1001: begin
                 reg_write   = 1'b1;
                 alu_control = 3'b011;
             end
 
-            // XOR  (R-type: rd, rs, rt)
+            // XOR
             4'b1010: begin
                 reg_write   = 1'b1;
                 alu_control = 3'b100;

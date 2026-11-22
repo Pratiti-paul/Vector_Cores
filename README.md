@@ -2,10 +2,9 @@
 
 ## Design and Implementation of an Instruction and Data Memory Hierarchy Using Harvard Architecture
 
-A Verilog HDL implementation of a simplified **16-bit, single-cycle processor** based on Harvard Architecture. The processor uses separate instruction and data memories and supports arithmetic, logical (AND/OR/XOR), memory-access, conditional-branch, jump, and halt instructions.
+A Verilog HDL implementation of a simplified **16-bit, single-cycle processor** based on Harvard Architecture. The processor uses separate instruction and data memories and supports arithmetic, logical, memory-access, conditional-branch, jump, and halt instructions.
 
-**Course:** MCA Computer Architecture  
-
+**Course:** MCA Computer Architecture
 
 ---
 
@@ -13,13 +12,16 @@ A Verilog HDL implementation of a simplified **16-bit, single-cycle processor** 
 
 Vector Cores is an educational processor implemented using Verilog HDL (IEEE 1364-2001). It follows Harvard Architecture, with separate instruction and data memories and independent memory paths. The processor uses a single-cycle execution model: each completed instruction executes in one clock cycle.
 
-Project objectives:
+### Project objectives
+
 - Design a modular processor architecture.
 - Implement instruction fetching and opcode decoding.
-- Perform register operations, 8-bit arithmetic, and bitwise logic (AND, OR, XOR).
+- Perform register operations and 8-bit arithmetic and logical operations.
 - Support data-memory reads and writes.
 - Implement conditional branches, jumps, and HALT.
-- Verify behavior with Verilog testbenches.
+- Extend the instruction set with AND, OR, and XOR operations.
+- Assemble symbolic assembly programs into machine-code instructions.
+- Verify module-level and processor-level behavior with Verilog testbenches.
 - Analyze the synthesized logic using Yosys.
 - Compare the Harvard design against a Von Neumann (shared-memory) baseline.
 
@@ -36,6 +38,7 @@ Project objectives:
 | Instruction Memory | 16 × 16 bits |
 | Data Memory | 16 × 8 bits |
 | Register File | 4 × 8-bit registers (`R0`–`R3`) |
+| ALU control | 3 bits |
 | Clock edge | Rising edge (`posedge clk`) |
 | Reset | Active-high synchronous reset |
 
@@ -44,40 +47,61 @@ Project objectives:
 ## 3. System Architecture
 
 ### 3.1 Program Counter (`program_counter`)
+
 - Maintains the current instruction address using a 4-bit register.
 - Updates to the selected next address when enabled.
 - Supports sequential execution, branches, and jumps.
 - Holds its value when HALT disables the PC.
 
 ### 3.2 Instruction Memory (`instruction_memory`)
+
 - Stores 16 instructions, each 16 bits wide.
 - Uses combinational (asynchronous) reads.
 - Initializes its contents from `program.hex` using `$readmemh`.
 
 ### 3.3 Control Unit (`control_unit`)
-Decodes the 4-bit opcode and generates control signals for register writes, memory operations, ALU selection, write-back selection, branches, jumps, PC enable, and HALT. It drives a 3-bit `alu_control` that matches the ALU: `000` ADD, `001` SUB, `010` AND, `011` OR, `100` XOR. Unused opcodes stop the PC.
+
+Decodes the 4-bit opcode and generates control signals for register writes, memory operations, ALU selection, write-back selection, branches, jumps, PC enable, and HALT. The Phase II Control Unit supports all 11 instructions listed in Section 4 and uses a 3-bit ALU control signal.
 
 ### 3.4 Register File (`register_file`)
+
 - Four 8-bit registers (`R0`–`R3`).
 - Two combinational read ports and one synchronous write port.
 - Reads from `R0` return zero; writes to `R0` are blocked.
 
 ### 3.5 Arithmetic Logic Unit (`alu`)
-- Supports addition, subtraction, and bitwise AND, OR, and XOR (3-bit `alu_control`).
+
+- Supports addition and subtraction.
+- Supports bitwise AND, OR, and XOR.
 - Produces an 8-bit result and a zero flag.
-- Arithmetic wraps modulo 256.
+- Arithmetic results wrap modulo 256.
+
+The 3-bit ALU control mapping is:
+
+| ALU control | Operation |
+|---|---|
+| `000` | ADD |
+| `001` | SUB |
+| `010` | AND |
+| `011` | OR |
+| `100` | XOR |
+| `101`–`111` | Reserved (default result: `8'h00`) |
 
 ### 3.6 Data Memory (`data_memory`)
+
 - Contains 16 locations of 8 bits each.
 - Supports combinational reads and synchronous writes.
 - Synchronously clears all locations during reset.
 - Instantiates the 4-to-16 Address Decoder internally.
 
 ### 3.7 Address Decoder (`address_decoder`)
+
 Implements a 4-to-16 one-hot decoder. It is instantiated inside Data Memory, not as a separate top-level datapath module.
 
 ### 3.8 Next-PC Selection
+
 The Top Module selects the next PC from:
+
 - Sequential execution: `PC + 1`.
 - Conditional branch: `PC + 1 + signed_offset`.
 - Jump: absolute 4-bit target.
@@ -93,7 +117,7 @@ The diagram is stored at [`docs/architecture/block_diagram.png`](docs/architectu
 
 ## 4. Supported Instruction Set
 
-All instructions are 16 bits wide. The opcode occupies bits `[15:12]`.
+All instructions are 16 bits wide. The opcode occupies bits `[15:12]`. The processor supports 11 instructions:
 
 | Instruction | Opcode | Operation |
 |---|---:|---|
@@ -101,12 +125,12 @@ All instructions are 16 bits wide. The opcode occupies bits `[15:12]`.
 | `STORE` | `0010` | `DMEM[address] = R[rs]` |
 | `ADD` | `0011` | `R[rd] = R[rs] + R[rt]` |
 | `SUB` | `0100` | `R[rd] = R[rs] - R[rt]` |
-| `ADDI` | `0101` | `R[rd] = R[rs] + immediate` |
+| `ADDI` | `0101` | `R[rd] = R[rs] + signed_immediate` |
 | `BEQ` | `0110` | Branch if `R[rs] == R[rt]` |
 | `JUMP` | `0111` | `PC = target` |
-| `AND` | `1000` | `R[rd] = R[rs] & R[rt]` |
-| `OR` | `1001` | `R[rd] = R[rs] \| R[rt]` |
-| `XOR` | `1010` | `R[rd] = R[rs] ^ R[rt]` |
+| `AND` | `1000` | `R[rd] = R[rs] & R[rt]` (Bitwise AND) |
+| `OR` | `1001` | `R[rd] = R[rs] \| R[rt]` (Bitwise OR) |
+| `XOR` | `1010` | `R[rd] = R[rs] ^ R[rt]` (Bitwise XOR) |
 | `HALT` | `1111` | Disable PC updates and assert `halted` |
 
 ### 4.1 Instruction Encoding
@@ -115,24 +139,52 @@ All instructions are 16 bits wide. The opcode occupies bits `[15:12]`.
 |---|---|
 | `LOAD` | `[15:12]` opcode, `[11:10]` `rd`, `[9:6]` address, `[5:0]` zero |
 | `STORE` | `[15:12]` opcode, `[11:10]` `rs`, `[9:6]` address, `[5:0]` zero |
-| `ADD` / `SUB` / `AND` / `OR` / `XOR` | `[15:12]` opcode, `[11:10]` `rd`, `[9:8]` `rs`, `[7:6]` `rt`, `[5:0]` zero |
+| `ADD` / `SUB` | `[15:12]` opcode, `[11:10]` `rd`, `[9:8]` `rs`, `[7:6]` `rt`, `[5:0]` zero |
+| `AND` / `OR` / `XOR` | `[15:12]` opcode, `[11:10]` `rd`, `[9:8]` `rs`, `[7:6]` `rt`, `[5:0]` zero |
 | `ADDI` | `[15:12]` opcode, `[11:10]` `rd`, `[9:8]` `rs`, `[7:0]` signed immediate |
 | `BEQ` | `[15:12]` opcode, `[11:10]` `rs`, `[9:8]` `rt`, `[7:0]` signed offset |
 | `JUMP` | `[15:12]` opcode, `[11:4]` zero, `[3:0]` target |
 | `HALT` | `[15:12]` opcode, `[11:0]` zero |
 
-The `BEQ` offset is signed and added to `PC + 1`; the resulting target is truncated to 4 bits. `JUMP` uses an absolute 4-bit target address.
+The `BEQ` offset is signed and added to `PC + 1`; the resulting target is truncated to 4 bits. `JUMP` uses an absolute 4-bit target address. The three logical instructions use the same R-type field layout as `ADD` and `SUB`.
+
+### 4.2 ALU Control Encoding (3-Bit)
+
+The ALU and Control Unit communicate using a dedicated 3-bit control bus (`alu_control[2:0]`):
+
+| `alu_control` | Operation | Associated Instructions |
+|:---:|---|---|
+| `3'b000` | Addition (`alu_in1 + alu_in2`) | `ADD`, `ADDI` |
+| `3'b001` | Subtraction (`alu_in1 - alu_in2`) | `SUB`, `BEQ` |
+| `3'b010` | Bitwise AND (`alu_in1 & alu_in2`) | `AND` |
+| `3'b011` | Bitwise OR (`alu_in1 \| alu_in2`) | `OR` |
+| `3'b100` | Bitwise XOR (`alu_in1 ^ alu_in2`) | `XOR` |
+| Other | Default zero (`8'h00`) | Invalid opcodes / Safe default |
 
 ## 5. Repository Structure
 
 ```text
 Vector_Cores/
-├── .gitignore
 ├── README.md
 ├── program.hex
-├── instruction_memory.vcd
-├── data_memory.vcd
-├── processor.vcd
+├── assembler/
+│   ├── __init__.py
+│   ├── __main__.py
+│   ├── assembler.py
+│   ├── encoder.py
+│   ├── instructions.py
+│   ├── parser.py
+│   ├── validator.py
+│   └── samples/
+│       ├── basic_alu.asm
+│       ├── branch_jump.asm
+│       └── logical_ops.asm
+├── tests/
+│   ├── __init__.py
+│   ├── test_assembler.py
+│   ├── test_encoder.py
+│   ├── test_parser.py
+│   └── test_validation.py
 ├── rtl/
 │   ├── address_decoder.v
 │   ├── alu.v
@@ -146,7 +198,9 @@ Vector_Cores/
 │       ├── unified_memory.v
 │       └── vn_top_module.v
 ├── testbench/
+│   ├── address_decoder_tb.v
 │   ├── alu_tb.v
+│   ├── address_decoder_tb.v
 │   ├── boundary_reset_tb.v
 │   ├── control_flow_tb.v
 │   ├── control_unit_tb.v
@@ -157,10 +211,16 @@ Vector_Cores/
 │   ├── processor_tb.v
 │   ├── program_counter_tb.v
 │   └── register_file_tb.v
+├── assembler/
+│   ├── assembler.py
+│   └── samples/
+├── tests/
 ├── simulation/
+│   ├── logical_ops_assembled.hex
 │   ├── logs/
 │   │   ├── yosys_synthesis.log
-│   │   └── yosys_synthesis_final.log
+│   │   ├── yosys_synthesis_final.log
+│   │   └── yosys_synthesis_phase2.log
 │   └── waveforms/
 │       ├── boundary_reset_wave.vcd
 │       ├── control_flow_wave.vcd
@@ -169,22 +229,29 @@ Vector_Cores/
 │       └── processor_wave.vcd
 ├── docs/
 │   ├── architecture_comparison.md
+│   ├── assembler_design.md
+│   ├── data_memory_verification.md
 │   ├── architecture/
 │   │   └── block_diagram.png
-│   └── report/
-│       └── individual_contribution_report.md
+│   ├── report/
+│   │   ├── Final Report.pdf
+│   │   └── individual_contribution_report.md
+│   └── Video/
+│       └── video.md
 └── synthesis/
     └── results.md
 ```
+
+This is a high-level guide to the repository. Some generated logs, waveforms, and supporting files may be present in addition to the paths shown above.
 
 ## 6. Team Members and Individual Contributions
 
 | Team member | Responsibilities |
 |---|---|
-| **Pratiti Paul** | Implemented the Program Counter and Control Unit; developed the Top Module; processor-level verification, waveform analysis, and synthesis. |
-| **Anuradha Raghuwanshi** | Implemented Instruction Memory, developed its testbench, and prepared `program.hex`. |
-| **Ganga** | Implemented Data Memory and the 4-to-16 Address Decoder, along with its testbench. |
-| **Alisha Gupta** | Implemented the ALU and Register File and developed their respective testbenches. |
+| **Pratiti Paul** | Implemented the Program Counter and Control Unit; developed the Top Module; handled processor integration, processor-level verification, waveform analysis, and synthesis. |
+| **Anuradha Raghuwanshi** | Implemented Instruction Memory and its testbench; prepared the Phase I program image; developed the Phase II Python two-pass assembler, assembler tests, and sample assembly programs. |
+| **Ganga Raghuwanshi** | Implemented Data Memory and the 4-to-16 Address Decoder; developed expanded memory and decoder verification. |
+| **Alisha Gupta** | Implemented the ALU and Register File; extended the ALU with AND, OR, and XOR operations and developed the related testbenches. |
 
 The modules were integrated collaboratively, with team members coordinating interfaces and reviewing processor behavior.
 
@@ -193,16 +260,17 @@ The modules were integrated collaboratively, with team members coordinating inte
 | Tool / Technology | Purpose |
 |---|---|
 | Verilog HDL (IEEE 1364-2001) | Hardware description and RTL implementation |
-| Icarus Verilog | Compilation and functional simulation |
+| Icarus Verilog (`iverilog`, `vvp`) | Compilation and functional simulation |
+| Python 3 & pytest | 2-pass Python Assembler implementation and test suite |
 | GTKWave | VCD waveform visualization |
-| Yosys 0.70 | Generic synthesis and Xilinx 7-Series technology mapping |
-| Git and GitHub | Version control and collaboration |
+| Yosys 0.70 | Generic logic synthesis and structural verification |
+| Git and GitHub | Version control and team branch management |
 
 ## 8. Getting Started
 
 ### 8.1 Prerequisites
 
-Install Git, Icarus Verilog (`iverilog` and `vvp`), GTKWave (optional, for waveform viewing), and Yosys (for synthesis).
+Install Git, Icarus Verilog (`iverilog` and `vvp`), Python 3 and pytest, GTKWave (optional, for waveform viewing), and Yosys (for synthesis).
 
 ### 8.2 Clone the Repository
 
@@ -211,134 +279,126 @@ git clone https://github.com/Pratiti-paul/Vector_Cores.git
 cd Vector_Cores
 ```
 
-### 8.3 Compile and Run the Processor Integration Test
+### 8.3 Python Assembler Workflow
+
+The repository includes a standalone two-pass Python assembler in `assembler/`:
+
+```bash
+# Assemble an assembly source file into a 16-line hex file for instruction memory:
+python3 -m assembler.assembler assembler/samples/logical_ops.asm -o simulation/logical_ops_assembled.hex
+
+# Run the full assembler test suite (203 tests):
+pytest tests/
+```
+
+### 8.4 Compile and Run the Processor Integration Test
 
 Run from the repository root because Instruction Memory loads `program.hex` using a relative path.
 
 ```bash
-iverilog -s processor_tb -o proc_test \
-  rtl/top_module.v rtl/program_counter.v rtl/instruction_memory.v \
-  rtl/control_unit.v rtl/register_file.v rtl/alu.v \
-  rtl/data_memory.v rtl/address_decoder.v \
-  testbench/processor_tb.v
-
+iverilog -g2012 -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v
 vvp proc_test
 rm -f proc_test
 ```
 
-### 8.4 Run All Nine Testbenches
+### 8.5 Run All Twelve Verilog Testbenches (Full Regression)
 
-This regression command runs the nine testbenches in sequence. Each subsequent test runs only if the preceding command succeeds.
+This regression command runs all twelve testbenches sequentially:
 
 ```bash
-iverilog -s program_counter_tb -o pc_test rtl/program_counter.v testbench/program_counter_tb.v && vvp pc_test && rm -f pc_test && \
-iverilog -s control_unit_tb -o control_test rtl/control_unit.v testbench/control_unit_tb.v && vvp control_test && rm -f control_test && \
-iverilog -s instruction_memory_tb -o imem_test rtl/instruction_memory.v testbench/instruction_memory_tb.v && vvp imem_test && rm -f imem_test && \
-iverilog -s data_memory_tb -o dmem_test rtl/address_decoder.v rtl/data_memory.v testbench/data_memory_tb.v && vvp dmem_test && rm -f dmem_test && \
-iverilog -s alu_tb -o alu_test rtl/alu.v testbench/alu_tb.v && vvp alu_test && rm -f alu_test && \
-iverilog -s register_file_tb -o rf_test rtl/register_file.v testbench/register_file_tb.v && vvp rf_test && rm -f rf_test && \
-iverilog -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v && vvp proc_test && rm -f proc_test && \
-iverilog -s control_flow_tb -o cf_test rtl/*.v testbench/control_flow_tb.v && vvp cf_test && rm -f cf_test && \
-iverilog -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v && vvp br_test && rm -f br_test
+iverilog -g2012 -s program_counter_tb -o pc_test rtl/program_counter.v testbench/program_counter_tb.v && vvp pc_test && rm -f pc_test && \
+iverilog -g2012 -s control_unit_tb -o control_test rtl/control_unit.v testbench/control_unit_tb.v && vvp control_test && rm -f control_test && \
+iverilog -g2012 -s instruction_memory_tb -o imem_test rtl/instruction_memory.v testbench/instruction_memory_tb.v && vvp imem_test && rm -f imem_test && \
+iverilog -g2012 -s address_decoder_tb -o dec_test rtl/address_decoder.v testbench/address_decoder_tb.v && vvp dec_test && rm -f dec_test && \
+iverilog -g2012 -s data_memory_tb -o dmem_test rtl/address_decoder.v rtl/data_memory.v testbench/data_memory_tb.v && vvp dmem_test && rm -f dmem_test && \
+iverilog -g2012 -s alu_tb -o alu_test rtl/alu.v testbench/alu_tb.v && vvp alu_test && rm -f alu_test && \
+iverilog -g2012 -s register_file_tb -o rf_test rtl/register_file.v testbench/register_file_tb.v && vvp rf_test && rm -f rf_test && \
+iverilog -g2012 -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v && vvp proc_test && rm -f proc_test && \
+iverilog -g2012 -s control_flow_tb -o cf_test rtl/*.v testbench/control_flow_tb.v && vvp cf_test && rm -f cf_test && \
+iverilog -g2012 -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v && vvp br_test && rm -f br_test && \
+iverilog -g2012 -s logical_ops_tb -o log_test rtl/*.v testbench/logical_ops_tb.v && vvp log_test && rm -f log_test && \
+iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v && vvp cmp_test && rm -f cmp_test
 ```
 
-### 8.5 Individual Testbench Commands
+### 8.6 Individual Testbench Commands
 
 | Testbench | Compile command | Run command |
 |---|---|---|
-| Program Counter | `iverilog -s program_counter_tb -o pc_test rtl/program_counter.v testbench/program_counter_tb.v` | `vvp pc_test` |
-| Control Unit | `iverilog -s control_unit_tb -o control_test rtl/control_unit.v testbench/control_unit_tb.v` | `vvp control_test` |
-| Instruction Memory | `iverilog -s instruction_memory_tb -o imem_test rtl/instruction_memory.v testbench/instruction_memory_tb.v` | `vvp imem_test` |
-| Data Memory | `iverilog -s data_memory_tb -o dmem_test rtl/address_decoder.v rtl/data_memory.v testbench/data_memory_tb.v` | `vvp dmem_test` |
-| ALU | `iverilog -s alu_tb -o alu_test rtl/alu.v testbench/alu_tb.v` | `vvp alu_test` |
-| Register File | `iverilog -s register_file_tb -o rf_test rtl/register_file.v testbench/register_file_tb.v` | `vvp rf_test` |
-| Processor | `iverilog -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v` | `vvp proc_test` |
-| Control Flow | `iverilog -s control_flow_tb -o cf_test rtl/*.v testbench/control_flow_tb.v` | `vvp cf_test` |
-| Boundary and Reset | `iverilog -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v` | `vvp br_test` |
-| Logical Instructions | `iverilog -s logical_ops_tb -o logic_test rtl/*.v rtl/baseline/*.v testbench/logical_ops_tb.v` | `vvp logic_test` |
-| Harvard vs Von Neumann | `iverilog -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v` | `vvp cmp_test` |
-
-### 8.6 Run the Harvard vs Von Neumann Comparison
-
-This test runs the same programs on the Harvard processor and on the Von Neumann baseline. It checks that both reach the same final state and reports cycles, CPI, and speed-up. Run it from the repository root.
-
-```bash
-iverilog -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v && vvp cmp_test && rm -f cmp_test
-```
+| Program Counter | `iverilog -g2012 -s program_counter_tb -o pc_test rtl/program_counter.v testbench/program_counter_tb.v` | `vvp pc_test` |
+| Control Unit | `iverilog -g2012 -s control_unit_tb -o control_test rtl/control_unit.v testbench/control_unit_tb.v` | `vvp control_test` |
+| Instruction Memory | `iverilog -g2012 -s instruction_memory_tb -o imem_test rtl/instruction_memory.v testbench/instruction_memory_tb.v` | `vvp imem_test` |
+| Address Decoder | `iverilog -g2012 -s address_decoder_tb -o dec_test rtl/address_decoder.v testbench/address_decoder_tb.v` | `vvp dec_test` |
+| Data Memory | `iverilog -g2012 -s data_memory_tb -o dmem_test rtl/address_decoder.v rtl/data_memory.v testbench/data_memory_tb.v` | `vvp dmem_test` |
+| ALU | `iverilog -g2012 -s alu_tb -o alu_test rtl/alu.v testbench/alu_tb.v` | `vvp alu_test` |
+| Register File | `iverilog -g2012 -s register_file_tb -o rf_test rtl/register_file.v testbench/register_file_tb.v` | `vvp rf_test` |
+| Processor Integration | `iverilog -g2012 -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v` | `vvp proc_test` |
+| Control Flow | `iverilog -g2012 -s control_flow_tb -o cf_test rtl/*.v testbench/control_flow_tb.v` | `vvp cf_test` |
+| Boundary and Reset | `iverilog -g2012 -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v` | `vvp br_test` |
+| Logical Operations | `iverilog -g2012 -s logical_ops_tb -o log_test rtl/*.v testbench/logical_ops_tb.v` | `vvp log_test` |
+| Harvard vs Von Neumann | `iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v` | `vvp cmp_test` |
 
 ## 9. Verification and Testing
 
-Twelve testbenches are used: nine module- and processor-level testbenches, the address-decoder testbench, the logical-instruction testbench, and the Harvard vs Von Neumann comparison testbench (see [Section 13.1](#131-harvard-vs-von-neumann-shared-memory-comparison)).
+Twelve dedicated Verilog testbenches plus an automated Python pytest suite provide comprehensive coverage.
 
-The counts below are **automated checks**: comparisons against an expected value that the testbench evaluates itself and reports as pass or fail. They were measured by running every testbench with Icarus Verilog.
+| Testbench | Level | Checks passed | Failed | Status |
+|---|---|---:|---:|:---:|
+| `program_counter_tb.v` | Unit | 35 | 0 | **PASS** |
+| `instruction_memory_tb.v` | Unit | 16 | 0 | **PASS** |
+| `register_file_tb.v` | Unit | 6 | 0 | **PASS** |
+| `alu_tb.v` | Unit | 13 | 0 | **PASS** |
+| `address_decoder_tb.v` | Unit | 40 | 0 | **PASS** |
+| `data_memory_tb.v` | Unit | 79 | 0 | **PASS** |
+| `control_unit_tb.v` | Unit | 130 | 0 | **PASS** |
+| `processor_tb.v` | System | 7 | 0 | **PASS** |
+| `control_flow_tb.v` | System | 13 | 0 | **PASS** |
+| `boundary_reset_tb.v` | System | 15 | 0 | **PASS** |
+| `logical_ops_tb.v` | System | 56 | 0 | **PASS** |
+| `harvard_vs_vn_tb.v` | Comparison | 151 | 0 | **PASS** |
+| **Total Verilog Checks** | — | **561** | **0** | **100% PASS** |
+| **Python Assembler (`pytest`)** | Tool | **203** | **0** | **100% PASS** |
 
-| Testbench | Automated checks passed | Failed | Notes |
-|---|---:|---:|---|
-| Program Counter | 35 | 0 | Reset, sequential update, jump, hold, all 16 addresses, 15 → 0 wraparound, synchronous reset, and reset priority over enable |
-| Control Unit | 32 | 0 | All 11 control outputs checked against a reference decode table for all 16 opcodes, in forward and reverse order |
-| Instruction Memory | 43 | 0 | 16 locations, 3 non-sequential reads, 8 HALT fills, 16 format checks |
-| Data Memory | 79 | 0 | |
-| Address Decoder | 40 | 0 | |
-| ALU | 13 | 0 | ADD, SUB, AND, OR, XOR, and the zero flag |
-| Register File | 6 | 0 | |
-| Processor Integration | 7 | 0 | |
-| Control Flow | 13 | 0 | |
-| Boundary and Reset | 15 | 0 | |
-| Logical Instructions (AND/OR/XOR) | 28 | 0 | Harvard and Von Neumann cores |
-| Harvard vs Von Neumann Comparison | 151 | 0 | |
-| **Total** | **462** | **0** | |
+### 9.2 Python Assembler Tests
 
-### 9.1 Verification Coverage
+The recorded Python assembler test suite completed **203 tests with 0 failures** using pytest.
+
+### 9.3 Verification Coverage
 
 Testing covers:
+
 - Individual module functionality.
 - Instruction fetching and decoding.
-- Arithmetic operations.
-- Register-file read and write behavior.
-- Data-memory reads and writes.
+- Addition, subtraction, and immediate arithmetic.
+- Bitwise AND, OR, and XOR operations.
+- Register-file read and write behavior, including hardwired `R0`.
+- Data-memory reads, writes, and address decoding.
 - Branch taken and not-taken conditions.
 - Forward and backward branch offsets.
 - Jump execution.
 - HALT behavior and PC freeze.
 - Negative branch offsets and PC wraparound.
 - Reset behavior across processor components.
+- Assembler parsing, label resolution, instruction encoding, and sample programs.
+- Execution of assembler-generated logical-operation machine code on the processor.
+- Equivalence of the Harvard processor and the Von Neumann baseline, with measured cycle counts.
 
-### 9.2 Processor-Level Test Program
+### 9.4 Logical-Operations Integration Example
 
-The program in `program.hex` performs the following operations:
+The Phase II logical-operations system test exercises AND, OR, and XOR through the integrated processor. The recorded example initializes `R1 = 12` and `R2 = 10`, then checks:
 
-| Address | Hex | Assembly | Result |
-|---:|---:|---|---|
-| `0x0` | `5405` | `ADDI R1, R0, 5` | `R1 = 5` |
-| `0x1` | `5803` | `ADDI R2, R0, 3` | `R2 = 3` |
-| `0x2` | `3580` | `ADD R1, R1, R2` | `R1 = 8` |
-| `0x3` | `2480` | `STORE R1, [2]` | `DMEM[2] = 8` |
-| `0x4` | `4580` | `SUB R1, R1, R2` | `R1 = 5` |
-| `0x5` | `1C80` | `LOAD R3, [2]` | `R3 = 8` |
-| `0x6` | `5F01` | `ADDI R3, R3, 1` | `R3 = 9` |
-| `0x7` | `F000` | `HALT` | `PC = 7`, `halted = 1` |
-
-Locations `0x8`–`0xF` contain `F000` (HALT).
-
-**Expected final architectural state:**
-
-| Component | Expected value |
+| Operation | Expected result |
 |---|---:|
-| `R0` | 0 |
-| `R1` | 5 |
-| `R2` | 3 |
-| `R3` | 9 |
-| `DMEM[2]` | 8 |
-| Program Counter | 7 |
-| `halted` | 1 |
+| `12 AND 10` | 8 |
+| `12 OR 10` | 14 |
+| `12 XOR 10` | 6 |
 
-The processor-level test verifies these values and confirms that the PC remains at 7 after HALT.
+The system test also checks register write-back, zero-result behavior, the hardwired-zero register, and HALT/PC-freeze behavior. The recorded logical-operations testbench reported 56 checks passed and 0 failures.
 
 ## 10. Synthesis and Resource Analysis
 
-The complete processor hierarchy was synthesized using **Yosys 0.70**, with `top_module` as the top-level module.
+The complete processor hierarchy was synthesized using Yosys with `top_module` as the top-level module.
 
-### 10.1 Generic Synthesis Command
+### 10.1 Generic Synthesis Flow
 
 Run from the repository root:
 
@@ -352,40 +412,50 @@ memory
 opt
 check
 stat
-" | tee simulation/logs/yosys_synthesis_final.log
+" | tee simulation/logs/yosys_synthesis_phase2.log
 ```
 
-The recorded structural check reported:
+The recorded Phase II generic synthesis report states:
 
 ```text
+Checking module top_module...
+Checking module data_memory...
+Checking module address_decoder...
+Checking module alu...
+Checking module register_file...
+Checking module control_unit...
+Checking module instruction_memory...
+Checking module program_counter...
 Found and reported 0 problems.
 ```
 
-### 10.2 Generic Cell Statistics
+### 10.2 Generic Cell Statistics (Phase II vs Phase I)
 
-| Cell type | Count |
-|---|---:|
-| `$mux` | 47 |
-| `$eq` | 18 |
-| `$sdffe` | 17 |
-| `$and` | 9 |
-| `$logic_not` | 5 |
-| `$reduce_bool` | 5 |
-| `$dffe` | 4 |
-| `$add` | 3 |
-| `$not` | 2 |
-| `$pmux` | 2 |
-| `$shl` | 1 |
-| `$sub` | 1 |
-| `$logic_and` | 1 |
-| `$logic_or` | 1 |
-| **Total generic cells** | **116** |
+| Cell type | Phase I Count | Phase II Count | Description |
+|---|---:|---:|---|
+| `$mux` | 47 | 50 | Multiplexers (datapath steering & control) |
+| `$eq` | 18 | 21 | Equality comparators (branch evaluation, decoding) |
+| `$sdffe` | 17 | 17 | Synchronous D-FF with reset & enable (16 DMEM + 1 PC) |
+| `$and` | 9 | 10 | Bitwise AND gates |
+| `$logic_not` | 5 | 5 | Logical inverters |
+| `$reduce_bool` | 5 | 5 | Reduction boolean gates |
+| `$dffe` | 4 | 4 | Register file D-flip-flops |
+| `$add` | 3 | 3 | 8-bit / 4-bit adders |
+| `$not` | 2 | 2 | Bitwise NOT gates |
+| `$pmux` | 2 | 2 | Parallel multiplexers |
+| `$sub` | 1 | 1 | 8-bit subtractor |
+| `$xor` | 0 | 1 | Bitwise XOR logic gate (ALU) |
+| `$or` | 0 | 1 | Bitwise OR logic gate (ALU) |
+| `$shl` | 1 | 1 | Shift-left decoder logic |
+| `$logic_and` | 1 | 1 | Logical AND |
+| `$logic_or` | 1 | 1 | Logical OR |
+| **Total generic cells** | **116** | **125** | Complete generic synthesized cell count |
 
-The report also recorded 186 wires (939 wire bits), 107 public wires (540 public wire bits), and 50 ports (191 port bits).
+The Phase II netlist contains 195 wires (1,025 wire bits), 107 public wires (543 public wire bits), and 50 ports (193 port bits).
 
-### 10.3 Xilinx 7-Series Technology Mapping
+### 10.3 Xilinx 7-Series Technology Mapping (Baseline Estimate)
 
-The technical audit recorded the following technology-mapping results for the AMD Xilinx 7-Series family (`xc7`):
+The baseline technical audit recorded the following technology-mapping results for the AMD Xilinx 7-Series family (`xc7`):
 
 | Resource | Count |
 |---|---:|
@@ -397,13 +467,15 @@ The technical audit recorded the following technology-mapping results for the AM
 | Output buffers (`OBUF`) | 38 |
 | Estimated logic cells | 170 |
 
-The reported register breakdown is 128 Data Memory bits, 24 writable Register File bits (`R1`–`R3`), and 4 Program Counter bits. The LUT breakdown is LUT2: 14, LUT3: 28, LUT4: 32, LUT5: 85, and LUT6: 25.
+The reported register breakdown is 128 Data Memory bits, 24 writable Register File bits (`R1`–`R3`), and 4 Program Counter bits.
 
-**Reproducibility note:** These are technology-mapping results recorded by the project audit, not measured board utilization or timing results. The audit did not provide the exact `synth_xilinx` command or a separate target-mapping log path, so those details are not specified here.
+**Reproducibility note:** These are technology-mapping results recorded by the project audit, not measured board utilization or timing results.
 
 ### 10.4 Memory Mapping Observation
 
-Yosys reported that the Data Memory array was replaced with a list of registers. The implementation synchronously clears all 16 memory locations during reset, so the reported generic synthesis flow maps the storage to registers rather than conventional block RAM.
+Yosys reported:
+`Warning: Replacing memory \mem with list of registers. See rtl/data_memory.v:45`
+The implementation synchronously clears all 16 memory locations during reset, so generic synthesis maps the storage to registers rather than conventional block RAM.
 
 ## 11. Waveform Archives
 
@@ -415,27 +487,29 @@ Yosys reported that the Data Memory array was replaced with a list of registers.
 | Processor (archived) | `simulation/waveforms/processor_wave.vcd` | `processor_tb.v` |
 | Control Flow | `simulation/waveforms/control_flow_wave.vcd` | `control_flow_tb.v` |
 | Boundary and Reset | `simulation/waveforms/boundary_reset_wave.vcd` | `boundary_reset_tb.v` |
+| Logical Operations | `simulation/waveforms/logical_ops_wave.vcd` | `logical_ops_tb.v` |
 | Harvard vs Von Neumann | `simulation/waveforms/harvard_vs_vn_wave.vcd` | `harvard_vs_vn_tb.v` |
-| Logical Instructions | `simulation/waveforms/logical_ops_wave.vcd` | `logical_ops_tb.v` |
 
 Open the archived system-level waveforms using GTKWave:
 
 ```bash
-gtkwave simulation/waveforms/processor_wave.vcd
+gtkwave simulation/waveforms/logical_ops_wave.vcd
 gtkwave simulation/waveforms/control_flow_wave.vcd
 gtkwave simulation/waveforms/boundary_reset_wave.vcd
+gtkwave simulation/waveforms/logical_ops_wave.vcd
 gtkwave simulation/waveforms/harvard_vs_vn_wave.vcd
 ```
 
+Waveform files are generated simulation artifacts. Their availability depends on which simulations have been run and which artifacts are included in the repository.
+
 ## 12. Limitations and Future Improvements
 
-1. **Data Memory mapping:** Synchronous reset clears all memory locations in one clock cycle. The reported synthesis flow therefore maps the memory to registers instead of conventional block RAM.
+1. **Data Memory mapping:** Synchronous reset clears all memory locations. The reported synthesis flow therefore maps the memory to registers instead of conventional block RAM.
 2. **Asynchronous Instruction Memory:** Instruction Memory uses combinational reads. A different implementation may be needed for FPGA block RAM configurations.
 3. **Relative program-file path:** Instruction Memory loads `program.hex` using a relative path. Run simulations from the repository root.
 4. **Small address space:** The 4-bit address buses limit instruction and data memories to 16 locations each.
-5. **Instruction set:** The processor currently supports eleven instructions. Additional arithmetic, shift, and control-flow instructions could be added.
-6. **Datapath capacity:** Future versions could increase data width, register count, and memory capacity.
-7. **Further hardware characterization:** Board-level testing, maximum-frequency measurement, critical-path timing analysis, and power measurement remain future work.
+5. **Datapath capacity:** Future versions could increase data width, register count, and memory capacity.
+6. **Further hardware characterization:** Board-level testing, maximum-frequency measurement, critical-path timing analysis, and power measurement remain future work.
 
 ## 13. Performance Metrics
 
@@ -470,12 +544,7 @@ The full comparison, including the memory map, FSM diagram, analysis, and wavefo
 
 ## 14. Conclusion
 
-Vector Cores demonstrates the design and implementation of a simplified single-cycle processor using Harvard Architecture and Verilog HDL. The implementation integrates instruction fetching, decoding, register operations, arithmetic processing, data-memory access, and control-flow management.
+Vector Cores demonstrates the design and implementation of a modular single-cycle processor using Harvard Architecture and Verilog HDL. The implementation integrates instruction fetching, decoding, register operations, arithmetic and bitwise logical processing, data-memory access, and control-flow management. It also includes a Python two-pass assembler for translating assembly programs into machine code.
 
-Twelve testbenches completed **462 automated checks with zero failures**. A Von Neumann shared-memory baseline was added for comparison: the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles (151 comparison checks, zero failures). Generic synthesis using Yosys reported **116 cells** and zero structural problems. The project also records Xilinx 7-Series technology-mapping results.
-
-## 15. Individual Contributions Report
-
-The detailed contribution report is available at [`docs/report/individual_contribution_report.md`](docs/report/individual_contribution_report.md).
-
+Twelve dedicated testbenches completed **561 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. A Von Neumann shared-memory baseline shows the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. These results do not represent measured FPGA timing, power, or board utilization.
 

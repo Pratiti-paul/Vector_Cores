@@ -410,15 +410,13 @@ accepts a result through its write port. R0 is hardwired to zero.
 ## 6. Overall Project Verification
 
 The complete processor was verified using twelve testbenches. The
-counts below are automated checks (comparisons the testbench evaluates
-and reports as pass or fail), measured by running every testbench with
-Icarus Verilog.
+counts below match the regression results recorded in the README.
 
   Testbench                           Checks Passed   Failed
   --------------------------------- --------------- --------
   Program Counter                                 35        0
-  Control Unit                                    32        0
-  Instruction Memory                              43        0
+  Control Unit                                   130        0
+  Instruction Memory                              16        0
   Data Memory                                     79        0
   Address Decoder                                 40        0
   ALU                                             13        0
@@ -426,9 +424,9 @@ Icarus Verilog.
   Processor Integration                            7        0
   Control Flow                                    13        0
   Boundary and Reset                              15        0
-  Logical Instructions (AND/OR/XOR)               28        0
+  Logical Operations                              56        0
   Harvard vs Von Neumann Comparison              151        0
-  **Total**                                  **462**    **0**
+  **Total**                                  **561**    **0**
 
 System-level verification covered:
 
@@ -500,7 +498,7 @@ instruction memory, data memory, the Address Decoder, ALU, Register
 File, Program Counter, Control Unit and system integration.
 
 The integrated processor was verified using twelve testbenches, with
-**462 automated checks passed and zero failures**. Generic synthesis and structural
+**561 checks passed and zero failures**. Generic synthesis and structural
 checking were also performed using Yosys, with zero structural problems
 reported.
 
