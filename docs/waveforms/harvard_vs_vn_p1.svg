@@ -1,0 +1,151 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1334' height='630' viewBox='0 0 1334 630'>
+<rect width='100%' height='100%' fill='#ffffff'/>
+<text x='16' y='30' font-family='Menlo, Consolas, monospace' font-size='18' fill='#1f2933' text-anchor='start' font-weight='bold'>Harvard vs Von Neumann - P1 - program.hex (mixed ALU + memory)</text>
+<text x='16' y='54' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#5b6670' text-anchor='start' font-weight='normal'>Same program on both cores.  Harvard finishes in 7 cycles, Von Neumann in 9 cycles.  Values sampled mid-cycle (falling clock edge).</text>
+<rect x='568' y='198' width='106' height='136' fill='#dff3ea'/>
+<rect x='674' y='368' width='106' height='170' fill='#fbe6d6'/>
+<rect x='780' y='198' width='106' height='136' fill='#dff3ea'/>
+<rect x='992' y='368' width='106' height='170' fill='#fbe6d6'/>
+<line x1='250' y1='96' x2='250' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='356' y1='96' x2='356' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='462' y1='96' x2='462' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='568' y1='96' x2='568' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='674' y1='96' x2='674' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='780' y1='96' x2='780' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='886' y1='96' x2='886' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='992' y1='96' x2='992' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='1098' y1='96' x2='1098' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='1204' y1='96' x2='1204' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='1310' y1='96' x2='1310' y2='538' stroke='#d5dbe1' stroke-width='1'/>
+<line x1='992' y1='198' x2='992' y2='334' stroke='#1b7f5a' stroke-width='2.5' stroke-dasharray='6 4'/>
+<line x1='1204' y1='368' x2='1204' y2='538' stroke='#b4541a' stroke-width='2.5' stroke-dasharray='6 4'/>
+<text x='24' y='117.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#5b6670' text-anchor='start' font-weight='normal'>clock</text>
+<polyline points='250,123 250,103 303.0,103 303.0,123 356,123 356,123 356,103 409.0,103 409.0,123 462,123 462,123 462,103 515.0,103 515.0,123 568,123 568,123 568,103 621.0,103 621.0,123 674,123 674,123 674,103 727.0,103 727.0,123 780,123 780,123 780,103 833.0,103 833.0,123 886,123 886,123 886,103 939.0,103 939.0,123 992,123 992,123 992,103 1045.0,103 1045.0,123 1098,123 1098,123 1098,103 1151.0,103 1151.0,123 1204,123 1204,123 1204,103 1257.0,103 1257.0,123 1310,123' fill='none' stroke='#5b6670' stroke-width='1.5'/>
+<text x='24' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#5b6670' text-anchor='start' font-weight='normal'>cycle</text>
+<text x='303.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>0</text>
+<text x='409.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>1</text>
+<text x='515.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>2</text>
+<text x='621.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>3</text>
+<text x='727.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>4</text>
+<text x='833.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>5</text>
+<text x='939.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>6</text>
+<text x='1045.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>7</text>
+<text x='1151.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>8</text>
+<text x='1257.0' y='151.5' font-family='Menlo, Consolas, monospace' font-size='12' fill='#5b6670' text-anchor='middle' font-weight='normal'>9</text>
+<line x1='8' y1='194' x2='1322' y2='194' stroke='#1b7f5a' stroke-width='1.5'/>
+<text x='16' y='188' font-family='Menlo, Consolas, monospace' font-size='13.5' fill='#1b7f5a' text-anchor='start' font-weight='bold'>HARVARD (top_module)</text>
+<text x='24' y='219.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#1b7f5a' text-anchor='start' font-weight='normal'>PC / IMEM address</text>
+<polygon points='250,215.0 254,203 352,203 356,215.0 352,227 254,227' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='303.0' y='219.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>0</text>
+<polygon points='356,215.0 360,203 458,203 462,215.0 458,227 360,227' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='409.0' y='219.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>1</text>
+<polygon points='462,215.0 466,203 564,203 568,215.0 564,227 466,227' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='515.0' y='219.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>2</text>
+<polygon points='568,215.0 572,203 670,203 674,215.0 670,227 572,227' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='621.0' y='219.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>3</text>
+<polygon points='674,215.0 678,203 776,203 780,215.0 776,227 678,227' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='727.0' y='219.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>4</text>
+<polygon points='780,215.0 784,203 882,203 886,215.0 882,227 784,227' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='833.0' y='219.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>5</text>
+<polygon points='886,215.0 890,203 988,203 992,215.0 988,227 890,227' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='939.0' y='219.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>6</text>
+<polygon points='992,215.0 996,203 1306,203 1310,215.0 1306,227 996,227' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='1151.0' y='219.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>7</text>
+<text x='24' y='253.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#1b7f5a' text-anchor='start' font-weight='normal'>IMEM -&gt; instruction</text>
+<polygon points='250,249.0 254,237 352,237 356,249.0 352,261 254,261' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='303.0' y='253.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>ADDI R1,R0,5</text>
+<polygon points='356,249.0 360,237 458,237 462,249.0 458,261 360,261' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='409.0' y='253.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>ADDI R2,R0,3</text>
+<polygon points='462,249.0 466,237 564,237 568,249.0 564,261 466,261' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='515.0' y='253.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>ADD R1,R1,R2</text>
+<polygon points='568,249.0 572,237 670,237 674,249.0 670,261 572,261' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='621.0' y='253.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>STORE R1,[2]</text>
+<polygon points='674,249.0 678,237 776,237 780,249.0 776,261 678,261' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='727.0' y='253.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>SUB R1,R1,R2</text>
+<polygon points='780,249.0 784,237 882,237 886,249.0 882,261 784,261' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='833.0' y='253.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>LOAD R3,[2]</text>
+<polygon points='886,249.0 890,237 988,237 992,249.0 988,261 890,261' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='939.0' y='253.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>ADDI R3,R3,1</text>
+<polygon points='992,249.0 996,237 1306,237 1310,249.0 1306,261 996,261' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='1151.0' y='253.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>HALT</text>
+<text x='24' y='287.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#1b7f5a' text-anchor='start' font-weight='normal'>DMEM port</text>
+<polygon points='250,283.0 254,271 564,271 568,283.0 564,295 254,295' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='409.0' y='287.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>idle</text>
+<polygon points='568,283.0 572,271 670,271 674,283.0 670,295 572,295' fill='#c4ead8' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='621.0' y='287.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>WR [2]</text>
+<polygon points='674,283.0 678,271 776,271 780,283.0 776,295 678,295' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='727.0' y='287.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>idle</text>
+<polygon points='780,283.0 784,271 882,271 886,283.0 882,295 784,295' fill='#c4ead8' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='833.0' y='287.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>RD [2]</text>
+<polygon points='886,283.0 890,271 1306,271 1310,283.0 1306,295 890,295' fill='#ffffff' stroke='#1b7f5a' stroke-width='1.2'/>
+<text x='1098.0' y='287.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#1b7f5a' text-anchor='middle' font-weight='normal'>idle</text>
+<text x='24' y='321.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#1b7f5a' text-anchor='start' font-weight='normal'>halted</text>
+<polyline points='250,327 356,327 356,327 462,327 462,327 568,327 568,327 674,327 674,327 780,327 780,327 886,327 886,327 992,327 992,327 992,307 1098,307 1098,307 1204,307 1204,307 1310,307' fill='none' stroke='#1b7f5a' stroke-width='2'/>
+<line x1='8' y1='364' x2='1322' y2='364' stroke='#b4541a' stroke-width='1.5'/>
+<text x='16' y='358' font-family='Menlo, Consolas, monospace' font-size='13.5' fill='#b4541a' text-anchor='start' font-weight='bold'>VON NEUMANN (vn_top_module)</text>
+<text x='24' y='389.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#b4541a' text-anchor='start' font-weight='normal'>PC</text>
+<polygon points='250,385.0 254,373 352,373 356,385.0 352,397 254,397' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='303.0' y='389.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>0</text>
+<polygon points='356,385.0 360,373 458,373 462,385.0 458,397 360,397' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='409.0' y='389.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>1</text>
+<polygon points='462,385.0 466,373 564,373 568,385.0 564,397 466,397' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='515.0' y='389.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>2</text>
+<polygon points='568,385.0 572,373 776,373 780,385.0 776,397 572,397' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='674.0' y='389.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>3</text>
+<polygon points='780,385.0 784,373 882,373 886,385.0 882,397 784,397' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='833.0' y='389.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>4</text>
+<polygon points='886,385.0 890,373 1094,373 1098,385.0 1094,397 890,397' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='992.0' y='389.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>5</text>
+<polygon points='1098,385.0 1102,373 1200,373 1204,385.0 1200,397 1102,397' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='1151.0' y='389.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>6</text>
+<polygon points='1204,385.0 1208,373 1306,373 1310,385.0 1306,397 1208,397' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='1257.0' y='389.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>7</text>
+<text x='24' y='423.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#b4541a' text-anchor='start' font-weight='normal'>shared memory port</text>
+<polygon points='250,419.0 254,407 352,407 356,419.0 352,431 254,431' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='303.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>FETCH 0</text>
+<polygon points='356,419.0 360,407 458,407 462,419.0 458,431 360,431' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='409.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>FETCH 1</text>
+<polygon points='462,419.0 466,407 564,407 568,419.0 564,431 466,431' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='515.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>FETCH 2</text>
+<polygon points='568,419.0 572,407 670,407 674,419.0 670,431 572,431' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='621.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>FETCH 3</text>
+<polygon points='674,419.0 678,407 776,407 780,419.0 776,431 678,431' fill='#f6c9a8' stroke='#b4541a' stroke-width='1.2'/>
+<text x='727.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>DATA [2]</text>
+<polygon points='780,419.0 784,407 882,407 886,419.0 882,431 784,431' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='833.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>FETCH 4</text>
+<polygon points='886,419.0 890,407 988,407 992,419.0 988,431 890,431' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='939.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>FETCH 5</text>
+<polygon points='992,419.0 996,407 1094,407 1098,419.0 1094,431 996,431' fill='#f6c9a8' stroke='#b4541a' stroke-width='1.2'/>
+<text x='1045.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>DATA [2]</text>
+<polygon points='1098,419.0 1102,407 1200,407 1204,419.0 1200,431 1102,431' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='1151.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>FETCH 6</text>
+<polygon points='1204,419.0 1208,407 1306,407 1310,419.0 1306,431 1208,431' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='1257.0' y='423.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>FETCH 7</text>
+<text x='24' y='457.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#b4541a' text-anchor='start' font-weight='normal'>instruction (fetched / IR)</text>
+<polygon points='250,453.0 254,441 352,441 356,453.0 352,465 254,465' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='303.0' y='457.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>ADDI R1,R0,5</text>
+<polygon points='356,453.0 360,441 458,441 462,453.0 458,465 360,465' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='409.0' y='457.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>ADDI R2,R0,3</text>
+<polygon points='462,453.0 466,441 564,441 568,453.0 564,465 466,465' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='515.0' y='457.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>ADD R1,R1,R2</text>
+<polygon points='568,453.0 572,441 776,441 780,453.0 776,465 572,465' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='674.0' y='457.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>STORE R1,[2]</text>
+<polygon points='780,453.0 784,441 882,441 886,453.0 882,465 784,465' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='833.0' y='457.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>SUB R1,R1,R2</text>
+<polygon points='886,453.0 890,441 1094,441 1098,453.0 1094,465 890,465' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='992.0' y='457.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>LOAD R3,[2]</text>
+<polygon points='1098,453.0 1102,441 1200,441 1204,453.0 1200,465 1102,465' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='1151.0' y='457.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>ADDI R3,R3,1</text>
+<polygon points='1204,453.0 1208,441 1306,441 1310,453.0 1306,465 1208,465' fill='#ffffff' stroke='#b4541a' stroke-width='1.2'/>
+<text x='1257.0' y='457.5' font-family='Menlo, Consolas, monospace' font-size='11.5' fill='#b4541a' text-anchor='middle' font-weight='normal'>HALT</text>
+<text x='24' y='491.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#b4541a' text-anchor='start' font-weight='normal'>stall</text>
+<polyline points='250,497 356,497 356,497 462,497 462,497 568,497 568,497 568,477 674,477 674,477 674,497 780,497 780,497 886,497 886,497 886,477 992,477 992,477 992,497 1098,497 1098,497 1204,497 1204,497 1310,497' fill='none' stroke='#b4541a' stroke-width='2'/>
+<text x='24' y='525.5' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#b4541a' text-anchor='start' font-weight='normal'>halted</text>
+<polyline points='250,531 356,531 356,531 462,531 462,531 568,531 568,531 674,531 674,531 780,531 780,531 886,531 886,531 992,531 992,531 1098,531 1098,531 1204,531 1204,531 1204,511 1310,511' fill='none' stroke='#b4541a' stroke-width='2'/>
+<rect x='16' y='551' width='18' height='16' fill='#dff3ea' stroke='#1b7f5a'/>
+<text x='42' y='564' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#1b7f5a' text-anchor='start' font-weight='normal'>Harvard: instruction fetch and data-memory access in the SAME cycle (separate IMEM and DMEM ports)</text>
+<rect x='16' y='577' width='18' height='16' fill='#fbe6d6' stroke='#b4541a'/>
+<text x='42' y='590' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#b4541a' text-anchor='start' font-weight='normal'>Von Neumann: the single shared port is busy with the data access, so the next fetch waits one cycle (stall)</text>
+<line x1='16' y1='613' x2='34' y2='613' stroke='#1f2933' stroke-width='2.5' stroke-dasharray='6 4'/>
+<text x='42' y='617' font-family='Menlo, Consolas, monospace' font-size='12.5' fill='#5b6670' text-anchor='start' font-weight='normal'>first cycle in which the core is halted</text>
+</svg>

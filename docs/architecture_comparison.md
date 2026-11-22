@@ -14,6 +14,8 @@ The existing Harvard RTL (`rtl/*.v`) is unchanged. The baseline reuses `program_
 
 ## 2. Memory Organization
 
+![Harvard vs Von Neumann block diagram](architecture/harvard_vs_vn_block_diagram.svg)
+
 | | Harvard (`top_module`) | Von Neumann (`vn_top_module`) |
 |---|---|---|
 | Instruction storage | `instruction_memory`: 16 × 16-bit | `unified_memory` words `0x00`–`0x0F` |
@@ -90,9 +92,36 @@ The testbench passed 151 checks with 0 failures. For each program it checks that
 2. **Speed-up depends on the program.** The Harvard advantage grows linearly with the fraction of memory instructions (M/N). It is 0% for a compute-only loop and 70% for the memory-heavy program. If every instruction were a LOAD/STORE, the speed-up would reach its upper limit of 2×.
 3. **Cost of the Von Neumann design.** It saves one memory and one address bus, but it needs extra control: a state flip-flop, a 16-bit instruction register, an address multiplexer for the shared port, and stall gating on the PC and register-file write.
 4. **Program protection.** In the Harvard design a STORE cannot reach instruction memory at all. In the shared-memory design, protection has to be added on purpose (here, writes to the instruction region are blocked). Without it, a wrong address could overwrite the program.
-5. **Clock period.** Both designs keep the same single-cycle combinational path (fetch → decode → register read → ALU or memory → writeback). The speed-ups above are therefore cycle-count ratios. Actual wall-clock speed-up also depends on the Fmax of each design after synthesis, which has not been measured yet.
+5. **Clock period.** The shared memory also slows each cycle. In the Von Neumann design, instruction fetch passes through the shared-port address multiplexer and the 32-word unified-memory read multiplexer, so its critical path is longer. Place-and-route on iCE40 HX8K (median of 5 seeds, `synthesis/run_ice40.sh`) gives:
 
-## 6. How to Run
+   | | Harvard | Von Neumann |
+   |---|---:|---:|
+   | Logic LUTs | 321 | 571 |
+   | Flip-flops | 156 | 301 |
+   | Fmax | 63.86 MHz | 37.69 MHz |
+   | Clock period | 15.66 ns | 26.53 ns |
+
+   Combining cycles and clock period, the Harvard speed-up in execution time is **2.18×** for P1, **2.88×** for P2, and **1.69×** for P3. The compute-only loop is faster too, because the clock is faster. See [`synthesis/results.md`](../synthesis/results.md) for the method and critical paths.
+
+## 6. Annotated Waveforms
+
+These figures are drawn from the comparison testbench's VCD. Green columns mark cycles where the Harvard processor fetches and accesses data memory in the same cycle. Orange columns mark cycles where the Von Neumann shared port is busy with data, so the next fetch stalls.
+
+**P1 - `program.hex`:** STORE (PC 3) and LOAD (PC 5) each cost the Von Neumann core one extra cycle, giving 9 cycles against 7.
+
+![P1 timing](waveforms/harvard_vs_vn_p1.svg)
+
+**P2 - memory-heavy:** 7 LOAD/STORE instructions give 7 stall cycles, so 17 cycles against 10.
+
+![P2 timing](waveforms/harvard_vs_vn_p2.svg)
+
+**P3 - compute-only loop:** with no data accesses there are no stalls, and both take 16 cycles.
+
+![P3 timing](waveforms/harvard_vs_vn_p3.svg)
+
+Regenerate with `python3 simulation/render_waveforms.py simulation/waveforms/harvard_vs_vn_wave.vcd docs/waveforms`. PNG copies are provided for the report.
+
+## 7. How to Run
 
 Run from the repository root, because both memories load `program.hex` using a relative path:
 

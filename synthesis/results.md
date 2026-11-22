@@ -2,31 +2,78 @@
 
 **Project:** Vector Cores — 16-Bit Harvard Architecture Processor  
 **Course:** MCA Computer Architecture Coursework  
-**Document Status:** Pre-Synthesis Functional Verification Complete; Full-Processor Synthesis Pending Integration  
+**Document Status:** Synthesis, place-and-route and timing complete (open-source iCE40 flow). Section 2 records the earlier pre-synthesis instruction-memory verification.
 
 ---
 
-## 1. Synthesis Status Overview
+## 1. Synthesis, Place-and-Route and Timing Results
 
-Hardware logic synthesis (resource utilization, slice logic, maximum operating frequency $F_{\max}$, and timing slack) is scheduled to be performed on the complete top-level processor (`rtl/top_module.v`) once all submodule implementations (`alu.v`, `register_file.v`, `data_memory.v`, `address_decoder.v`) are completed and integrated.
+### 1.1 Flow
 
-- **Current Status:** In Development (Pre-Synthesis).
-- **Assigned Contributor:** Member 5 (Full processor verification, synthesis, and hardware resource analysis).
-- **Target Synthesis Tool:** AMD Xilinx Vivado / FPGA synthesis toolchain.
+| Item | Value |
+|---|---|
+| Synthesis | Yosys 0.71 (`synth_ice40 -noflatten`) |
+| Place and route / timing | nextpnr-ice40 0.11.1 |
+| Target device | Lattice iCE40 HX8K, CT256 package (7,680 logic cells) |
+| Designs | Harvard `top_module` and Von Neumann baseline `vn_top_module` |
+| Seeds | 5 placement seeds per design; the median Fmax is reported |
+| Script | `synthesis/run_ice40.sh` (run from the repository root) |
+| Raw reports | `synthesis/ice40/` |
 
-### Target Synthesis Metrics (To Be Populated Post-Integration)
+Reproduce:
 
-| Metric | Target / Result | Notes |
-|---|---|---|
-| **Target Device** | *To be determined* | E.g., Artix-7 / Basys 3 FPGA |
-| **Slice LUTs** | *Pending synthesis* | Logic utilization |
-| **Slice Registers (FFs)** | *Pending synthesis* | Sequential elements (PC, Registers) |
-| **Distributed / Block RAM** | *Pending synthesis* | Instruction & Data memory utilization |
-| **Worst Negative Slack (WNS)** | *Pending synthesis* | Timing analysis |
-| **Maximum Frequency ($F_{\max}$)** | *Pending synthesis* | Critical path constraint |
+```bash
+bash synthesis/run_ice40.sh
+```
 
-> [!NOTE]
-> In accordance with project integrity standards, no estimated or invented synthesis measurements are recorded prior to executing the actual hardware synthesis toolflow.
+Method notes:
+
+- **Hierarchy is kept** (`-noflatten`). If the design is flattened, Yosys propagates the constant contents of `program.hex` and removes data-memory bits that the sample program never writes. That would make the results depend on the program, so the hierarchical result is reported.
+- **Fmax is measured flip-flop to flip-flop.** `synthesis/fmax_wrappers.v` registers every processor output. Without it, the timing analyser would include routing to unconstrained output pins.
+
+### 1.2 Results
+
+| Metric | Harvard (`top_module`) | Von Neumann (`vn_top_module`) |
+|---|---:|---:|
+| Logic LUTs (`SB_LUT4`) | 321 | 571 |
+| Flip-flops (`SB_DFF*`) | 156 | 301 |
+| Carry cells (`SB_CARRY`) | 19 | 19 |
+| Block RAM (`ICESTORM_RAM`) | 0 | 0 |
+| **Fmax, median of 5 seeds** | **63.86 MHz** | **37.69 MHz** |
+| Fmax range over 5 seeds | 58.98 – 65.65 MHz | 37.20 – 40.55 MHz |
+| Minimum clock period | 15.66 ns | 26.53 ns |
+
+LUT and flip-flop counts are for the processor core only. The Fmax wrapper's output registers are not included.
+
+**Flip-flop breakdown**
+- **Harvard (156):** 128 data memory (16 × 8) + 24 register file (R1–R3) + 4 PC.
+- **Von Neumann (301):** 256 unified-memory data region (16 words × 16 bits) + 16 instruction register + 24 register file + 4 PC + 1 FSM state.
+
+Both memories are cleared on reset, so they are built from flip-flops rather than block RAM.
+
+### 1.3 Critical Paths
+
+| Design | Critical path |
+|---|---|
+| Harvard | PC → instruction ROM → register-file read → ALU (carry chain) → write-back |
+| Von Neumann | PC → shared-port address mux → 32-word unified-memory read mux → instruction mux → decode → register-file read → ALU → write-back |
+
+In the Von Neumann design, instruction fetch has to pass through the shared memory's address multiplexer and its larger 32-word read multiplexer. This lengthens the critical path, so the shared-memory design is slower **per cycle** as well as needing more cycles.
+
+### 1.4 Execution Time (Cycles × Clock Period)
+
+Cycle counts come from `testbench/harvard_vs_vn_tb.v`. The clock periods are the median Fmax values above.
+
+| Program | Harvard cycles | VN cycles | Harvard time | VN time | Harvard speed-up |
+|---|---:|---:|---:|---:|---:|
+| P1 `program.hex` (mixed) | 7 | 9 | 109.6 ns | 238.8 ns | **2.18×** |
+| P2 memory-heavy | 10 | 17 | 156.6 ns | 451.0 ns | **2.88×** |
+| P3 compute-only loop | 16 | 16 | 250.5 ns | 424.5 ns | **1.69×** |
+
+### 1.5 Limitations
+
+- These are post-route results for a Lattice iCE40 FPGA and were not measured on hardware. Xilinx (Vivado) results would differ in absolute value.
+- The design was not run on a physical board, and power was not measured.
 
 ---
 
@@ -82,9 +129,9 @@ ALL INSTRUCTION MEMORY TESTS PASSED
 ```
 
 ### Waveform Inspection
-![Instruction memory waveform](../docs/report/instruction_memory_waveform.png)
+Running the testbench writes `instruction_memory.vcd` to the repository root (open it with `gtkwave instruction_memory.vcd`). The waveform shows asynchronous combinational instruction fetch: the `instr` bus updates as soon as the address changes. Program instructions are read from addresses `0x0`–`0x6`, addresses `0x7`–`0xF` return `HALT` (`16'hF000`), and non-sequential address changes confirm the combinational behavior.
 
-*Figure 1: Waveform demonstrating asynchronous combinational instruction fetch. The `instr` bus updates immediately with address changes. Program instructions are retrieved from addresses `0x0`–`0x6`, addresses `0x7`–`0xF` return `HALT` (`16'hF000`), and non-sequential address transitions verify combinational behavior.*
+Instruction fetch inside the running processor, one fetched instruction per cycle, is shown in the annotated timing diagram [`docs/waveforms/harvard_vs_vn_p1.svg`](../docs/waveforms/harvard_vs_vn_p1.svg) (row "IMEM -> instruction").
 
 ### Functional Observations
 - **Combinational Fetch:** Instruction memory is read-only and unclocked, yielding purely combinational read latency.

@@ -1,0 +1,5 @@
+iCE40 HX8K (CT256) - Yosys 0.71+post / nextpnr-ice40
+
+design         LUT4      DFF    CARRY  Fmax(MHz)   per-seed Fmax (MHz)
+harvard         321      156       19      63.86   65.65 63.86 58.98 60.71 64.64 
+vn              571      301       19      37.69   37.20 37.21 40.55 37.69 38.00 
