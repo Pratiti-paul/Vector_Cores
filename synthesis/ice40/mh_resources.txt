@@ -1,0 +1,200 @@
+
+12. Printing statistics.
+
+=== $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       61 wires
+      192 wire bits
+       61 public wires
+      192 public wire bits
+       15 ports
+       66 port bits
+      103 cells
+        1   SB_CARRY
+       40   SB_DFFE
+        4   SB_DFFESR
+       58   SB_LUT4
+
+=== $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       97 wires
+      386 wire bits
+       97 public wires
+      386 public wire bits
+       11 ports
+       48 port bits
+      285 cells
+        2   SB_CARRY
+      136   SB_DFFE
+        8   SB_DFFESR
+      139   SB_LUT4
+
+=== $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      151 wires
+      721 wire bits
+      151 public wires
+      721 public wire bits
+        8 ports
+       42 port bits
+      555 cells
+        2   SB_CARRY
+      256   SB_DFFESR
+        4   SB_DFFSR
+      293   SB_LUT4
+        1 submodules
+        1   address_decoder
+
+=== address_decoder ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        5 wires
+       29 wire bits
+        5 public wires
+       29 public wire bits
+        3 ports
+       21 port bits
+       18 cells
+       18   SB_LUT4
+
+=== alu ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       45 wires
+      142 wire bits
+       45 public wires
+      142 public wire bits
+        5 ports
+       28 port bits
+       79 cells
+       14   SB_CARRY
+       65   SB_LUT4
+
+=== control_unit ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       11 wires
+       16 wire bits
+       11 public wires
+       16 public wire bits
+       11 ports
+       16 port bits
+       11 cells
+       11   SB_LUT4
+
+=== mem_arbiter ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       14 wires
+       56 wire bits
+       14 public wires
+       56 public wire bits
+       14 ports
+       56 port bits
+       10 cells
+       10   SB_LUT4
+
+=== mh_top_module ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       87 wires
+      263 wire bits
+       87 public wires
+      263 public wire bits
+       15 ports
+       47 port bits
+       53 cells
+        5   SB_CARRY
+       48   SB_LUT4
+        8 submodules
+        1   $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache
+        1   $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache
+        1   $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010
+        1   alu
+        1   control_unit
+        1   mem_arbiter
+        1   program_counter
+        1   register_file
+
+=== program_counter ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        6 wires
+       12 wire bits
+        6 public wires
+       12 public wire bits
+        5 ports
+       11 port bits
+        5 cells
+        4   SB_DFFESR
+        1   SB_LUT4
+
+=== register_file ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       42 wires
+      140 wire bits
+       42 public wires
+      140 public wire bits
+        9 ports
+       33 port bits
+       70 cells
+        8   SB_DFFE
+       16   SB_DFFESR
+       46   SB_LUT4
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+     1189 mh_top_module
+      103 $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache
+      285 $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache
+      555 $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010
+       18   address_decoder
+       79 alu
+       11 control_unit
+       10 mem_arbiter
+        5 program_counter
+       70 register_file
+
+        +----------Count including submodules.
+        | 
+      519 wires
+     1957 wire bits
+      519 public wires
+     1957 public wire bits
+       96 ports
+      368 port bits
+        - memories
+        - memory bits
+        - processes
+     1189 cells
+       24   SB_CARRY
+      184   SB_DFFE
+      288   SB_DFFESR
+        4   SB_DFFSR
+      689   SB_LUT4
+        8 submodules
+        1   $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache
+        1   $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache
+        1   $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010
+        1   alu
+        1   control_unit
+        1   mem_arbiter
+        1   program_counter
+        1   register_file
+

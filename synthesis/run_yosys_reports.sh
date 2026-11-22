@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Yosys synthesis reports for the Harvard processor and the Von Neumann
-# baseline. No FPGA vendor tools are needed.
+# Yosys synthesis reports for the Harvard processor, the Von Neumann
+# baseline and the memory-hierarchy processor. No FPGA vendor tools are
+# needed.
 #
 #   1. Generic flow (README Section 10.1): proc/opt/memory/opt/check/stat
 #   2. AMD Xilinx 7-Series technology mapping with Yosys `synth_xilinx`
@@ -24,6 +25,7 @@ set -euo pipefail
 COMMON="rtl/program_counter.v rtl/control_unit.v rtl/register_file.v rtl/alu.v rtl/address_decoder.v"
 HARVARD="$COMMON rtl/instruction_memory.v rtl/data_memory.v rtl/top_module.v"
 VN="$COMMON rtl/baseline/unified_memory.v rtl/baseline/vn_top_module.v"
+MH="$COMMON rtl/hierarchy/shared_memory.v rtl/hierarchy/mem_arbiter.v rtl/hierarchy/icache.v rtl/hierarchy/dcache.v rtl/hierarchy/mh_top_module.v"
 
 mkdir -p synthesis/generic synthesis/xilinx
 
@@ -52,18 +54,20 @@ xilinx () {
 
 generic harvard top_module    "$HARVARD"
 generic vn      vn_top_module "$VN"
+generic mh      mh_top_module "$MH"
 xilinx  harvard top_module    "$HARVARD"
 xilinx  vn      vn_top_module "$VN"
+xilinx  mh      mh_top_module "$MH"
 
 echo
 echo "Xilinx 7-Series resource summary (processor core, hierarchy totals):"
-for d in harvard vn; do
+for d in harvard vn mh; do
     awk '/=== design hierarchy ===/{h=1} h' "synthesis/xilinx/${d}_xc7.txt" \
       | awk -v d="$d" '
           /LUT[1-6]/      {lut+=$1}
           /FD[A-Z]*/      {ff+=$1}
           /CARRY4/        {c+=$1}
           /MUXF[78]/      {m+=$1}
-          /RAM[0-9]+X/    {r+=$1}
+          /RAM[0-9]+[A-Z]/ {r+=$1}
           END {printf "  %-8s LUTs=%d  FFs=%d  CARRY4=%d  MUXF7/8=%d  LUTRAM=%d\n", d, lut, ff, c, m, r}'
 done

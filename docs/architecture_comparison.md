@@ -103,6 +103,8 @@ The testbench passed 151 checks with 0 failures. For each program it checks that
 
    Combining cycles and clock period, the Harvard speed-up in execution time is **2.18×** for P1, **2.88×** for P2, and **1.69×** for P3. The compute-only loop is faster too, because the clock is faster. See [`synthesis/results.md`](../synthesis/results.md) for the method and critical paths.
 
+6. **Shared lower-level memory.** Real processors combine both organizations: a Harvard split at level 1 (separate instruction and data caches) in front of a shared lower-level memory. This was implemented in `rtl/hierarchy/` and is described in [`memory_hierarchy.md`](memory_hierarchy.md). With a 2-wait-state shared memory, the L1 caches make loops **1.97×** (P3) and **2.24×** (P4) faster than the same memory without caches. In the steady state of the P4 loop, the cached design matches the cycle count of the Von Neumann processor that has an ideal single-cycle memory.
+
 ## 6. Annotated Waveforms
 
 These figures are drawn from the comparison testbench's VCD. Green columns mark cycles where the Harvard processor fetches and accesses data memory in the same cycle. Orange columns mark cycles where the Von Neumann shared port is busy with data, so the next fetch stalls.
