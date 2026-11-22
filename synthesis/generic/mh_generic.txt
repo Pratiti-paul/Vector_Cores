@@ -1,0 +1,1962 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.71+post (git sha1 5628c13240f670b97aaaca3d47940c4afb8ff572, Release, AppleClang clang++ 21.0.0.21000401)
+
+-- Running command `
+read_verilog rtl/program_counter.v rtl/control_unit.v rtl/register_file.v rtl/alu.v rtl/address_decoder.v rtl/hierarchy/shared_memory.v rtl/hierarchy/mem_arbiter.v rtl/hierarchy/icache.v rtl/hierarchy/dcache.v rtl/hierarchy/mh_top_module.v
+hierarchy -check -top mh_top_module
+proc
+opt
+memory
+opt
+check
+stat
+' --
+
+1. Executing Verilog-2005 frontend: rtl/program_counter.v
+Parsing Verilog input from `rtl/program_counter.v' to AST representation.
+Generating RTLIL representation for module `\program_counter'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: rtl/control_unit.v
+Parsing Verilog input from `rtl/control_unit.v' to AST representation.
+Generating RTLIL representation for module `\control_unit'.
+Successfully finished Verilog frontend.
+
+3. Executing Verilog-2005 frontend: rtl/register_file.v
+Parsing Verilog input from `rtl/register_file.v' to AST representation.
+Generating RTLIL representation for module `\register_file'.
+Successfully finished Verilog frontend.
+
+4. Executing Verilog-2005 frontend: rtl/alu.v
+Parsing Verilog input from `rtl/alu.v' to AST representation.
+Generating RTLIL representation for module `\alu'.
+Successfully finished Verilog frontend.
+
+5. Executing Verilog-2005 frontend: rtl/address_decoder.v
+Parsing Verilog input from `rtl/address_decoder.v' to AST representation.
+Generating RTLIL representation for module `\address_decoder'.
+Successfully finished Verilog frontend.
+
+6. Executing Verilog-2005 frontend: rtl/hierarchy/shared_memory.v
+Parsing Verilog input from `rtl/hierarchy/shared_memory.v' to AST representation.
+Generating RTLIL representation for module `\shared_memory'.
+Warning: Replacing memory \mem with list of registers. See rtl/hierarchy/shared_memory.v:59, rtl/hierarchy/shared_memory.v:39
+Successfully finished Verilog frontend.
+
+7. Executing Verilog-2005 frontend: rtl/hierarchy/mem_arbiter.v
+Parsing Verilog input from `rtl/hierarchy/mem_arbiter.v' to AST representation.
+Generating RTLIL representation for module `\mem_arbiter'.
+Successfully finished Verilog frontend.
+
+8. Executing Verilog-2005 frontend: rtl/hierarchy/icache.v
+Parsing Verilog input from `rtl/hierarchy/icache.v' to AST representation.
+Generating RTLIL representation for module `\icache'.
+Successfully finished Verilog frontend.
+
+9. Executing Verilog-2005 frontend: rtl/hierarchy/dcache.v
+Parsing Verilog input from `rtl/hierarchy/dcache.v' to AST representation.
+Generating RTLIL representation for module `\dcache'.
+Successfully finished Verilog frontend.
+
+10. Executing Verilog-2005 frontend: rtl/hierarchy/mh_top_module.v
+Parsing Verilog input from `rtl/hierarchy/mh_top_module.v' to AST representation.
+Generating RTLIL representation for module `\mh_top_module'.
+Successfully finished Verilog frontend.
+
+11. Executing HIERARCHY pass (managing design hierarchy).
+
+11.1. Analyzing design hierarchy..
+Top module:  \mh_top_module
+Used module:     \shared_memory
+Used module:         \address_decoder
+Used module:     \mem_arbiter
+Used module:     \dcache
+Used module:     \icache
+Used module:     \alu
+Used module:     \register_file
+Used module:     \control_unit
+Used module:     \program_counter
+Parameter \WAIT_CYCLES = 2
+
+11.2. Executing AST frontend in derive mode using pre-parsed AST for module `\shared_memory'.
+Parameter \WAIT_CYCLES = 2
+Generating RTLIL representation for module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Warning: Replacing memory \mem with list of registers. See rtl/hierarchy/shared_memory.v:59, rtl/hierarchy/shared_memory.v:39
+Parameter \INDEX_BITS = 2
+Parameter \ENABLE = 1
+
+11.3. Executing AST frontend in derive mode using pre-parsed AST for module `\dcache'.
+Parameter \INDEX_BITS = 2
+Parameter \ENABLE = 1
+Generating RTLIL representation for module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Parameter \INDEX_BITS = 3
+Parameter \ENABLE = 1
+
+11.4. Executing AST frontend in derive mode using pre-parsed AST for module `\icache'.
+Parameter \INDEX_BITS = 3
+Parameter \ENABLE = 1
+Generating RTLIL representation for module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+
+11.5. Analyzing design hierarchy..
+Top module:  \mh_top_module
+Used module:     $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010
+Used module:         \address_decoder
+Used module:     \mem_arbiter
+Used module:     $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache
+Used module:     $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache
+Used module:     \alu
+Used module:     \register_file
+Used module:     \control_unit
+Used module:     \program_counter
+
+11.6. Analyzing design hierarchy..
+Top module:  \mh_top_module
+Used module:     $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010
+Used module:         \address_decoder
+Used module:     \mem_arbiter
+Used module:     $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache
+Used module:     $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache
+Used module:     \alu
+Used module:     \register_file
+Used module:     \control_unit
+Used module:     \program_counter
+Removing unused module `\dcache'.
+Removing unused module `\icache'.
+Removing unused module `\shared_memory'.
+Removed 3 unused modules.
+
+12. Executing PROC pass (convert processes to netlists).
+
+12.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+12.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 3 switch rules as full_case in process $rtl/hierarchy/icache.v:53$proc$273 in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Marked 2 switch rules as full_case in process $rtl/hierarchy/dcache.v:62$proc$226 in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Removed 1 dead cases from process $rtl/hierarchy/shared_memory.v:44$proc$203 in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Marked 1 switch rules as full_case in process $rtl/hierarchy/shared_memory.v:44$proc$203 in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Marked 2 switch rules as full_case in process $rtl/hierarchy/shared_memory.v:55$proc$199 in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Marked 1 switch rules as full_case in process $rtl/address_decoder.v:14$proc$41 in module address_decoder.
+Marked 1 switch rules as full_case in process $rtl/alu.v:24$proc$34 in module alu.
+Marked 2 switch rules as full_case in process $rtl/register_file.v:19$proc$8 in module register_file.
+Marked 1 switch rules as full_case in process $rtl/control_unit.v:20$proc$2 in module control_unit.
+Marked 1 switch rules as full_case in process $rtl/program_counter.v:11$proc$1 in module program_counter.
+Removed a total of 1 dead cases.
+
+12.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 1 redundant assignment.
+Promoted 88 assignments to connections.
+
+12.4. Executing PROC_INIT pass (extract init attributes).
+Found init rule in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+  Set init value: \i = 32
+  Set init value: \mem[16] = 16'0000000000000000
+  Set init value: \mem[17] = 16'0000000000000000
+  Set init value: \mem[18] = 16'0000000000000000
+  Set init value: \mem[19] = 16'0000000000000000
+  Set init value: \mem[20] = 16'0000000000000000
+  Set init value: \mem[21] = 16'0000000000000000
+  Set init value: \mem[22] = 16'0000000000000000
+  Set init value: \mem[23] = 16'0000000000000000
+  Set init value: \mem[24] = 16'0000000000000000
+  Set init value: \mem[25] = 16'0000000000000000
+  Set init value: \mem[26] = 16'0000000000000000
+  Set init value: \mem[27] = 16'0000000000000000
+  Set init value: \mem[28] = 16'0000000000000000
+  Set init value: \mem[29] = 16'0000000000000000
+  Set init value: \mem[30] = 16'0000000000000000
+  Set init value: \mem[31] = 16'0000000000000000
+
+12.5. Executing PROC_ARST pass (detect async resets in processes).
+
+12.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 1 switch.
+<suppressed ~30 debug messages>
+
+12.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+     1/17: $3$lookahead\line_valid$272[7:0]$308
+     2/17: $2$lookahead\line_valid$272[7:0]$299
+     3/17: $2$bitselwrite$pos$rtl/hierarchy/icache.v:59$263[2:0]$292
+     4/17: $2$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_EN[0:0]$298
+     5/17: $2$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$297
+     6/17: $2$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_ADDR[2:0]$296
+     7/17: $2$memwr$\line_data$rtl/hierarchy/icache.v:57$264_EN[15:0]$295
+     8/17: $2$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$294
+     9/17: $2$memwr$\line_data$rtl/hierarchy/icache.v:57$264_ADDR[2:0]$293
+    10/17: $1$lookahead\line_valid$272[7:0]$289
+    11/17: $1$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_EN[0:0]$288
+    12/17: $1$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$287
+    13/17: $1$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_ADDR[2:0]$286
+    14/17: $1$memwr$\line_data$rtl/hierarchy/icache.v:57$264_EN[15:0]$285
+    15/17: $1$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$284
+    16/17: $1$memwr$\line_data$rtl/hierarchy/icache.v:57$264_ADDR[2:0]$283
+    17/17: $1$bitselwrite$pos$rtl/hierarchy/icache.v:59$263[2:0]$282
+Creating decoders for process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+     1/16: $2$lookahead\line_valid$225[3:0]$254
+     2/16: $2$bitselwrite$pos$rtl/hierarchy/dcache.v:68$208[1:0]$247
+     3/16: $2$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_EN[1:0]$253
+     4/16: $2$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_DATA[1:0]$252
+     5/16: $2$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_ADDR[1:0]$251
+     6/16: $2$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_EN[7:0]$250
+     7/16: $2$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_DATA[7:0]$249
+     8/16: $2$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_ADDR[1:0]$248
+     9/16: $1$lookahead\line_valid$225[3:0]$242
+    10/16: $1$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_EN[1:0]$241
+    11/16: $1$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_DATA[1:0]$240
+    12/16: $1$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_ADDR[1:0]$239
+    13/16: $1$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_EN[7:0]$238
+    14/16: $1$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_DATA[7:0]$237
+    15/16: $1$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_ADDR[1:0]$236
+    16/16: $1$bitselwrite$pos$rtl/hierarchy/dcache.v:68$208[1:0]$235
+Creating decoders for process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+Creating decoders for process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+Creating decoders for process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:44$proc$203'.
+     1/1: $1$mem2reg_rd$\mem$rtl/hierarchy/shared_memory.v:44$194_DATA[15:0]$205
+Creating decoders for process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+     1/18: $1\i[31:0]
+     2/18: $0\wait_cnt[3:0]
+     3/18: $0\mem[31][15:0]
+     4/18: $0\mem[30][15:0]
+     5/18: $0\mem[29][15:0]
+     6/18: $0\mem[28][15:0]
+     7/18: $0\mem[27][15:0]
+     8/18: $0\mem[26][15:0]
+     9/18: $0\mem[25][15:0]
+    10/18: $0\mem[24][15:0]
+    11/18: $0\mem[23][15:0]
+    12/18: $0\mem[22][15:0]
+    13/18: $0\mem[21][15:0]
+    14/18: $0\mem[20][15:0]
+    15/18: $0\mem[19][15:0]
+    16/18: $0\mem[18][15:0]
+    17/18: $0\mem[17][15:0]
+    18/18: $0\mem[16][15:0]
+Creating decoders for process `\address_decoder.$rtl/address_decoder.v:14$proc$41'.
+     1/1: $1\select_lines[15:0]
+Creating decoders for process `\alu.$rtl/alu.v:24$proc$34'.
+     1/1: $1\alu_out[7:0]
+Creating decoders for process `\register_file.$rtl/register_file.v:19$proc$8'.
+     1/10: $2$memwr$\registers$rtl/register_file.v:27$7_EN[7:0]$27
+     2/10: $2$memwr$\registers$rtl/register_file.v:27$7_DATA[7:0]$26
+     3/10: $2$memwr$\registers$rtl/register_file.v:27$7_ADDR[1:0]$25
+     4/10: $1$memwr$\registers$rtl/register_file.v:24$6_EN[7:0]$19
+     5/10: $1$memwr$\registers$rtl/register_file.v:23$5_EN[7:0]$18
+     6/10: $1$memwr$\registers$rtl/register_file.v:22$4_EN[7:0]$17
+     7/10: $1$memwr$\registers$rtl/register_file.v:21$3_EN[7:0]$16
+     8/10: $1$memwr$\registers$rtl/register_file.v:27$7_EN[7:0]$22
+     9/10: $1$memwr$\registers$rtl/register_file.v:27$7_DATA[7:0]$21
+    10/10: $1$memwr$\registers$rtl/register_file.v:27$7_ADDR[1:0]$20
+Creating decoders for process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+     1/1: { $1\mem_to_reg[0:0] $1\mem_read[0:0] $1\reg_write[0:0] $1\halted[0:0] $1\jump_enable[0:0] $1\branch_enable[0:0] $1\alu_src[0:0] $1\alu_control[2:0] $1\mem_write[0:0] $1\pc_enable[0:0] }
+Creating decoders for process `\program_counter.$rtl/program_counter.v:11$proc$1'.
+     1/1: $0\pc_out[3:0]
+
+12.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[0]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[1]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[2]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[3]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[4]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[5]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[6]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[7]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[8]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[9]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[10]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[11]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[12]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[13]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[14]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[15]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[0]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[1]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[2]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[3]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[4]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[5]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[6]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[7]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[8]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[9]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[10]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[11]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[12]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[13]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[14]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[15]' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+No latch inferred for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$mem2reg_rd$\mem$rtl/hierarchy/shared_memory.v:44$194_DATA' from process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:44$proc$203'.
+No latch inferred for signal `\address_decoder.\select_lines' from process `\address_decoder.$rtl/address_decoder.v:14$proc$41'.
+No latch inferred for signal `\alu.\alu_out' from process `\alu.$rtl/alu.v:24$proc$34'.
+No latch inferred for signal `\control_unit.\pc_enable' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\reg_write' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\mem_read' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\mem_write' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\alu_control' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\alu_src' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\mem_to_reg' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\branch_enable' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\jump_enable' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+No latch inferred for signal `\control_unit.\halted' from process `\control_unit.$rtl/control_unit.v:20$proc$2'.
+
+12.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.\line_valid' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$643' with positive edge clock.
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$bitselwrite$pos$rtl/hierarchy/icache.v:59$263' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$644' with positive edge clock.
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$memwr$\line_data$rtl/hierarchy/icache.v:57$264_ADDR' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$645' with positive edge clock.
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$646' with positive edge clock.
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$memwr$\line_data$rtl/hierarchy/icache.v:57$264_EN' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$647' with positive edge clock.
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_ADDR' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$648' with positive edge clock.
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$649' with positive edge clock.
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_EN' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$650' with positive edge clock.
+Creating register for signal `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$lookahead\line_valid$272' using process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+  created $dff cell `$procdff$651' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.\line_valid' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$652' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$bitselwrite$pos$rtl/hierarchy/dcache.v:68$208' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$653' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_ADDR' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$654' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_DATA' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$655' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_EN' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$656' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_ADDR' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$657' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_DATA' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$658' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_EN' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$659' with positive edge clock.
+Creating register for signal `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$lookahead\line_valid$225' using process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+  created $dff cell `$procdff$660' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\i' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$661' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\wait_cnt' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$662' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[16]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$663' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[17]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$664' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[18]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$665' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[19]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$666' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[20]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$667' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[21]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$668' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[22]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$669' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[23]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$670' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[24]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$671' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[25]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$672' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[26]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$673' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[27]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$674' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[28]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$675' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[29]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$676' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[30]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$677' with positive edge clock.
+Creating register for signal `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.\mem[31]' using process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+  created $dff cell `$procdff$678' with positive edge clock.
+Creating register for signal `\register_file.$memwr$\registers$rtl/register_file.v:21$3_EN' using process `\register_file.$rtl/register_file.v:19$proc$8'.
+  created $dff cell `$procdff$679' with positive edge clock.
+Creating register for signal `\register_file.$memwr$\registers$rtl/register_file.v:22$4_EN' using process `\register_file.$rtl/register_file.v:19$proc$8'.
+  created $dff cell `$procdff$680' with positive edge clock.
+Creating register for signal `\register_file.$memwr$\registers$rtl/register_file.v:23$5_EN' using process `\register_file.$rtl/register_file.v:19$proc$8'.
+  created $dff cell `$procdff$681' with positive edge clock.
+Creating register for signal `\register_file.$memwr$\registers$rtl/register_file.v:24$6_EN' using process `\register_file.$rtl/register_file.v:19$proc$8'.
+  created $dff cell `$procdff$682' with positive edge clock.
+Creating register for signal `\register_file.$memwr$\registers$rtl/register_file.v:27$7_ADDR' using process `\register_file.$rtl/register_file.v:19$proc$8'.
+  created $dff cell `$procdff$683' with positive edge clock.
+Creating register for signal `\register_file.$memwr$\registers$rtl/register_file.v:27$7_DATA' using process `\register_file.$rtl/register_file.v:19$proc$8'.
+  created $dff cell `$procdff$684' with positive edge clock.
+Creating register for signal `\register_file.$memwr$\registers$rtl/register_file.v:27$7_EN' using process `\register_file.$rtl/register_file.v:19$proc$8'.
+  created $dff cell `$procdff$685' with positive edge clock.
+Creating register for signal `\program_counter.\pc_out' using process `\program_counter.$rtl/program_counter.v:11$proc$1'.
+  created $dff cell `$procdff$686' with positive edge clock.
+
+12.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+12.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 3 empty switches in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+Removing empty process `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.$rtl/hierarchy/icache.v:53$proc$273'.
+Found and cleaned up 2 empty switches in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+Removing empty process `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.$rtl/hierarchy/dcache.v:62$proc$226'.
+Removing empty process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:40$proc$207'.
+Removing empty process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:37$proc$206'.
+Found and cleaned up 1 empty switch in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:44$proc$203'.
+Removing empty process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:44$proc$203'.
+Found and cleaned up 18 empty switches in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+Removing empty process `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.$rtl/hierarchy/shared_memory.v:55$proc$199'.
+Found and cleaned up 1 empty switch in `\address_decoder.$rtl/address_decoder.v:14$proc$41'.
+Removing empty process `address_decoder.$rtl/address_decoder.v:14$proc$41'.
+Found and cleaned up 1 empty switch in `\alu.$rtl/alu.v:24$proc$34'.
+Removing empty process `alu.$rtl/alu.v:24$proc$34'.
+Found and cleaned up 2 empty switches in `\register_file.$rtl/register_file.v:19$proc$8'.
+Removing empty process `register_file.$rtl/register_file.v:19$proc$8'.
+Found and cleaned up 1 empty switch in `\control_unit.$rtl/control_unit.v:20$proc$2'.
+Removing empty process `control_unit.$rtl/control_unit.v:20$proc$2'.
+Found and cleaned up 2 empty switches in `\program_counter.$rtl/program_counter.v:11$proc$1'.
+Removing empty process `program_counter.$rtl/program_counter.v:11$proc$1'.
+Cleaned up 31 empty switches.
+
+12.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+<suppressed ~2 debug messages>
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+<suppressed ~1 debug messages>
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+<suppressed ~1 debug messages>
+Optimizing module address_decoder.
+Optimizing module alu.
+<suppressed ~2 debug messages>
+Optimizing module register_file.
+<suppressed ~3 debug messages>
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+13. Executing OPT pass (performing simple optimizations).
+
+13.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+13.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 34 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+<suppressed ~6 debug messages>
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 52 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 50 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 49 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+<suppressed ~9 debug messages>
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 60 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 58 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 57 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+<suppressed ~9 debug messages>
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 94 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 33 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Finding identical cells in module `\control_unit'.
+Computing hashes of 2 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 3 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 8 cells.
+
+13.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \mh_top_module..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 1/2 on $mux $procmux$392.
+    dead port 2/2 on $mux $procmux$392.
+    dead port 1/2 on $mux $procmux$368.
+    dead port 1/2 on $mux $procmux$362.
+    dead port 1/2 on $mux $procmux$356.
+    dead port 1/2 on $mux $procmux$350.
+    dead port 1/2 on $mux $procmux$344.
+    dead port 1/2 on $mux $procmux$338.
+    dead port 1/2 on $mux $procmux$332.
+    dead port 2/2 on $mux $procmux$332.
+    dead port 1/2 on $mux $procmux$329.
+    dead port 2/2 on $mux $procmux$329.
+    dead port 1/2 on $mux $procmux$326.
+    dead port 1/2 on $mux $procmux$320.
+    dead port 1/2 on $mux $procmux$317.
+Running muxtree optimizer on module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 1/2 on $mux $procmux$464.
+    dead port 2/2 on $mux $procmux$464.
+    dead port 1/2 on $mux $procmux$440.
+    dead port 1/2 on $mux $procmux$434.
+    dead port 1/2 on $mux $procmux$428.
+    dead port 1/2 on $mux $procmux$422.
+    dead port 1/2 on $mux $procmux$416.
+    dead port 1/2 on $mux $procmux$410.
+    dead port 1/2 on $mux $procmux$404.
+    dead port 2/2 on $mux $procmux$404.
+    dead port 1/2 on $mux $procmux$401.
+    dead port 2/2 on $mux $procmux$401.
+    dead port 1/2 on $mux $procmux$398.
+Running muxtree optimizer on module \mem_arbiter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \address_decoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \alu..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \register_file..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 1/2 on $mux $procmux$614.
+    dead port 1/2 on $mux $procmux$608.
+    dead port 1/2 on $mux $procmux$602.
+Running muxtree optimizer on module \control_unit..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \program_counter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 31 multiplexer ports.
+<suppressed ~163 debug messages>
+
+13.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \mh_top_module.
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+    Consolidated identical input bits for $mux cell $procmux$353:
+      Old ports: A=16'0000000000000000, B=16'1111111111111111, Y=$procmux$353_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$353_Y [0]
+      New connections: $procmux$353_Y [15:1] = { $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] $procmux$353_Y [0] }
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+    Consolidated identical input bits for $mux cell $procmux$383:
+      Old ports: A=$2$memwr$\line_data$rtl/hierarchy/icache.v:57$264_EN[15:0]$295, B=16'0000000000000000, Y=$procmux$383_Y
+      New ports: A=$procmux$353_Y [0], B=1'0, Y=$procmux$383_Y [0]
+      New connections: $procmux$383_Y [15:1] = { $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] $procmux$383_Y [0] }
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+    Consolidated identical input bits for $mux cell $procmux$425:
+      Old ports: A=8'00000000, B=8'11111111, Y=$procmux$425_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$425_Y [0]
+      New connections: $procmux$425_Y [7:1] = { $procmux$425_Y [0] $procmux$425_Y [0] $procmux$425_Y [0] $procmux$425_Y [0] $procmux$425_Y [0] $procmux$425_Y [0] $procmux$425_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$407:
+      Old ports: A=2'00, B=2'11, Y=$procmux$407_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$407_Y [0]
+      New connections: $procmux$407_Y [1] = $procmux$407_Y [0]
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+    Consolidated identical input bits for $mux cell $procmux$455:
+      Old ports: A=$2$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_EN[7:0]$250, B=8'00000000, Y=$procmux$455_Y
+      New ports: A=$procmux$425_Y [0], B=1'0, Y=$procmux$455_Y [0]
+      New connections: $procmux$455_Y [7:1] = { $procmux$455_Y [0] $procmux$455_Y [0] $procmux$455_Y [0] $procmux$455_Y [0] $procmux$455_Y [0] $procmux$455_Y [0] $procmux$455_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$446:
+      Old ports: A=$2$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_EN[1:0]$253, B=2'00, Y=$procmux$446_Y
+      New ports: A=$procmux$407_Y [0], B=1'0, Y=$procmux$446_Y [0]
+      New connections: $procmux$446_Y [1] = $procmux$446_Y [0]
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+  Optimizing cells in module \mem_arbiter.
+  Optimizing cells in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+    New ctrl vector for $pmux cell $procmux$466: { $procmux$467_CMP $procmux$468_CMP $procmux$469_CMP $procmux$470_CMP $procmux$471_CMP $procmux$472_CMP $procmux$473_CMP $procmux$474_CMP $procmux$475_CMP $procmux$476_CMP $procmux$477_CMP $procmux$478_CMP $procmux$479_CMP $procmux$480_CMP $procmux$481_CMP $procmux$482_CMP $auto$opt_reduce.cc:137:opt_pmux$697 $procmux$492_CMP $procmux$493_CMP $procmux$494_CMP $procmux$495_CMP $procmux$496_CMP $procmux$497_CMP $procmux$498_CMP }
+  Optimizing cells in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+  Optimizing cells in module \address_decoder.
+  Optimizing cells in module \alu.
+  Optimizing cells in module \register_file.
+    Consolidated identical input bits for $mux cell $procmux$626:
+      Old ports: A=8'00000000, B=8'11111111, Y=$procmux$626_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$626_Y [0]
+      New connections: $procmux$626_Y [7:1] = { $procmux$626_Y [0] $procmux$626_Y [0] $procmux$626_Y [0] $procmux$626_Y [0] $procmux$626_Y [0] $procmux$626_Y [0] $procmux$626_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$623:
+      Old ports: A=8'00000000, B=8'11111111, Y=$procmux$623_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$623_Y [0]
+      New connections: $procmux$623_Y [7:1] = { $procmux$623_Y [0] $procmux$623_Y [0] $procmux$623_Y [0] $procmux$623_Y [0] $procmux$623_Y [0] $procmux$623_Y [0] $procmux$623_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$620:
+      Old ports: A=8'00000000, B=8'11111111, Y=$procmux$620_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$620_Y [0]
+      New connections: $procmux$620_Y [7:1] = { $procmux$620_Y [0] $procmux$620_Y [0] $procmux$620_Y [0] $procmux$620_Y [0] $procmux$620_Y [0] $procmux$620_Y [0] $procmux$620_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$617:
+      Old ports: A=8'00000000, B=8'11111111, Y=$procmux$617_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$617_Y [0]
+      New connections: $procmux$617_Y [7:1] = { $procmux$617_Y [0] $procmux$617_Y [0] $procmux$617_Y [0] $procmux$617_Y [0] $procmux$617_Y [0] $procmux$617_Y [0] $procmux$617_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$599:
+      Old ports: A=8'00000000, B=8'11111111, Y=$procmux$599_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$599_Y [0]
+      New connections: $procmux$599_Y [7:1] = { $procmux$599_Y [0] $procmux$599_Y [0] $procmux$599_Y [0] $procmux$599_Y [0] $procmux$599_Y [0] $procmux$599_Y [0] $procmux$599_Y [0] }
+  Optimizing cells in module \register_file.
+    Consolidated identical input bits for $mux cell $procmux$629:
+      Old ports: A=$2$memwr$\registers$rtl/register_file.v:27$7_EN[7:0]$27, B=8'00000000, Y=$procmux$629_Y
+      New ports: A=$procmux$599_Y [0], B=1'0, Y=$procmux$629_Y [0]
+      New connections: $procmux$629_Y [7:1] = { $procmux$629_Y [0] $procmux$629_Y [0] $procmux$629_Y [0] $procmux$629_Y [0] $procmux$629_Y [0] $procmux$629_Y [0] $procmux$629_Y [0] }
+  Optimizing cells in module \register_file.
+  Optimizing cells in module \control_unit.
+  Optimizing cells in module \program_counter.
+Performed a total of 13 changes.
+
+13.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 37 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 35 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 33 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 32 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+<suppressed ~15 debug messages>
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 47 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 45 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 43 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 42 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+<suppressed ~15 debug messages>
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 95 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 30 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Computing hashes of 27 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Computing hashes of 24 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+<suppressed ~18 debug messages>
+Finding identical cells in module `\control_unit'.
+Computing hashes of 2 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 3 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 16 cells.
+
+13.6. Executing OPT_DFF pass (perform DFF optimizations).
+Adding SRST signal on $procdff$643 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $2$lookahead\line_valid$272[7:0]$299, Q = \line_valid, rval = 8'00000000).
+Setting constant 0-bit at position 0 on $procdff$644 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 1 on $procdff$644 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 2 on $procdff$644 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 0 on $procdff$651 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 1 on $procdff$651 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 2 on $procdff$651 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 3 on $procdff$651 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 4 on $procdff$651 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 5 on $procdff$651 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 6 on $procdff$651 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Setting constant 0-bit at position 7 on $procdff$651 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Adding SRST signal on $procdff$652 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $2$lookahead\line_valid$225[3:0]$254, Q = \line_valid, rval = 4'0000).
+Setting constant 0-bit at position 0 on $procdff$653 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Setting constant 0-bit at position 1 on $procdff$653 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Setting constant 0-bit at position 0 on $procdff$660 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Setting constant 0-bit at position 1 on $procdff$660 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Setting constant 0-bit at position 2 on $procdff$660 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Setting constant 0-bit at position 3 on $procdff$660 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Adding SRST signal on $procdff$662 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $rtl/hierarchy/shared_memory.v:66$add$202_Y, Q = \wait_cnt, rval = 4'0000).
+Adding SRST signal on $procdff$663 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$583_Y, Q = \mem[16], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$707 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[16]).
+Adding SRST signal on $procdff$664 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$578_Y, Q = \mem[17], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$709 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[17]).
+Adding SRST signal on $procdff$665 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$573_Y, Q = \mem[18], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$711 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[18]).
+Adding SRST signal on $procdff$666 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$568_Y, Q = \mem[19], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$713 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[19]).
+Adding SRST signal on $procdff$667 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$563_Y, Q = \mem[20], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$715 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[20]).
+Adding SRST signal on $procdff$668 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$558_Y, Q = \mem[21], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$717 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[21]).
+Adding SRST signal on $procdff$669 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$553_Y, Q = \mem[22], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$719 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[22]).
+Adding SRST signal on $procdff$670 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$548_Y, Q = \mem[23], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$721 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[23]).
+Adding SRST signal on $procdff$671 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$543_Y, Q = \mem[24], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$723 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[24]).
+Adding SRST signal on $procdff$672 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$538_Y, Q = \mem[25], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$725 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[25]).
+Adding SRST signal on $procdff$673 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$533_Y, Q = \mem[26], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$727 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[26]).
+Adding SRST signal on $procdff$674 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$528_Y, Q = \mem[27], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$729 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[27]).
+Adding SRST signal on $procdff$675 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$523_Y, Q = \mem[28], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$731 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[28]).
+Adding SRST signal on $procdff$676 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$518_Y, Q = \mem[29], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$733 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[29]).
+Adding SRST signal on $procdff$677 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$513_Y, Q = \mem[30], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$735 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[30]).
+Adding SRST signal on $procdff$678 ($dff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = $procmux$508_Y, Q = \mem[31], rval = 16'0000000000000000).
+Adding EN signal on $auto$ff.cc:337:slice$737 ($sdff) from module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 (D = \wdata, Q = \mem[31]).
+Adding SRST signal on $procdff$686 ($dff) from module program_counter (D = $procmux$638_Y, Q = \pc_out, rval = 4'0000).
+Adding EN signal on $auto$ff.cc:337:slice$739 ($sdff) from module program_counter (D = \pc_next, Q = \pc_out).
+
+13.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+Removed 54 unused cells and 415 unused wires.
+<suppressed ~65 debug messages>
+
+13.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+13.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+13.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \mh_top_module..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \mem_arbiter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \address_decoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \alu..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \register_file..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \control_unit..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \program_counter..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~68 debug messages>
+
+13.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \mh_top_module.
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+  Optimizing cells in module \mem_arbiter.
+  Optimizing cells in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+  Optimizing cells in module \address_decoder.
+  Optimizing cells in module \alu.
+  Optimizing cells in module \register_file.
+  Optimizing cells in module \control_unit.
+  Optimizing cells in module \program_counter.
+Performed a total of 0 changes.
+
+13.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 24 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 34 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 60 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 20 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Finding identical cells in module `\control_unit'.
+Computing hashes of 2 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 1 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 0 cells.
+
+13.13. Executing OPT_DFF pass (perform DFF optimizations).
+Adding EN signal on $auto$ff.cc:337:slice$698 ($sdff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $rtl/hierarchy/icache.v:59$or$306_Y, Q = \line_valid).
+Adding EN signal on $auto$ff.cc:337:slice$701 ($sdff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $rtl/hierarchy/dcache.v:68$or$262_Y, Q = \line_valid).
+
+13.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+Removed 2 unused cells and 2 unused wires.
+<suppressed ~4 debug messages>
+
+13.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+13.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+13.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \mh_top_module..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \mem_arbiter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \address_decoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \alu..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \register_file..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \control_unit..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \program_counter..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~64 debug messages>
+
+13.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \mh_top_module.
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+  Optimizing cells in module \mem_arbiter.
+  Optimizing cells in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+  Optimizing cells in module \address_decoder.
+  Optimizing cells in module \alu.
+  Optimizing cells in module \register_file.
+  Optimizing cells in module \control_unit.
+  Optimizing cells in module \program_counter.
+Performed a total of 0 changes.
+
+13.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 23 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 33 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 60 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 20 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Finding identical cells in module `\control_unit'.
+Computing hashes of 2 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 1 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 0 cells.
+
+13.20. Executing OPT_DFF pass (perform DFF optimizations).
+
+13.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+
+13.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+13.23. Finished fast OPT passes. (There is nothing left to do.)
+
+14. Executing MEMORY pass.
+
+14.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+14.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 6 transformations.
+
+14.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+  Analyzing $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.line_tag write port 0.
+  Analyzing $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.line_data write port 0.
+  Analyzing $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.line_tag write port 0.
+  Analyzing $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.line_data write port 0.
+  Analyzing register_file.registers write port 0.
+  Analyzing register_file.registers write port 1.
+  Analyzing register_file.registers write port 2.
+  Analyzing register_file.registers write port 3.
+  Analyzing register_file.registers write port 4.
+
+14.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+14.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+Checking read port `\line_tag'[0] in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache':
+    no output FF found.
+Checking read port `\line_data'[0] in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache':
+    no output FF found.
+Checking read port address `\line_tag'[0] in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache':
+    no address FF found.
+Checking read port address `\line_data'[0] in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache':
+    no address FF found.
+Checking read port `\line_tag'[0] in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache':
+    no output FF found.
+Checking read port `\line_data'[0] in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache':
+    no output FF found.
+Checking read port address `\line_tag'[0] in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache':
+    no address FF found.
+Checking read port address `\line_data'[0] in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache':
+    no address FF found.
+Checking read port `\registers'[0] in module `\register_file':
+    no output FF found.
+Checking read port `\registers'[1] in module `\register_file':
+    no output FF found.
+Checking read port address `\registers'[0] in module `\register_file':
+    no address FF found.
+Checking read port address `\registers'[1] in module `\register_file':
+    no address FF found.
+Checking read port `$auto$proc_rom.cc:155:do_switch$310'[0] in module `\control_unit':
+    no output FF found.
+Checking read port address `$auto$proc_rom.cc:155:do_switch$310'[0] in module `\control_unit':
+    no address FF found.
+
+14.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+
+14.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+Consolidating read ports of memory register_file.registers by address:
+Consolidating write ports of memory register_file.registers by address:
+  Merging ports 0, 1 (address 0).
+  Merging ports 0, 2 (address 0).
+  Merging ports 0, 3 (address 0).
+Consolidating write ports of memory register_file.registers by address:
+Consolidating write ports of memory register_file.registers using sat-based resource sharing:
+
+14.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+14.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+
+14.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+14.11. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+Mapping memory \line_data in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache:
+  created 8 $dff cells and 0 static cells of width 16.
+  read interface: 0 $dff and 7 $mux cells.
+  write interface: 8 write mux blocks.
+Mapping memory \line_tag in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache:
+  created 8 $dff cells and 0 static cells of width 1.
+  read interface: 0 $dff and 7 $mux cells.
+  write interface: 8 write mux blocks.
+Mapping memory \line_data in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache:
+  created 4 $dff cells and 0 static cells of width 8.
+  read interface: 0 $dff and 3 $mux cells.
+  write interface: 4 write mux blocks.
+Mapping memory \line_tag in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache:
+  created 4 $dff cells and 0 static cells of width 2.
+  read interface: 0 $dff and 3 $mux cells.
+  write interface: 4 write mux blocks.
+Mapping memory \registers in module \register_file:
+  created 4 $dff cells and 0 static cells of width 8.
+  read interface: 0 $dff and 6 $mux cells.
+  write interface: 8 write mux blocks.
+Mapping memory $auto$proc_rom.cc:155:do_switch$310 in module \control_unit:
+  created 16 $dff cells and 0 static cells of width 12.
+  read interface: 0 $dff and 15 $mux cells.
+  write interface: 0 write mux blocks.
+
+15. Executing OPT pass (performing simple optimizations).
+
+15.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+<suppressed ~6 debug messages>
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+<suppressed ~4 debug messages>
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+<suppressed ~33 debug messages>
+Optimizing module control_unit.
+<suppressed ~1 debug messages>
+Optimizing module program_counter.
+
+15.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 96 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 88 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+<suppressed ~24 debug messages>
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 65 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 61 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+<suppressed ~12 debug messages>
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 60 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 41 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Finding identical cells in module `\control_unit'.
+Computing hashes of 14 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 1 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 12 cells.
+
+15.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \mh_top_module..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \mem_arbiter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \address_decoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \alu..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \register_file..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \control_unit..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \program_counter..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~228 debug messages>
+
+15.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \mh_top_module.
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+  Optimizing cells in module \mem_arbiter.
+  Optimizing cells in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+  Optimizing cells in module \address_decoder.
+  Optimizing cells in module \alu.
+  Optimizing cells in module \register_file.
+  Optimizing cells in module \control_unit.
+  Optimizing cells in module \program_counter.
+Performed a total of 0 changes.
+
+15.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 88 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 61 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 60 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 41 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Finding identical cells in module `\control_unit'.
+Computing hashes of 14 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 1 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 0 cells.
+
+15.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+15.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+Removed 0 unused cells and 125 unused wires.
+<suppressed ~4 debug messages>
+
+15.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+15.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+15.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \mh_top_module..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \mem_arbiter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \address_decoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \alu..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \register_file..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \control_unit..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \program_counter..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~228 debug messages>
+
+15.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \mh_top_module.
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+  Optimizing cells in module \mem_arbiter.
+  Optimizing cells in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+  Optimizing cells in module \address_decoder.
+  Optimizing cells in module \alu.
+  Optimizing cells in module \register_file.
+  Optimizing cells in module \control_unit.
+  Optimizing cells in module \program_counter.
+Performed a total of 0 changes.
+
+15.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 88 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 61 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 60 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 41 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Finding identical cells in module `\control_unit'.
+Computing hashes of 14 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 1 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 0 cells.
+
+15.13. Executing OPT_DFF pass (perform DFF optimizations).
+Adding EN signal on $memory\line_data[0]$757 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$276, Q = \line_data[0]).
+Adding EN signal on $memory\line_data[1]$759 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$276, Q = \line_data[1]).
+Adding EN signal on $memory\line_data[2]$761 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$276, Q = \line_data[2]).
+Adding EN signal on $memory\line_data[3]$763 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$276, Q = \line_data[3]).
+Adding EN signal on $memory\line_data[4]$765 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$276, Q = \line_data[4]).
+Adding EN signal on $memory\line_data[5]$767 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$276, Q = \line_data[5]).
+Adding EN signal on $memory\line_data[6]$769 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$276, Q = \line_data[6]).
+Adding EN signal on $memory\line_data[7]$771 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_data$rtl/hierarchy/icache.v:57$264_DATA[15:0]$276, Q = \line_data[7]).
+Adding EN signal on $memory\line_tag[0]$862 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$279, Q = \line_tag[0]).
+Adding EN signal on $memory\line_tag[1]$864 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$279, Q = \line_tag[1]).
+Adding EN signal on $memory\line_tag[2]$866 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$279, Q = \line_tag[2]).
+Adding EN signal on $memory\line_tag[3]$868 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$279, Q = \line_tag[3]).
+Adding EN signal on $memory\line_tag[4]$870 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$279, Q = \line_tag[4]).
+Adding EN signal on $memory\line_tag[5]$872 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$279, Q = \line_tag[5]).
+Adding EN signal on $memory\line_tag[6]$874 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$279, Q = \line_tag[6]).
+Adding EN signal on $memory\line_tag[7]$876 ($dff) from module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache (D = $0$memwr$\line_tag$rtl/hierarchy/icache.v:58$265_DATA[0:0]$279, Q = \line_tag[7]).
+Adding EN signal on $memory\line_data[0]$931 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $0$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_DATA[7:0]$229, Q = \line_data[0]).
+Adding EN signal on $memory\line_data[1]$933 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $0$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_DATA[7:0]$229, Q = \line_data[1]).
+Adding EN signal on $memory\line_data[2]$935 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $0$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_DATA[7:0]$229, Q = \line_data[2]).
+Adding EN signal on $memory\line_data[3]$937 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $0$memwr$\line_data$rtl/hierarchy/dcache.v:66$209_DATA[7:0]$229, Q = \line_data[3]).
+Adding EN signal on $memory\line_tag[0]$980 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $0$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_DATA[1:0]$232, Q = \line_tag[0]).
+Adding EN signal on $memory\line_tag[1]$982 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $0$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_DATA[1:0]$232, Q = \line_tag[1]).
+Adding EN signal on $memory\line_tag[2]$984 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $0$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_DATA[1:0]$232, Q = \line_tag[2]).
+Adding EN signal on $memory\line_tag[3]$986 ($dff) from module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache (D = $0$memwr$\line_tag$rtl/hierarchy/dcache.v:67$210_DATA[1:0]$232, Q = \line_tag[3]).
+Adding EN signal on $memory\registers[0]$1013 ($dff) from module register_file (D = $memory\registers$wrmux[0][1][0]$y$1078, Q = \registers[0]).
+Adding EN signal on $memory\registers[1]$1015 ($dff) from module register_file (D = $memory\registers$wrmux[1][1][0]$y$1098, Q = \registers[1]).
+Adding EN signal on $memory\registers[2]$1017 ($dff) from module register_file (D = $memory\registers$wrmux[2][1][0]$y$1118, Q = \registers[2]).
+Adding EN signal on $memory\registers[3]$1019 ($dff) from module register_file (D = $memory\registers$wrmux[3][1][0]$y$1136, Q = \registers[3]).
+
+15.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+Removed 24 unused cells and 24 unused wires.
+<suppressed ~26 debug messages>
+
+15.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+<suppressed ~4 debug messages>
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+15.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+15.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \mh_top_module..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \mem_arbiter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \address_decoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \alu..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \register_file..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \control_unit..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \program_counter..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~128 debug messages>
+
+15.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \mh_top_module.
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+  Optimizing cells in module \mem_arbiter.
+  Optimizing cells in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+  Optimizing cells in module \address_decoder.
+  Optimizing cells in module \alu.
+  Optimizing cells in module \register_file.
+  Optimizing cells in module \control_unit.
+  Optimizing cells in module \program_counter.
+Performed a total of 0 changes.
+
+15.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 72 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 53 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 60 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 45 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Computing hashes of 42 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+<suppressed ~9 debug messages>
+Finding identical cells in module `\control_unit'.
+Computing hashes of 14 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 1 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 3 cells.
+
+15.20. Executing OPT_DFF pass (perform DFF optimizations).
+
+15.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+Removed 0 unused cells and 3 unused wires.
+<suppressed ~1 debug messages>
+
+15.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+15.23. Rerunning OPT passes. (Maybe there is more to do..)
+
+15.24. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \mh_top_module..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \mem_arbiter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \address_decoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \alu..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \register_file..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \control_unit..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \program_counter..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~130 debug messages>
+
+15.25. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \mh_top_module.
+  Optimizing cells in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+  Optimizing cells in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+  Optimizing cells in module \mem_arbiter.
+  Optimizing cells in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+  Optimizing cells in module \address_decoder.
+  Optimizing cells in module \alu.
+  Optimizing cells in module \register_file.
+  Optimizing cells in module \control_unit.
+  Optimizing cells in module \program_counter.
+Performed a total of 0 changes.
+
+15.26. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\mh_top_module'.
+Computing hashes of 32 cells of `\mh_top_module'.
+Finding duplicate cells in `\mh_top_module'.
+Finding identical cells in module `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Computing hashes of 72 cells of `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding duplicate cells in `$paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache'.
+Finding identical cells in module `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Computing hashes of 53 cells of `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding duplicate cells in `$paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache'.
+Finding identical cells in module `\mem_arbiter'.
+Computing hashes of 7 cells of `\mem_arbiter'.
+Finding duplicate cells in `\mem_arbiter'.
+Finding identical cells in module `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Computing hashes of 60 cells of `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding duplicate cells in `$paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010'.
+Finding identical cells in module `\address_decoder'.
+Computing hashes of 2 cells of `\address_decoder'.
+Finding duplicate cells in `\address_decoder'.
+Finding identical cells in module `\alu'.
+Computing hashes of 12 cells of `\alu'.
+Finding duplicate cells in `\alu'.
+Finding identical cells in module `\register_file'.
+Computing hashes of 42 cells of `\register_file'.
+Finding duplicate cells in `\register_file'.
+Finding identical cells in module `\control_unit'.
+Computing hashes of 14 cells of `\control_unit'.
+Finding duplicate cells in `\control_unit'.
+Finding identical cells in module `\program_counter'.
+Computing hashes of 1 cells of `\program_counter'.
+Finding duplicate cells in `\program_counter'.
+Removed a total of 0 cells.
+
+15.27. Executing OPT_DFF pass (perform DFF optimizations).
+
+15.28. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \mh_top_module..
+Finding unused cells or wires in module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache..
+Finding unused cells or wires in module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache..
+Finding unused cells or wires in module \mem_arbiter..
+Finding unused cells or wires in module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010..
+Finding unused cells or wires in module \address_decoder..
+Finding unused cells or wires in module \alu..
+Finding unused cells or wires in module \register_file..
+Finding unused cells or wires in module \control_unit..
+Finding unused cells or wires in module \program_counter..
+
+15.29. Executing OPT_EXPR pass (perform const folding).
+Optimizing module mh_top_module.
+Optimizing module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache.
+Optimizing module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache.
+Optimizing module mem_arbiter.
+Optimizing module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010.
+Optimizing module address_decoder.
+Optimizing module alu.
+Optimizing module register_file.
+Optimizing module control_unit.
+Optimizing module program_counter.
+
+15.30. Finished fast OPT passes. (There is nothing left to do.)
+
+16. Executing CHECK pass (checking for obvious problems).
+Checking module mh_top_module...
+Checking module $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache...
+Checking module $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache...
+Checking module mem_arbiter...
+Checking module $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010...
+Checking module address_decoder...
+Checking module alu...
+Checking module register_file...
+Checking module control_unit...
+Checking module program_counter...
+Found and reported 0 problems.
+
+17. Printing statistics.
+
+=== mh_top_module ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       77 wires
+      268 wire bits
+       69 public wires
+      257 public wire bits
+       15 ports
+       47 port bits
+       24 cells
+        2   $add
+        8   $and
+        2   $eq
+        1   $logic_or
+        6   $mux
+        4   $not
+        1   $or
+        8 submodules
+        1   $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache
+        1   $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache
+        1   $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010
+        1   alu
+        1   control_unit
+        1   mem_arbiter
+        1   program_counter
+        1   register_file
+
+=== $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       82 wires
+      433 wire bits
+       30 public wires
+      196 public wire bits
+       11 ports
+       48 port bits
+       72 cells
+       21   $and
+       16   $dffe
+        1   $eq
+        2   $logic_and
+       22   $mux
+        1   $neg
+        5   $not
+        1   $or
+        1   $sdffe
+        1   $shift
+        1   $shiftx
+
+=== $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       66 wires
+      231 wire bits
+       27 public wires
+      115 public wire bits
+       15 ports
+       66 port bits
+       53 cells
+       11   $and
+        8   $dffe
+        1   $eq
+        3   $logic_and
+        1   $logic_or
+       18   $mux
+        1   $neg
+        4   $not
+        3   $or
+        1   $sdffe
+        1   $shift
+        1   $shiftx
+
+=== mem_arbiter ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       15 wires
+       57 wire bits
+       14 public wires
+       56 public wire bits
+       14 ports
+       56 port bits
+        7 cells
+        4   $and
+        1   $mux
+        1   $not
+        1   $or
+
+=== $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010 ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       82 wires
+      617 wire bits
+       42 public wires
+      574 public wire bits
+        8 ports
+       42 port bits
+       59 cells
+        1   $add
+        2   $and
+       32   $eq
+        1   $logic_and
+        2   $logic_not
+        1   $logic_or
+        1   $pmux
+        2   $reduce_or
+        1   $sdff
+       16   $sdffe
+        1 submodules
+        1   address_decoder
+
+=== address_decoder ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        4 wires
+       37 wire bits
+        3 public wires
+       21 public wire bits
+        3 ports
+       21 port bits
+        2 cells
+        1   $mux
+        1   $shl
+
+=== alu ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       15 wires
+       73 wire bits
+        5 public wires
+       28 public wire bits
+        5 ports
+       28 port bits
+       12 cells
+        1   $add
+        1   $and
+        4   $eq
+        2   $logic_not
+        1   $or
+        1   $pmux
+        1   $sub
+        1   $xor
+
+=== register_file ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       49 wires
+      215 wire bits
+       13 public wires
+       65 public wire bits
+        9 ports
+       33 port bits
+       42 cells
+        8   $and
+        4   $dffe
+        1   $logic_and
+        2   $logic_not
+       20   $mux
+        2   $not
+        5   $reduce_bool
+
+=== control_unit ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       24 wires
+      172 wire bits
+       11 public wires
+       16 public wire bits
+       11 ports
+       16 port bits
+       14 cells
+       14   $mux
+
+=== program_counter ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        5 wires
+       11 wire bits
+        5 public wires
+       11 public wire bits
+        5 ports
+       11 port bits
+        1 cells
+        1   $sdffe
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+      286 mh_top_module
+       53 $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache
+       72 $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache
+       59 $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010
+        2   address_decoder
+       12 alu
+       14 control_unit
+        7 mem_arbiter
+        1 program_counter
+       42 register_file
+
+        +----------Count including submodules.
+        | 
+      419 wires
+     2114 wire bits
+      219 public wires
+     1339 public wire bits
+       96 ports
+      368 port bits
+        - memories
+        - memory bits
+        - processes
+      286 cells
+        4   $add
+       55   $and
+       28   $dffe
+       40   $eq
+        7   $logic_and
+        6   $logic_not
+        3   $logic_or
+       82   $mux
+        2   $neg
+       16   $not
+        7   $or
+        2   $pmux
+        5   $reduce_bool
+        2   $reduce_or
+        1   $sdff
+       19   $sdffe
+        2   $shift
+        2   $shiftx
+        1   $shl
+        1   $sub
+        1   $xor
+        8 submodules
+        1   $paramod$0061aecbfe8cbc4231c3b3cddfb3db3be7e04de7\dcache
+        1   $paramod$6711075ea05cc21bdf8c665148879168ae895c5a\icache
+        1   $paramod\shared_memory\WAIT_CYCLES=s32'00000000000000000000000000000010
+        1   alu
+        1   control_unit
+        1   mem_arbiter
+        1   program_counter
+        1   register_file
+
+Warnings: 1 unique messages, 2 total
+End of script. Logfile hash: 25eec08fa8, time: 0.05s, user: 0.05s, system: 0.00s, MEM: 18.86 MB peak
+Yosys 0.71+post (git sha1 5628c13240f670b97aaaca3d47940c4afb8ff572, Release, AppleClang clang++ 21.0.0.21000401)
+Time spent: 18% 9x opt_clean (0 sec), 17% 11x read_verilog (0 sec), ...

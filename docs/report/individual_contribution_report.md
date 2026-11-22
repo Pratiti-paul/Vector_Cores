@@ -409,7 +409,7 @@ accepts a result through its write port. R0 is hardwired to zero.
 
 ## 6. Overall Project Verification
 
-The complete processor was verified using twelve testbenches. The
+The complete processor was verified using thirteen testbenches. The
 counts below match the regression results recorded in the README.
 
   Testbench                           Checks Passed   Failed
@@ -426,7 +426,8 @@ counts below match the regression results recorded in the README.
   Boundary and Reset                              15        0
   Logical Operations                              56        0
   Harvard vs Von Neumann Comparison              151        0
-  **Total**                                  **561**    **0**
+  Memory Hierarchy (L1 caches + shared L2)       376        0
+  **Total**                                  **937**    **0**
 
 System-level verification covered:
 
@@ -497,8 +498,8 @@ Each member contributed to a defined part of the processor, including
 instruction memory, data memory, the Address Decoder, ALU, Register
 File, Program Counter, Control Unit and system integration.
 
-The integrated processor was verified using twelve testbenches, with
-**561 checks passed and zero failures**. Generic synthesis and structural
+The integrated processor was verified using thirteen testbenches, with
+**937 checks passed and zero failures**. Generic synthesis and structural
 checking were also performed using Yosys, with zero structural problems
 reported.
 

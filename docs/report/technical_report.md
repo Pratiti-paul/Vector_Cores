@@ -1,6 +1,6 @@
 # Vector Cores: Final Technical Report
 
-## Instruction and Data Memory Hierarchy Using Harvard Architecture, with a Von Neumann Comparison
+## Instruction and Data Memory Hierarchy Using Harvard Architecture, with a Von Neumann Comparison and a Shared Lower-Level Memory
 
 **Team:** Pratiti Paul, Anuradha Raghuwanshi, Ganga Raghuwanshi, Alisha Gupta
 
@@ -14,12 +14,13 @@
 
 Vector Cores is a 16-bit, single-cycle processor written in synthesizable Verilog (IEEE 1364-2001). It uses a Harvard memory organization, with a separate instruction memory and data memory, each with its own address and data path. The processor executes 11 instructions: LOAD, STORE, ADD, SUB, ADDI, BEQ, JUMP, AND, OR, XOR and HALT.
 
-To evaluate the Harvard organization, a Von Neumann baseline was built. It uses the same processor core but one shared, single-port memory.
+To evaluate the Harvard organization, a Von Neumann baseline was built. It uses the same processor core but one shared, single-port memory. A third version adds the optional shared lower-level memory: L1 instruction and data caches in front of one shared, slower L2 memory.
 
-- **Verification:** twelve self-checking Verilog testbenches pass **561 checks with 0 failures**, and the Python assembler passes 203 tests.
+- **Verification:** thirteen self-checking Verilog testbenches pass **937 checks with 0 failures**, and the Python assembler passes 203 tests.
 - **Cycle count:** the Harvard processor runs every instruction in one cycle (CPI = 1). The baseline needs a second cycle for each LOAD and STORE, so its CPI is 1 + M/N, where M/N is the fraction of memory instructions. This gives a cycle-count speed-up of 1.29× on the main program and 1.70× on a memory-heavy program.
 - **Synthesis and timing:** on a Lattice iCE40 HX8K FPGA, the Harvard processor reaches a post-route **Fmax of 63.86 MHz** with 321 LUTs and 156 flip-flops. The Von Neumann baseline reaches 37.69 MHz with 571 LUTs and 301 flip-flops.
 - **Execution time:** combining cycles and clock period, the Harvard design is **2.18×** faster on the main program and **2.88×** faster on the memory-heavy program.
+- **Memory hierarchy:** with a 2-wait-state shared L2, the L1 caches reach I-cache hit rates of up to 76% and make loops up to **2.24×** faster than the same memory without caches. The hierarchy runs at 42.33 MHz.
 
 ---
 
@@ -36,7 +37,8 @@ The project objectives were:
 2. Build the supporting modules: Program Counter, Instruction Memory, Data Memory, Address Decoder and read/write control.
 3. Connect them to a working processor and run programs that contain both instruction fetches and data accesses.
 4. Analyze opportunities for simultaneous access, and compare the design against a shared-memory (Von Neumann) organization.
-5. Verify the design with directed testbenches and waveforms, and report performance, resource use and maximum frequency.
+5. Add the optional shared lower-level memory behind separate L1 instruction and data caches.
+6. Verify the design with directed testbenches and waveforms, and report performance, resource use and maximum frequency.
 
 ## 2. System Architecture
 
@@ -72,6 +74,11 @@ The project objectives were:
 | `address_decoder` | `rtl/address_decoder.v` | 4-to-16 one-hot word-select decoder used by Data Memory |
 | `vn_top_module` | `rtl/baseline/vn_top_module.v` | Von Neumann baseline top level with FETCH/DATA state machine |
 | `unified_memory` | `rtl/baseline/unified_memory.v` | 32 × 16 single-port memory for instructions and data |
+| `mh_top_module` | `rtl/hierarchy/mh_top_module.v` | Memory-hierarchy processor: same core, L1 caches, stall logic |
+| `icache` | `rtl/hierarchy/icache.v` | L1 instruction cache, 8 lines, direct-mapped |
+| `dcache` | `rtl/hierarchy/dcache.v` | L1 data cache, 4 lines, direct-mapped, write-through |
+| `mem_arbiter` | `rtl/hierarchy/mem_arbiter.v` | Shares the single L2 port between the two caches |
+| `shared_memory` | `rtl/hierarchy/shared_memory.v` | L2: 32 × 16 single-port memory with 2 wait states |
 
 ### 2.3 Memory Control (Read/Write)
 
@@ -173,7 +180,8 @@ All testbenches are self-checking: each compares results against expected values
 | boundary_reset_tb | System | 15 | 0 |
 | logical_ops_tb | System | 56 | 0 |
 | harvard_vs_vn_tb | Comparison | 151 | 0 |
-| **Total** | | **561** | **0** |
+| memory_hierarchy_tb | Comparison | 376 | 0 |
+| **Total** | | **937** | **0** |
 
 The Python assembler test suite (pytest) passes 203 tests. This is a separate count and is not included in the total above.
 
@@ -299,16 +307,73 @@ The Harvard organization is faster for two separate reasons:
 
 The Von Neumann design's main advantage is flexibility: one memory can be divided between code and data in any proportion. In this small design, that flexibility does not save hardware. Storing 8-bit data in 16-bit words, plus the extra control logic, makes the baseline larger.
 
-## 9. Limitations and Future Work
+## 9. Shared Lower-Level Memory (Memory Hierarchy)
+
+The optional shared lower-level memory was implemented as a two-level hierarchy (Figure 4). This "modified Harvard" organization is the one used by most real processors.
+
+```
+   Processor core (same PC, control unit, register file, ALU)
+        | instruction path              | data path
+   [ L1 I-cache 8 x 16 ]           [ L1 D-cache 4 x 8, write-through ]
+              \                           /
+               +------ mem_arbiter -------+     one access at a time
+                            |
+          [ shared L2 memory 32 x 16, single port, 2 wait states ]
+```
+
+*Figure 4. L1 instruction and data caches over a shared lower-level memory.*
+
+### 9.1 Operation
+
+The processor stalls whenever the memory system is busy, so the cost of each access depends on where it is served:
+
+- **Hits:** on a hit in both caches, the processor completes each instruction in one cycle, exactly like the Harvard design.
+- **I-cache miss:** costs 3 extra cycles. The word is requested from L2, written into the cache line, and the instruction executes in the next cycle. Executing only from the line avoids a combinational loop through the shared port.
+- **LOAD miss:** costs 2 extra cycles; the data is forwarded to the register file.
+- **STORE:** costs 2 extra cycles, because it is written through to L2. The line is also allocated, so a later LOAD of the same address hits.
+
+This gives the cycle model **N + 3 × I-misses + 2 × (LOAD misses + STOREs)**, which the testbench verifies against the measured miss counts.
+
+Setting `CACHE_ENABLE = 0` turns both caches off. In that "L2 only" configuration every fetch and every LOAD goes to the slow shared memory.
+
+### 9.2 Results
+
+| Program | Harvard | Von Neumann | L1 + shared L2 | L2 only | I-cache hit rate | LOAD hits |
+|---|---|---|---|---|---|---|
+| P1 program.hex | 7 | 9 | 33 | 35 | 0% | 1 / 1 |
+| P2 memory-heavy | 10 | 17 | 51 | 57 | 0% | 3 / 3 |
+| P3 compute loop | 16 | 16 | 34 | 67 | 64.7% | - |
+| P4 memory loop | 37 | 49 | 78 | 175 | 76.3% | 5 / 6 |
+
+All four processors reach identical final registers, data memory and PC (`memory_hierarchy_tb`, 376 checks).
+
+- **Loops:** the caches speed up loops by **1.97×** (P3) and **2.24×** (P4) over the uncached shared memory.
+- **Straight-line code:** gains little, because every fetch is a first-time (compulsory) miss.
+- **Steady state:** after the first iteration, each P4 loop iteration takes 8 cycles (CPI 1.33). This equals the Von Neumann processor with an ideal single-cycle memory, against 28 cycles (CPI 4.67) without caches.
+- **Memory latency:** with 0, 2 and 5 wait states, the cache speed-up on P4 grows from 1.63× to 2.24× to 2.58×. The slower the shared memory, the more the L1 caches are worth.
+
+### 9.3 Hardware Cost
+
+| Metric (iCE40 HX8K) | Harvard | Von Neumann | L1 + shared L2 |
+|---|---|---|---|
+| LUT4 | 321 | 571 | 689 |
+| Flip-flops | 156 | 301 | 476 |
+| Fmax (median of 5 seeds) | 63.86 MHz | 37.69 MHz | 42.33 MHz |
+
+On Xilinx 7-Series, the hierarchy maps to 325 LUTs and 300 flip-flops, with the cache arrays in 5 RAM32M distributed-RAM cells.
+
+The critical path is a LOAD miss: I-cache read → decode → D-cache tag compare → L2 read → forwarded data. Refilling the D-cache first and executing the LOAD in the next cycle would raise Fmax at the cost of one more cycle per LOAD miss.
+
+## 10. Limitations and Future Work
 
 - The address space is small (16 instructions, 16 data words), and the data width is 8 bits.
 - Both memories are built from flip-flops, not block RAM, because they are cleared on reset and read combinationally. Synchronous-read memories would map to FPGA block RAM.
 - Fmax was measured with the open-source iCE40 flow. Xilinx timing (Vivado), board-level testing and power measurement have not been performed.
-- The optional shared lower-level memory, for example a common backing store behind both memories, was not implemented.
+- The caches are small and direct-mapped, with one word per line. Larger lines (spatial locality), set-associativity and a write buffer for stores are natural extensions.
 
-## 10. Conclusion
+## 11. Conclusion
 
-Vector Cores implements and verifies a Harvard instruction and data memory hierarchy: separate instruction and data paths, address decoding and read/write control, integrated into an 11-instruction single-cycle processor. Twelve self-checking testbenches pass 561 checks.
+Vector Cores implements and verifies a Harvard instruction and data memory hierarchy: separate instruction and data paths, address decoding and read/write control, integrated into an 11-instruction single-cycle processor. Thirteen self-checking testbenches pass 937 checks.
 
 A Von Neumann baseline built from the same core quantifies the benefit of separate instruction and data memories:
 
@@ -316,14 +381,18 @@ A Von Neumann baseline built from the same core quantifies the benefit of separa
 - **Clock frequency:** Fmax falls from 63.86 MHz to 37.69 MHz.
 - **Execution time:** the Harvard design is 2.18× faster on the main program and up to 2.88× faster on memory-heavy code.
 
+The shared lower-level memory combines both ideas. L1 instruction and data caches keep the Harvard split on hits, and one shared L2 memory holds instructions and data. With a slow shared memory, the caches make loops up to 2.24× faster, with steady-state loop performance equal to a Von Neumann processor that has an ideal single-cycle memory.
+
 ## Appendix A: Reproducing the Results
 
 All commands are run from the repository root.
 
 ```
-# Full Verilog regression (12 testbenches): see README Section 8.5
+# Full Verilog regression (13 testbenches): see README Section 8.5
 iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v
 vvp cmp_test
+iverilog -g2012 -s memory_hierarchy_tb -o mh_test rtl/*.v rtl/baseline/*.v rtl/hierarchy/*.v testbench/memory_hierarchy_tb.v
+vvp mh_test
 
 # Waveform figures
 python3 simulation/render_waveforms.py simulation/waveforms/harvard_vs_vn_wave.vcd docs/waveforms

@@ -24,6 +24,7 @@ Vector Cores is an educational processor implemented using Verilog HDL (IEEE 136
 - Verify module-level and processor-level behavior with Verilog testbenches.
 - Analyze the synthesized logic using Yosys.
 - Compare the Harvard design against a Von Neumann (shared-memory) baseline.
+- Add a shared lower-level memory behind L1 instruction and data caches (two-level memory hierarchy).
 
 ## 2. Architecture Specifications
 
@@ -198,9 +199,15 @@ Vector_Cores/
 │   ├── program_counter.v
 │   ├── register_file.v
 │   ├── top_module.v
-│   └── baseline/                    # Von Neumann comparison baseline
-│       ├── unified_memory.v
-│       └── vn_top_module.v
+│   ├── baseline/                    # Von Neumann comparison baseline
+│   │   ├── unified_memory.v
+│   │   └── vn_top_module.v
+│   └── hierarchy/                   # L1 caches + shared lower-level memory
+│       ├── shared_memory.v
+│       ├── icache.v
+│       ├── dcache.v
+│       ├── mem_arbiter.v
+│       └── mh_top_module.v
 ├── testbench/
 │   ├── address_decoder_tb.v
 │   ├── alu_tb.v
@@ -211,6 +218,7 @@ Vector_Cores/
 │   ├── harvard_vs_vn_tb.v
 │   ├── instruction_memory_tb.v
 │   ├── logical_ops_tb.v
+│   ├── memory_hierarchy_tb.v
 │   ├── processor_tb.v
 │   ├── program_counter_tb.v
 │   └── register_file_tb.v
@@ -222,9 +230,11 @@ Vector_Cores/
 │       ├── control_flow_wave.vcd
 │       ├── harvard_vs_vn_wave.vcd
 │       ├── logical_ops_wave.vcd
+│       ├── memory_hierarchy_wave.vcd
 │       └── processor_wave.vcd
 ├── docs/
 │   ├── architecture_comparison.md   # Harvard vs Von Neumann comparison
+│   ├── memory_hierarchy.md          # L1 caches + shared lower-level memory
 │   ├── architecture/
 │   │   ├── block_diagram.png
 │   │   ├── harvard_vs_vn_block_diagram.svg
@@ -309,9 +319,9 @@ vvp proc_test
 rm -f proc_test
 ```
 
-### 8.5 Run All Twelve Verilog Testbenches (Full Regression)
+### 8.5 Run All Thirteen Verilog Testbenches (Full Regression)
 
-This regression command runs all twelve testbenches sequentially:
+This regression command runs all thirteen testbenches sequentially:
 
 ```bash
 iverilog -g2012 -s program_counter_tb -o pc_test rtl/program_counter.v testbench/program_counter_tb.v && vvp pc_test && rm -f pc_test && \
@@ -325,7 +335,8 @@ iverilog -g2012 -s processor_tb -o proc_test rtl/*.v testbench/processor_tb.v &&
 iverilog -g2012 -s control_flow_tb -o cf_test rtl/*.v testbench/control_flow_tb.v && vvp cf_test && rm -f cf_test && \
 iverilog -g2012 -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v && vvp br_test && rm -f br_test && \
 iverilog -g2012 -s logical_ops_tb -o log_test rtl/*.v testbench/logical_ops_tb.v && vvp log_test && rm -f log_test && \
-iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v && vvp cmp_test && rm -f cmp_test
+iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v && vvp cmp_test && rm -f cmp_test && \
+iverilog -g2012 -s memory_hierarchy_tb -o mh_test rtl/*.v rtl/baseline/*.v rtl/hierarchy/*.v testbench/memory_hierarchy_tb.v && vvp mh_test && rm -f mh_test
 ```
 
 ### 8.6 Individual Testbench Commands
@@ -344,10 +355,11 @@ iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testben
 | Boundary and Reset | `iverilog -g2012 -s boundary_reset_tb -o br_test rtl/*.v testbench/boundary_reset_tb.v` | `vvp br_test` |
 | Logical Operations | `iverilog -g2012 -s logical_ops_tb -o log_test rtl/*.v testbench/logical_ops_tb.v` | `vvp log_test` |
 | Harvard vs Von Neumann | `iverilog -g2012 -s harvard_vs_vn_tb -o cmp_test rtl/*.v rtl/baseline/*.v testbench/harvard_vs_vn_tb.v` | `vvp cmp_test` |
+| Memory Hierarchy | `iverilog -g2012 -s memory_hierarchy_tb -o mh_test rtl/*.v rtl/baseline/*.v rtl/hierarchy/*.v testbench/memory_hierarchy_tb.v` | `vvp mh_test` |
 
 ## 9. Verification and Testing
 
-Twelve dedicated Verilog testbenches plus an automated Python pytest suite provide comprehensive coverage.
+Thirteen dedicated Verilog testbenches plus an automated Python pytest suite provide comprehensive coverage.
 
 | Testbench | Level | Checks passed | Failed | Status |
 |---|---|---:|---:|:---:|
@@ -363,7 +375,8 @@ Twelve dedicated Verilog testbenches plus an automated Python pytest suite provi
 | `boundary_reset_tb.v` | System | 15 | 0 | **PASS** |
 | `logical_ops_tb.v` | System | 56 | 0 | **PASS** |
 | `harvard_vs_vn_tb.v` | Comparison | 151 | 0 | **PASS** |
-| **Total Verilog Checks** | — | **561** | **0** | **100% PASS** |
+| `memory_hierarchy_tb.v` | Comparison | 376 | 0 | **PASS** |
+| **Total Verilog Checks** | — | **937** | **0** | **100% PASS** |
 | **Python Assembler (`pytest`)** | Tool | **203** | **0** | **100% PASS** |
 
 ### 9.2 Python Assembler Tests
@@ -389,6 +402,7 @@ Testing covers:
 - Assembler parsing, label resolution, instruction encoding, and sample programs.
 - Execution of assembler-generated logical-operation machine code on the processor.
 - Equivalence of the Harvard processor and the Von Neumann baseline, with measured cycle counts.
+- The two-level memory hierarchy: final-state equivalence with Harvard, cache refills, LOAD hits, write-through stores and the cycle model, with caches on and off.
 
 ### 9.4 Logical-Operations Integration Example
 
@@ -494,22 +508,23 @@ The implementation synchronously clears all 16 memory locations during reset, so
 
 ### 10.5 FPGA Place-and-Route and Fmax (iCE40 HX8K)
 
-Both the Harvard processor and the Von Neumann baseline were synthesized, placed and routed for a Lattice iCE40 HX8K (CT256) FPGA using the open-source Yosys + nextpnr flow. Static timing analysis gives the maximum clock frequency (Fmax). Each design was run with 5 placement seeds, and the median is reported.
+The Harvard processor, the Von Neumann baseline and the memory-hierarchy processor (Section 13.2) were synthesized, placed and routed for a Lattice iCE40 HX8K (CT256) FPGA using the open-source Yosys + nextpnr flow. Static timing analysis gives the maximum clock frequency (Fmax). Each design was run with 5 placement seeds, and the median is reported.
 
 ```bash
 bash synthesis/run_ice40.sh
 ```
 
-| Metric | Harvard | Von Neumann |
-|---|---:|---:|
-| Logic LUTs | 321 | 571 |
-| Flip-flops | 156 | 301 |
-| Block RAM | 0 | 0 |
-| **Fmax (median of 5 seeds)** | **63.86 MHz** | **37.69 MHz** |
-| Minimum clock period | 15.66 ns | 26.53 ns |
+| Metric | Harvard | Von Neumann | L1 caches + shared L2 |
+|---|---:|---:|---:|
+| Logic LUTs | 321 | 571 | 689 |
+| Flip-flops | 156 | 301 | 476 |
+| Block RAM | 0 | 0 | 0 |
+| **Fmax (median of 5 seeds)** | **63.86 MHz** | **37.69 MHz** | **42.33 MHz** |
+| Minimum clock period | 15.66 ns | 26.53 ns | 23.62 ns |
 
 - **Harvard critical path:** PC → instruction ROM → register-file read → ALU carry chain → write-back.
 - **Von Neumann critical path:** adds the shared-port address multiplexer and the 32-word unified-memory read multiplexer to the instruction-fetch path.
+- **Memory-hierarchy critical path (a LOAD miss):** PC → I-cache line read → decode → D-cache tag compare → arbiter → shared-memory read → forwarded into the register file.
 
 Synthesis keeps the module hierarchy so the data memory is not optimized for the specific `program.hex`. Fmax is measured flip-flop to flip-flop using `synthesis/fmax_wrappers.v`. Full method, per-seed results and the flip-flop breakdown are in [`synthesis/results.md`](synthesis/results.md); raw reports are in `synthesis/ice40/`. These are post-route results for an iCE40 FPGA; they were not measured on a board.
 
@@ -522,6 +537,7 @@ Synthesis keeps the module hierarchy so the data memory is not optimized for the
 | Boundary and Reset | `simulation/waveforms/boundary_reset_wave.vcd` | `boundary_reset_tb.v` | Yes |
 | Logical Operations | `simulation/waveforms/logical_ops_wave.vcd` | `logical_ops_tb.v` | Yes |
 | Harvard vs Von Neumann | `simulation/waveforms/harvard_vs_vn_wave.vcd` | `harvard_vs_vn_tb.v` | Yes |
+| Memory Hierarchy | `simulation/waveforms/memory_hierarchy_wave.vcd` | `memory_hierarchy_tb.v` | Yes |
 | Instruction Memory | `instruction_memory.vcd` (repository root) | `instruction_memory_tb.v` | No, created when the test runs |
 | Data Memory | `data_memory.vcd` (repository root) | `data_memory_tb.v` | No, created when the test runs |
 | Processor (root copy) | `processor.vcd` (repository root) | `processor_tb.v` | No, created when the test runs |
@@ -534,6 +550,7 @@ gtkwave simulation/waveforms/control_flow_wave.vcd
 gtkwave simulation/waveforms/boundary_reset_wave.vcd
 gtkwave simulation/waveforms/logical_ops_wave.vcd
 gtkwave simulation/waveforms/harvard_vs_vn_wave.vcd
+gtkwave simulation/waveforms/memory_hierarchy_wave.vcd
 ```
 
 `.vcd` files are ignored by `.gitignore`, so the system-level waveforms above are added to the repository explicitly. Module-level waveforms are recreated in the repository root whenever their testbench runs.
@@ -608,11 +625,35 @@ The Von Neumann baseline also uses more hardware: 571 LUTs and 301 flip-flops, a
 
 The cycle-by-cycle timing diagrams are in Section 11.1. The full comparison, including the memory map, FSM diagram, analysis, and waveform signals to inspect, is in [`docs/architecture_comparison.md`](docs/architecture_comparison.md).
 
+### 13.2 Shared Lower-Level Memory (Two-Level Memory Hierarchy)
+
+The memory-hierarchy processor (`rtl/hierarchy/mh_top_module.v`) keeps the Harvard split at level 1 and adds one shared memory at level 2:
+
+- **L1 instruction cache:** 8 lines, direct-mapped.
+- **L1 data cache:** 4 lines, direct-mapped, write-through.
+- **Shared L2 memory:** one 32 × 16 memory with a single port and 2 wait states, connected to both caches through an arbiter.
+
+On cache hits the processor runs at 1 cycle per instruction, like the Harvard design. An instruction-cache miss costs 3 extra cycles; a LOAD miss or a STORE costs 2. The same processor with its caches disabled ("L2 only") shows what the caches are worth.
+
+| Program | Harvard | Von Neumann | L1 caches + shared L2 | Shared L2 only | I-cache hit rate | LOAD hits |
+|---|---:|---:|---:|---:|---:|---:|
+| P1 `program.hex` | 7 | 9 | 33 | 35 | 0% | 1 / 1 |
+| P2 memory-heavy | 10 | 17 | 51 | 57 | 0% | 3 / 3 |
+| P3 compute loop | 16 | 16 | 34 | 67 | 64.7% | - |
+| P4 memory loop | 37 | 49 | 78 | 175 | 76.3% | 5 / 6 |
+
+- **Loops:** the caches speed up the loops by **1.97×** (P3) and **2.24×** (P4) over the uncached shared memory.
+- **Straight-line code:** gains little, because every fetch is a first-time (compulsory) miss.
+- **Steady state:** after the first iteration, each iteration of the P4 loop takes 8 cycles, the same as the Von Neumann processor with an ideal single-cycle memory.
+- **Testbench:** `memory_hierarchy_tb.v` checks that all four processors reach the same final state.
+
+Full design, cycle model, memory-latency sweep and synthesis results: [`docs/memory_hierarchy.md`](docs/memory_hierarchy.md).
+
 ## 14. Conclusion
 
 Vector Cores demonstrates the design and implementation of a modular single-cycle processor using Harvard Architecture and Verilog HDL. The implementation integrates instruction fetching, decoding, register operations, arithmetic and bitwise logical processing, data-memory access, and control-flow management. It also includes a Python two-pass assembler for translating assembly programs into machine code.
 
-Twelve dedicated testbenches completed **561 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. A Von Neumann shared-memory baseline shows the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles. Including clock frequency, the Harvard design is **2.18×** and **2.88×** faster in execution time. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. Place-and-route on iCE40 HX8K gives an Fmax of **63.86 MHz** for the Harvard processor and **37.69 MHz** for the Von Neumann baseline. These are post-route figures; FPGA power and board-level measurements were not performed.
+Thirteen dedicated testbenches completed **937 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. A Von Neumann shared-memory baseline shows the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles. Including clock frequency, the Harvard design is **2.18×** and **2.88×** faster in execution time. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. Place-and-route on iCE40 HX8K gives an Fmax of **63.86 MHz** for the Harvard processor and **37.69 MHz** for the Von Neumann baseline. A two-level memory hierarchy (L1 instruction and data caches over a shared lower-level memory) runs at **42.33 MHz** and makes loops up to **2.24×** faster than the same shared memory without caches. These are post-route figures; FPGA power and board-level measurements were not performed.
 
 
 ## 15. Reports
@@ -624,6 +665,7 @@ Twelve dedicated testbenches completed **561 checks with zero failures**, accomp
 | [`docs/report/Report Phase 1.pdf`](<docs/report/Report Phase 1.pdf>) | Phase I project paper |
 | [`docs/report/individual_contribution_report.md`](docs/report/individual_contribution_report.md) | Individual contributions of each team member |
 | [`docs/architecture_comparison.md`](docs/architecture_comparison.md) | Detailed Harvard vs Von Neumann comparison |
+| [`docs/memory_hierarchy.md`](docs/memory_hierarchy.md) | Shared lower-level memory: L1 caches + shared L2 |
 | [`synthesis/results.md`](synthesis/results.md) | Synthesis, place-and-route and timing results |
 
 Rebuild the technical report PDF after editing its Markdown source (requires `reportlab`; `Pillow` is optional):

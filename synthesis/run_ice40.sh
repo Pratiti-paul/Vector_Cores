@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Synthesis + place-and-route for the Harvard processor and the Von Neumann
-# baseline on a Lattice iCE40 HX8K (CT256) using the open-source flow:
+# Synthesis + place-and-route for the Harvard processor, the Von Neumann
+# baseline and the memory-hierarchy processor (L1 caches + shared memory)
+# on a Lattice iCE40 HX8K (CT256) using the open-source flow:
 #   Yosys (synth_ice40)  ->  nextpnr-ice40 (place, route, static timing)
 #
 # Run from the repository root (instruction memory loads program.hex by a
@@ -29,6 +30,7 @@ mkdir -p "$OUT"
 COMMON="rtl/program_counter.v rtl/control_unit.v rtl/register_file.v rtl/alu.v rtl/address_decoder.v"
 HARVARD="$COMMON rtl/instruction_memory.v rtl/data_memory.v rtl/top_module.v"
 VN="$COMMON rtl/baseline/unified_memory.v rtl/baseline/vn_top_module.v"
+MH="$COMMON rtl/hierarchy/shared_memory.v rtl/hierarchy/mem_arbiter.v rtl/hierarchy/icache.v rtl/hierarchy/dcache.v rtl/hierarchy/mh_top_module.v"
 
 run_design () {
     local name=$1 core=$2 wrapper=$3 files=$4
@@ -68,12 +70,13 @@ core_cells () {   # LUTs, flip-flops, carry cells of the core (hierarchy total)
 
 run_design harvard top_module    harvard_fmax_top "$HARVARD"
 run_design vn      vn_top_module vn_fmax_top      "$VN"
+run_design mh      mh_top_module mh_fmax_top      "$MH"
 
 {
     echo "iCE40 HX8K (CT256) - Yosys $(yosys -V | awk '{print $2}') / nextpnr-ice40"
     echo
     printf "%-10s %8s %8s %8s %10s   %s\n" design LUT4 DFF CARRY "Fmax(MHz)" "per-seed Fmax (MHz)"
-    for d in harvard vn; do
+    for d in harvard vn mh; do
         read -r l f c <<< "$(core_cells "$OUT/${d}_resources.txt")"
         seeds=$(fmax_list "$d" | tr '\n' ' ')
         med=$(fmax_list "$d" | median)
