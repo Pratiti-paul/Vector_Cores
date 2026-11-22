@@ -217,6 +217,7 @@ Vector_Cores/
 ├── tests/
 ├── simulation/
 │   ├── logical_ops_assembled.hex
+│   ├── render_waveforms.py        # VCD -> annotated SVG timing diagrams
 │   ├── logs/
 │   │   ├── yosys_synthesis.log
 │   │   ├── yosys_synthesis_final.log
@@ -229,6 +230,7 @@ Vector_Cores/
 │       └── processor_wave.vcd
 ├── docs/
 │   ├── architecture_comparison.md
+│   ├── waveforms/                 # annotated Harvard vs VN timing diagrams (SVG + PNG)
 │   ├── assembler_design.md
 │   ├── data_memory_verification.md
 │   ├── architecture/
@@ -239,7 +241,10 @@ Vector_Cores/
 │   └── Video/
 │       └── video.md
 └── synthesis/
-    └── results.md
+    ├── results.md
+    ├── run_ice40.sh               # Yosys + nextpnr flow (resources, Fmax)
+    ├── fmax_wrappers.v            # registered-output wrappers for timing
+    └── ice40/                     # synthesis and place-and-route reports
 ```
 
 This is a high-level guide to the repository. Some generated logs, waveforms, and supporting files may be present in addition to the paths shown above.
@@ -477,6 +482,27 @@ Yosys reported:
 `Warning: Replacing memory \mem with list of registers. See rtl/data_memory.v:45`
 The implementation synchronously clears all 16 memory locations during reset, so generic synthesis maps the storage to registers rather than conventional block RAM.
 
+### 10.5 FPGA Place-and-Route and Fmax (iCE40 HX8K)
+
+Both the Harvard processor and the Von Neumann baseline were synthesized, placed and routed for a Lattice iCE40 HX8K (CT256) FPGA using the open-source Yosys + nextpnr flow. Static timing analysis gives the maximum clock frequency (Fmax). Each design was run with 5 placement seeds, and the median is reported.
+
+```bash
+bash synthesis/run_ice40.sh
+```
+
+| Metric | Harvard | Von Neumann |
+|---|---:|---:|
+| Logic LUTs | 321 | 571 |
+| Flip-flops | 156 | 301 |
+| Block RAM | 0 | 0 |
+| **Fmax (median of 5 seeds)** | **63.86 MHz** | **37.69 MHz** |
+| Minimum clock period | 15.66 ns | 26.53 ns |
+
+- **Harvard critical path:** PC → instruction ROM → register-file read → ALU carry chain → write-back.
+- **Von Neumann critical path:** adds the shared-port address multiplexer and the 32-word unified-memory read multiplexer to the instruction-fetch path.
+
+Synthesis keeps the module hierarchy so the data memory is not optimized for the specific `program.hex`. Fmax is measured flip-flop to flip-flop using `synthesis/fmax_wrappers.v`. Full method, per-seed results and the flip-flop breakdown are in [`synthesis/results.md`](synthesis/results.md); raw reports are in `synthesis/ice40/`. These are post-route results for an iCE40 FPGA; they were not measured on a board.
+
 ## 11. Waveform Archives
 
 | Waveform | Location | Generating testbench |
@@ -502,6 +528,26 @@ gtkwave simulation/waveforms/harvard_vs_vn_wave.vcd
 
 Waveform files are generated simulation artifacts. Their availability depends on which simulations have been run and which artifacts are included in the repository.
 
+### 11.1 Annotated Harvard vs Von Neumann Waveforms
+
+The figures below are drawn from `simulation/waveforms/harvard_vs_vn_wave.vcd` and show both processors running the same program cycle by cycle:
+
+- **Green columns:** the Harvard processor fetches an instruction and accesses data memory in the same cycle.
+- **Orange columns:** the Von Neumann baseline's single memory port is busy with a data access, so the next fetch stalls.
+
+![Harvard vs Von Neumann timing, program.hex](docs/waveforms/harvard_vs_vn_p1.svg)
+
+Additional figures:
+
+- Memory-heavy program (10 vs 17 cycles): [`docs/waveforms/harvard_vs_vn_p2.svg`](docs/waveforms/harvard_vs_vn_p2.svg)
+- Compute-only loop (16 vs 16 cycles): [`docs/waveforms/harvard_vs_vn_p3.svg`](docs/waveforms/harvard_vs_vn_p3.svg)
+
+PNG copies for the report are in `docs/waveforms/`. To regenerate the SVGs, run the comparison testbench (Section 8.8) and then:
+
+```bash
+python3 simulation/render_waveforms.py simulation/waveforms/harvard_vs_vn_wave.vcd docs/waveforms
+```
+
 ## 12. Limitations and Future Improvements
 
 1. **Data Memory mapping:** Synchronous reset clears all memory locations. The reported synthesis flow therefore maps the memory to registers instead of conventional block RAM.
@@ -509,7 +555,7 @@ Waveform files are generated simulation artifacts. Their availability depends on
 3. **Relative program-file path:** Instruction Memory loads `program.hex` using a relative path. Run simulations from the repository root.
 4. **Small address space:** The 4-bit address buses limit instruction and data memories to 16 locations each.
 5. **Datapath capacity:** Future versions could increase data width, register count, and memory capacity.
-6. **Further hardware characterization:** Board-level testing, maximum-frequency measurement, critical-path timing analysis, and power measurement remain future work.
+6. **Further hardware characterization:** Post-route Fmax and critical paths are reported for iCE40 HX8K (Section 10.5). Xilinx (Vivado) timing, board-level testing, and power measurement remain future work.
 
 ## 13. Performance Metrics
 
@@ -520,7 +566,7 @@ The processor uses a single-cycle execution model:
 - **Instruction width:** 16 bits.
 - **Data width:** 8 bits.
 
-The throughput is an architectural ideal. Actual operating frequency and instructions per second have not been measured.
+At the post-route Fmax of **63.86 MHz** on iCE40 HX8K (Section 10.5), this gives a peak throughput of about **63.9 million instructions per second**. This is a post-route figure and was not measured on a board.
 
 ### 13.1 Harvard vs Von Neumann (Shared-Memory) Comparison
 
@@ -538,13 +584,23 @@ For N executed instructions, M of which are LOAD/STORE: Harvard takes **N** cycl
 | P2 memory-heavy | 10 | 7 | 10 | 17 | 1.000 | 1.700 | **1.700×** |
 | P3 compute-only loop | 16 | 0 | 16 | 16 | 1.000 | 1.000 | **1.000×** |
 
-Both processors reached identical, expected final register, data-memory, and PC states in all three programs (151 checks, 0 failures). The speed-ups are cycle-count ratios; wall-clock speed-up also depends on each design's post-synthesis Fmax, which has not been measured.
+Both processors reached identical, expected final register, data-memory, and PC states in all three programs (151 checks, 0 failures).
 
-The full comparison, including the memory map, FSM diagram, analysis, and waveform signals to inspect, is in [`docs/architecture_comparison.md`](docs/architecture_comparison.md).
+**Execution time.** The shared memory also lengthens the Von Neumann critical path, so its Fmax is lower: 37.69 MHz against 63.86 MHz for Harvard on iCE40 HX8K (Section 10.5). Combining cycles and clock period:
+
+| Program | Harvard time | VN time | Harvard speed-up |
+|---|---:|---:|---:|
+| P1 `program.hex` (mixed) | 109.6 ns | 238.8 ns | **2.18×** |
+| P2 memory-heavy | 156.6 ns | 451.0 ns | **2.88×** |
+| P3 compute-only loop | 250.5 ns | 424.5 ns | **1.69×** |
+
+The Von Neumann baseline also uses more hardware: 571 LUTs and 301 flip-flops, against 321 and 156 for Harvard. Its unified memory stores data in 16-bit words, and it needs an instruction register and an FSM.
+
+The cycle-by-cycle timing diagrams are in Section 11.1. The full comparison, including the memory map, FSM diagram, analysis, and waveform signals to inspect, is in [`docs/architecture_comparison.md`](docs/architecture_comparison.md).
 
 ## 14. Conclusion
 
 Vector Cores demonstrates the design and implementation of a modular single-cycle processor using Harvard Architecture and Verilog HDL. The implementation integrates instruction fetching, decoding, register operations, arithmetic and bitwise logical processing, data-memory access, and control-flow management. It also includes a Python two-pass assembler for translating assembly programs into machine code.
 
-Twelve dedicated testbenches completed **561 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. A Von Neumann shared-memory baseline shows the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. These results do not represent measured FPGA timing, power, or board utilization.
+Twelve dedicated testbenches completed **561 checks with zero failures**, accompanied by a 2-pass Python assembler verified across **203 automated pytest tests**. A Von Neumann shared-memory baseline shows the Harvard design is **1.29×** faster on the main program and **1.70×** faster on a memory-heavy program, measured in clock cycles. Including clock frequency, the Harvard design is **2.18×** and **2.88×** faster in execution time. Generic synthesis using Yosys 0.70 reported **125 cells** and zero structural problems. Place-and-route on iCE40 HX8K gives an Fmax of **63.86 MHz** for the Harvard processor and **37.69 MHz** for the Von Neumann baseline. These are post-route figures; FPGA power and board-level measurements were not performed.
 

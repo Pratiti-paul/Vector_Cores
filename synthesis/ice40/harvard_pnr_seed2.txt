@@ -1,0 +1,279 @@
+Warning: No PCF file specified; IO pins will be placed automatically
+
+Info: Packing constants..
+Info: Packing IOs..
+Info: Packing LUT-FFs..
+Info:      316 LCs used as LUT4 only
+Info:        5 LCs used as LUT4 and DFF
+Info: Packing non-LUT FFs..
+Info:      189 LCs used as DFF only
+Info: Packing carries..
+Info:        3 LCs used as CARRY only
+Info: Packing indirect carry+LUT pairs...
+Info:        1 LUTs merged into carry LCs
+Info: Packing RAMs..
+Info: Placing PLLs..
+Info: Packing special functions..
+Info: Packing PLLs..
+Info: Promoting globals..
+Info: promoting clk$SB_IO_IN (fanout 194)
+Info: promoting reset$SB_IO_IN [reset] (fanout 132)
+Info: Constraining chains...
+Info:        1 LCs used to legalise carry chains.
+Info: Checksum: 0xe2b499ec
+
+Info: Device utilisation:
+Info: 	         ICESTORM_LC:     515/   7680     6%
+Info: 	        ICESTORM_RAM:       0/     32     0%
+Info: 	               SB_IO:      40/    206    19%
+Info: 	               SB_GB:       2/      8    25%
+Info: 	        ICESTORM_PLL:       0/      2     0%
+Info: 	         SB_WARMBOOT:       0/      1     0%
+
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 497 cells, random placement wirelen = 14308.
+Info:     at initial placer iter 0, wirelen = 890
+Info:     at initial placer iter 1, wirelen = 888
+Info:     at initial placer iter 2, wirelen = 967
+Info:     at initial placer iter 3, wirelen = 895
+Info: Running main analytical placer, max placement attempts per cell = 38781.
+Info:     at iteration #1, type ALL: wirelen solved = 898, spread = 2246, legal = 2697; time = 0.01s
+Info:     at iteration #2, type ALL: wirelen solved = 953, spread = 2134, legal = 2567; time = 0.01s
+Info:     at iteration #3, type ALL: wirelen solved = 913, spread = 2229, legal = 2588; time = 0.01s
+Info:     at iteration #4, type ALL: wirelen solved = 982, spread = 2153, legal = 2460; time = 0.01s
+Info:     at iteration #5, type ALL: wirelen solved = 1066, spread = 2155, legal = 2624; time = 0.01s
+Info:     at iteration #6, type ALL: wirelen solved = 1121, spread = 2198, legal = 2539; time = 0.01s
+Info:     at iteration #7, type ALL: wirelen solved = 1150, spread = 2243, legal = 2577; time = 0.01s
+Info:     at iteration #8, type ALL: wirelen solved = 1123, spread = 2144, legal = 2532; time = 0.01s
+Info:     at iteration #9, type ALL: wirelen solved = 1161, spread = 2314, legal = 2609; time = 0.01s
+Info: HeAP Placer Time: 0.08s
+Info:   of which solving equations: 0.05s
+Info:   of which spreading cells: 0.00s
+Info:   of which strict legalisation: 0.01s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 145, wirelen = 2460
+Info:   at iteration #5: temp = 0.000000, timing cost = 123, wirelen = 1928
+Info:   at iteration #10: temp = 0.000000, timing cost = 109, wirelen = 1823
+Info:   at iteration #15: temp = 0.000000, timing cost = 132, wirelen = 1767
+Info:   at iteration #18: temp = 0.000000, timing cost = 132, wirelen = 1720 
+Info: SA placement time 0.10s
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 62.58 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 6.11 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 3.44 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 2 endpoint(s)
+Info:          + represents [1,2) endpoint(s)
+Info: [ 67354,  68053) |*+
+Info: [ 68053,  68752) |**********+
+Info: [ 68752,  69451) |****+
+Info: [ 69451,  70150) |**+
+Info: [ 70150,  70849) |***+
+Info: [ 70849,  71548) |+
+Info: [ 71548,  72247) | 
+Info: [ 72247,  72946) | 
+Info: [ 72946,  73645) | 
+Info: [ 73645,  74344) |********************+
+Info: [ 74344,  75043) |************************************************************ 
+Info: [ 75043,  75742) |**************************************+
+Info: [ 75742,  76441) |*******+
+Info: [ 76441,  77140) |*******+
+Info: [ 77140,  77839) |*********+
+Info: [ 77839,  78538) |***+
+Info: [ 78538,  79237) |****+
+Info: [ 79237,  79936) |**+
+Info: [ 79936,  80635) |****+
+Info: [ 80635,  81334) |**+
+Info: Checksum: 0x994b3056
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 1556 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |      104        883 |  104   883 |       715|       0.13       0.13|
+Info:       1988 |      320       1652 |  216   769 |         0|       0.17       0.30|
+Info: Routing complete.
+Info: Router1 time 0.30s
+Info: Checksum: 0xd94239ee
+
+Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.54  0.54 Source core.pc_inst_pc_next_3_SB_LUT4_O_LC.O
+Info:    routing  0.59  1.13 Net pc_w[3] (5,8) -> (4,7)
+Info:                          Sink core.imem_inst.instr_SB_LUT4_O_4_LC.I0
+Info:                          Defined in:
+Info:                               synthesis/fmax_wrappers.v:22.17-22.21
+Info:      logic  0.45  1.58 Source core.imem_inst.instr_SB_LUT4_O_4_LC.O
+Info:    routing  0.59  2.16 Net instr_w[15] (4,7) -> (5,7)
+Info:                          Sink core.rf_inst_read_reg1_1_SB_LUT4_O_I3_SB_LUT4_O_LC.I1
+Info:                          Defined in:
+Info:                               synthesis/fmax_wrappers.v:23.17-23.24
+Info:      logic  0.40  2.56 Source core.rf_inst_read_reg1_1_SB_LUT4_O_I3_SB_LUT4_O_LC.O
+Info:    routing  0.59  3.15 Net core.rf_inst_read_reg1_1_SB_LUT4_O_I3[3] (5,7) -> (5,6)
+Info:                          Sink core.rf_inst_read_reg2_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.31  3.47 Source core.rf_inst_read_reg2_SB_LUT4_O_LC.O
+Info:    routing  0.59  4.05 Net core.rf_inst_read_reg2 (5,6) -> (6,7)
+Info:                          Sink core.rf_inst.read_data2_SB_LUT4_O_4_I3_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               rtl/register_file.v:7.22-7.31
+Info:      logic  0.31  4.37 Source core.rf_inst.read_data2_SB_LUT4_O_4_I3_SB_LUT4_O_LC.O
+Info:    routing  0.59  4.96 Net core.rf_inst.read_data2_SB_LUT4_O_4_I3[3] (6,7) -> (6,7)
+Info:                          Sink core.rf_inst.read_data2_SB_LUT4_O_4_LC.I3
+Info:                          Defined in:
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.31  5.27 Source core.rf_inst.read_data2_SB_LUT4_O_4_LC.O
+Info:    routing  0.59  5.86 Net core.read_data2[1] (6,7) -> (6,7)
+Info:                          Sink core.alu_inst_alu_in2_1_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               rtl/top_module.v:67.16-67.26
+Info:      logic  0.31  6.18 Source core.alu_inst_alu_in2_1_SB_LUT4_O_LC.O
+Info:    routing  1.27  7.45 Net core.alu_inst_alu_in2_1 (6,7) -> (7,3)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_LUT4_I3_I2_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               rtl/alu.v:18.23-18.30
+Info:      logic  0.31  7.76 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_LUT4_I3_I2_SB_LUT4_O_LC.O
+Info:    routing  0.59  8.35 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_LUT4_I3_I2[2] (7,3) -> (6,3)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_LUT4_I3_LC.I2
+Info:                          Defined in:
+Info:                               rtl/alu.v:27.32-27.49
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.23  8.58 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_LUT4_I3_LC.COUT
+Info:    routing  0.00  8.58 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO (6,3) -> (6,3)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_LUT4_I3_LC.CIN
+Info:                          Defined in:
+Info:                               rtl/alu.v:27.32-27.49
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.13  8.71 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_LUT4_I3_LC.COUT
+Info:    routing  0.00  8.71 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO (6,3) -> (6,3)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_LC.CIN
+Info:                          Defined in:
+Info:                               rtl/alu.v:27.32-27.49
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.13  8.84 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_LC.COUT
+Info:    routing  0.00  8.84 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI (6,3) -> (6,3)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_LC.CIN
+Info:                          Defined in:
+Info:                               rtl/alu.v:27.32-27.49
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.13  8.96 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_LC.COUT
+Info:    routing  0.00  8.96 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CO_CI (6,3) -> (6,3)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_LUT4_I3_LC.CIN
+Info:                          Defined in:
+Info:                               rtl/alu.v:27.32-27.49
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.13  9.09 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_LUT4_I3_LC.COUT
+Info:    routing  0.00  9.09 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I2[3] (6,3) -> (6,3)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_LC.CIN
+Info:                          Defined in:
+Info:                               rtl/alu.v:27.32-27.49
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:      logic  0.13  9.21 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_LC.COUT
+Info:    routing  0.26  9.47 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO (6,3) -> (6,3)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_LUT4_I3_LC.I3
+Info:                          Defined in:
+Info:                               rtl/alu.v:27.32-27.49
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:      logic  0.31  9.79 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_LUT4_I3_LC.O
+Info:    routing  0.59  10.38 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_1_I3_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_LUT4_I3_O[3] (6,3) -> (6,4)
+Info:                          Sink core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_1_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_2_LC.I3
+Info:                          Defined in:
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.31  10.69 Source core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_1_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_2_LC.O
+Info:    routing  0.59  11.28 Net core.alu_inst.alu_out_SB_LUT4_O_3_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_1_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O[3] (6,4) -> (7,3)
+Info:                          Sink core.alu_inst.zero_SB_LUT4_O_I3_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.31  11.59 Source core.alu_inst.zero_SB_LUT4_O_I3_SB_LUT4_O_LC.O
+Info:    routing  0.96  12.55 Net core.alu_inst.zero_SB_LUT4_O_I3[3] (7,3) -> (6,6)
+Info:                          Sink core.alu_inst.zero_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.31  12.87 Source core.alu_inst.zero_SB_LUT4_O_LC.O
+Info:    routing  0.59  13.45 Net zero_w (6,6) -> (5,7)
+Info:                          Sink core.zero_flag_SB_LUT4_I2_LC.I2
+Info:                          Defined in:
+Info:                               synthesis/fmax_wrappers.v:25.17-25.23
+Info:      logic  0.38  13.83 Source core.zero_flag_SB_LUT4_I2_LC.O
+Info:    routing  0.59  14.42 Net core.zero_flag_SB_LUT4_I0_O[1] (5,7) -> (5,8)
+Info:                          Sink core.pc_inst_pc_next_SB_LUT4_O_I3_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.31  14.74 Source core.pc_inst_pc_next_SB_LUT4_O_I3_SB_LUT4_O_LC.O
+Info:    routing  0.59  15.32 Net core.pc_inst_pc_next_SB_LUT4_O_I3[2] (5,8) -> (5,8)
+Info:                          Sink core.pc_inst_pc_next_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      setup  0.34  15.66 Source core.pc_inst_pc_next_SB_LUT4_O_LC.I3
+Info: 6.11 ns logic, 9.55 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> 'posedge clk$SB_IO_IN_$glb_clk':
+Info:       type curr  total name
+Info:     source  0.00  0.00 Source reset$sb_io.D_IN_0
+Info:    routing  2.98  2.98 Net reset$SB_IO_IN (11,33) -> (4,6)
+Info:                          Sink core.rf_inst.write_reg_SB_LUT4_I1_LC.I2
+Info:                          Defined in:
+Info:                               synthesis/fmax_wrappers.v:14.24-14.29
+Info:      logic  0.38  3.36 Source core.rf_inst.write_reg_SB_LUT4_I1_LC.O
+Info:    routing  0.59  3.94 Net core.rf_inst.write_reg_SB_LUT4_I1_O[1] (4,6) -> (4,6)
+Info:                          Sink core.rf_inst.registers[1]_SB_DFFESR_Q_E_SB_LUT4_O_LC.I3
+Info:                          Defined in:
+Info:                               /opt/homebrew/Cellar/yosys/0.71/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.31  4.26 Source core.rf_inst.registers[1]_SB_DFFESR_Q_E_SB_LUT4_O_LC.O
+Info:    routing  1.93  6.19 Net core.rf_inst.registers[1]_SB_DFFESR_Q_E (4,6) -> (6,7)
+Info:                          Sink core.rf_inst.registers[1]_SB_DFFESR_Q_1_DFFLC.CEN
+Info:      setup  0.10  6.29 Source core.rf_inst.registers[1]_SB_DFFESR_Q_1_DFFLC.CEN
+Info: 0.79 ns logic, 5.50 ns routing
+
+Info: Critical path report for cross-domain path 'posedge clk$SB_IO_IN_$glb_clk' -> '<async>':
+Info:       type curr  total name
+Info:   clk-to-q  0.54  0.54 Source alu_out_SB_DFF_Q_7_DFFLC.O
+Info:    routing  2.80  3.34 Net alu_out[0]$SB_IO_OUT (7,8) -> (33,9)
+Info:                          Sink alu_out[0]$sb_io.D_OUT_0
+Info:                          Defined in:
+Info:                               synthesis/fmax_wrappers.v:17.24-17.31
+Info: 0.54 ns logic, 2.80 ns routing
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 63.86 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 6.29 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 3.34 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 1 endpoint(s)
+Info:          + represents [1,1) endpoint(s)
+Info: [ 67674,  68362) |*+
+Info: [ 68362,  69050) |**********+
+Info: [ 69050,  69738) |*******+
+Info: [ 69738,  70426) |**+
+Info: [ 70426,  71114) |***+
+Info: [ 71114,  71802) |*+
+Info: [ 71802,  72490) | 
+Info: [ 72490,  73178) | 
+Info: [ 73178,  73866) | 
+Info: [ 73866,  74554) |****+
+Info: [ 74554,  75242) |****************************************************+
+Info: [ 75242,  75930) |************************************************************ 
+Info: [ 75930,  76618) |************************+
+Info: [ 76618,  77306) |******+
+Info: [ 77306,  77994) |**************+
+Info: [ 77994,  78682) |**+
+Info: [ 78682,  79370) |****+
+Info: [ 79370,  80058) |****+
+Info: [ 80058,  80746) |***+
+Info: [ 80746,  81434) |*+
+1 warning, 0 errors
+
+Info: Program finished normally.

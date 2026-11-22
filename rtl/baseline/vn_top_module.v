@@ -112,7 +112,11 @@ module vn_top_module (
     // =========================================================================
     // 3. Shared Memory Port Arbitration
     // =========================================================================
-    assign mem_addr    = (state == S_DATA) ? {1'b1, dmem_addr} : {1'b0, pc_current};
+    // The data address is taken directly from IR (not from instr_word), so the
+    // port address never depends on the port's own read data. This avoids a
+    // structural combinational loop mem_addr -> mem_rdata -> instr_word ->
+    // mem_addr that synthesis/timing tools would otherwise report.
+    assign mem_addr    = (state == S_DATA) ? {1'b1, ir[9:6]} : {1'b0, pc_current};
 
     // =========================================================================
     // 4. Control Gating

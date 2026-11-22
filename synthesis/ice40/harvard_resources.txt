@@ -1,0 +1,159 @@
+
+10. Printing statistics.
+
+=== address_decoder ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        5 wires
+       29 wire bits
+        5 public wires
+       29 public wire bits
+        3 ports
+       21 port bits
+       18 cells
+       18   SB_LUT4
+
+=== alu ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       45 wires
+      142 wire bits
+       45 public wires
+      142 public wire bits
+        5 ports
+       28 port bits
+       79 cells
+       14   SB_CARRY
+       65   SB_LUT4
+
+=== control_unit ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       11 wires
+       16 wire bits
+       11 public wires
+       16 public wire bits
+       11 ports
+       16 port bits
+       11 cells
+       11   SB_LUT4
+
+=== data_memory ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       83 wires
+      336 wire bits
+       83 public wires
+      336 public wire bits
+        7 ports
+       24 port bits
+      256 cells
+      128   SB_DFFESR
+      128   SB_LUT4
+        1 submodules
+        1   address_decoder
+
+=== instruction_memory ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        2 wires
+       20 wire bits
+        2 public wires
+       20 public wire bits
+        2 ports
+       20 port bits
+       12 cells
+       12   SB_LUT4
+
+=== program_counter ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        6 wires
+       12 wire bits
+        6 public wires
+       12 public wire bits
+        5 ports
+       11 port bits
+        5 cells
+        4   SB_DFFESR
+        1   SB_LUT4
+
+=== register_file ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       42 wires
+      140 wire bits
+       42 public wires
+      140 public wire bits
+        9 ports
+       33 port bits
+       70 cells
+        8   SB_DFFE
+       16   SB_DFFESR
+       46   SB_LUT4
+
+=== top_module ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       61 wires
+      187 wire bits
+       61 public wires
+      187 public wire bits
+        8 ports
+       40 port bits
+       45 cells
+        5   SB_CARRY
+       40   SB_LUT4
+        6 submodules
+        1   alu
+        1   control_unit
+        1   data_memory
+        1   instruction_memory
+        1   program_counter
+        1   register_file
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+      496 top_module
+       79 alu
+       11 control_unit
+      256 data_memory
+       18   address_decoder
+       12 instruction_memory
+        5 program_counter
+       70 register_file
+
+        +----------Count including submodules.
+        | 
+      255 wires
+      882 wire bits
+      255 public wires
+      882 public wire bits
+       50 ports
+      193 port bits
+        - memories
+        - memory bits
+        - processes
+      496 cells
+       19   SB_CARRY
+        8   SB_DFFE
+      148   SB_DFFESR
+      321   SB_LUT4
+        6 submodules
+        1   alu
+        1   control_unit
+        1   data_memory
+        1   instruction_memory
+        1   program_counter
+        1   register_file
+
